@@ -51,3 +51,40 @@ open_conn_mysql <- function(dbname,
 close_conn_mysql <- function(conn) {
   RMariaDB::dbDisconnect(conn)
 }
+
+#' Execute select query
+#'
+#' Retrieves records that meet the criteria declared in the query
+#'
+#' @param conn \code{MariaDBConnection} connection object
+#' @param query select query
+#' @param quiet boolean flag to hide status messages
+#'
+#' @return data frame containing the selected records
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'     conn <- conn_mysql("sys", "root")
+#'     out <- select_query_mysql(conn, "SELECT * FROM table_name")
+#'     close_conn_mysql(conn)
+#' }
+select_query_mysql <- function(conn, query, quiet = FALSE) {
+  # Verify that the query has a SELECT token
+  if (!("SELECT" %in% unlist(strsplit(toupper(query), " "))))
+      stop("Your query does not look like a valid SELECT query!")
+  # Show query
+  if (!quiet)
+    message(paste0("Executing: \n", query))
+
+  # Send query
+  rs <- RMariaDB::dbSendQuery(conn, query)
+  # Fetch records
+  records <- RMariaDB::dbFetch(rs)
+  # Show query
+  if (!quiet)
+    message(paste0("Results:\n", nrow(records), " records were found."))
+  # Clear the result
+  RMariaDB::dbClearResult(rs)
+  return(records)
+}
