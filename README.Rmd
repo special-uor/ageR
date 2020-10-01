@@ -16,6 +16,11 @@ knitr::opts_chunk$set(
 # ageR: Age Models
 
 <!-- badges: start -->
+<!-- `r badger::badge_code_size("special-uor/ageR")` -->
+`r badger::badge_devel("special-uor/ageR", "yellow")`
+`r badger::badge_github_actions("special-uor/ageR")`
+`r badger::badge_cran_release("ageR", "black")`
+<!-- `r badger::badge_codecov("special-uor/ageR", "Q6SYL7AOGR")` -->
 <!-- badges: end -->
 
 The goal of ageR is to ...
