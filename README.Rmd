@@ -13,7 +13,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ageR: Age Models
+# ageR: Age Models 
+<!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> -->
 
 <!-- badges: start -->
 <!-- `r badger::badge_code_size("special-uor/ageR")` -->

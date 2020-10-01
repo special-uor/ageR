@@ -3,6 +3,8 @@
 
 # ageR: Age Models
 
+<!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> -->
+
 <!-- badges: start -->
 
 <!-- [![](https://img.shields.io/github/languages/code-size/special-uor/ageR.svg)](https://github.com/special-uor/ageR) -->
