@@ -37,3 +37,17 @@ open_conn_mysql <- function(dbname,
   return(conn)
 }
 
+#' Close connection to database
+#'
+#' @param conn \code{MariaDBConnection} connection object
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'     conn <- conn_mysql("sys", "root")
+#'     close_conn_mysql(conn)
+#' }
+close_conn_mysql <- function(conn) {
+  RMariaDB::dbDisconnect(conn)
+}
