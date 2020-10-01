@@ -18,3 +18,7 @@ RoxygenNote: 7.1.1
 Language: en-GB
 Imports:
     RMariaDB
+Suggests:
+    badger,
+    hexSticker,
+    knitr
