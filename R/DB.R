@@ -110,3 +110,14 @@ select_all.MariaDBConnection <- function(conn, table, quiet = FALSE, ...) {
   query <- paste0("SELECT * FROM ", table)
   return(ageR::select_query_mysql(conn, query, quiet))
 }
+
+#' Check if \code{conn} is an object with class \code{MariaDBConnection}
+#'
+#' @param conn \code{MariaDBConnection} connection object
+#'
+#' @return \code{TRUE} if \code{conn} a \code{MariaDBConnection} connection
+#'     object, \code{FALSE} otherwise
+#' @export
+is.MariaDBConnection <- function(conn) {
+  inherits(conn, "MariaDBConnection")
+}
