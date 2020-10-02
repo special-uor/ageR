@@ -39,17 +39,31 @@ open_conn_mysql <- function(dbname,
 
 #' Close connection to database
 #'
-#' @param conn \code{MariaDBConnection} connection object
+#' @param conn connection object
+#' @param ... other arguments
 #'
+#' @rdname close_conn
+#' @export
+close_conn <- function(conn, ...) {
+  UseMethod("close_conn", conn)
+}
+
+#' @rdname close_conn
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #'     conn <- conn_mysql("sys", "root")
-#'     close_conn_mysql(conn)
+#'     close_conn(conn)
 #' }
-close_conn_mysql <- function(conn) {
+close_conn.MariaDBConnection <- function(conn, ...) {
   RMariaDB::dbDisconnect(conn)
+}
+
+#' @rdname close_conn
+#' @export
+close_conn.default <- function(conn, ...) {
+  stop("Invalid connection object")
 }
 
 #' Execute select query
