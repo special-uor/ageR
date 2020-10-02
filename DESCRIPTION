@@ -17,6 +17,8 @@ LazyData: true
 RoxygenNote: 7.1.1
 Language: en-GB
 Imports:
+    plyr,
+    rbacon,
     RMariaDB
 Suggests:
     badger,
