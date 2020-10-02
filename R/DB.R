@@ -88,3 +88,25 @@ select_query_mysql <- function(conn, query, quiet = FALSE) {
   RMariaDB::dbClearResult(rs)
   return(records)
 }
+
+#' Select all the records inside a particular table
+#'
+#' @param conn \code{MariaDBConnection} connection object
+#' @param ... other arguments
+#'
+#' @return data frame with records
+#' @rdname select_all
+#' @export
+select_all <- function(conn, ...) {
+  UseMethod("select_all", conn)
+}
+
+#' @param table name of the table
+#' @param quiet boolean flag to hide status messages
+#'
+#' @rdname select_all
+#' @export
+select_all.MariaDBConnection <- function(conn, table, quiet = FALSE, ...) {
+  query <- paste0("SELECT * FROM ", table)
+  return(ageR::select_query_mysql(conn, query, quiet))
+}
