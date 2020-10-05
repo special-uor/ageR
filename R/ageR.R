@@ -15,8 +15,8 @@
 #'
 #' @param wdir path where input files are stored.
 #' @param entity name of the entity.
-#' @param postbomb TODO
-#' @param cc TODO
+#' @param postbomb postbomb curve
+#' @param cc calibration curve
 #'
 #' @return saves MC ensembel, bacon_chronology and AM plot.
 #'
@@ -97,8 +97,8 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
                     postbomb = postbomb,
                     hiatus.depths = hiatus_tb$depth_sample_bacon,
                     cc = cc,
-                    suggest = F,
-                    ask = F,
+                    suggest = FALSE,
+                    ask = FALSE,
                     ssize = j,
                     th0 = tho)
     },
@@ -110,7 +110,9 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
 
   print("--------------save data -----------------")
   bacon_mcmc <- sapply(depth_eval, rbacon::Bacon.Age.d)
-  bacon_age <- get_bacon_median_quantile(depth_eval, hiatus_tb, bacon_mcmc)
+  bacon_age <- ageR::get_bacon_median_quantile(depth_eval,
+                                               hiatus_tb,
+                                               bacon_mcmc)
   bacon_mcmc <- rbind(depth_eval, bacon_mcmc)
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_id, bacon_mcmc)
@@ -175,6 +177,132 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
   dev.off()
 }
 
+#' Age model function for linear regression.
+#'
+#' @param wdir path where input files are stored.
+#' @param entity name of the entity.
+#' @param N number of iterations.
+#' @return saves MC ensembel, lin_reg_chronology and AM plot.
+#' @export
+#' @references
+#' Telford, R. J. et al., Quaternary Science Reviews 23, 1-5 (2004)
+#'
+#' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' \url{https://github.com/paleovar/SISAL.AM}
+runLinReg <- function(wdir, entity, N = 2000) {
+  print('---------------- Read in data -------------')
+  setwd(file.path(wdir, entity, '/linReg'))
+  dating_tb <- read.csv('ages.csv', header = TRUE, stringsAsFactors = FALSE)
+  depth_sample <- read.csv('depths.csv',
+                           header = TRUE,
+                           stringsAsFactors = FALSE,
+                           colClasses = c('numeric', 'numeric'))
+  id <-read.csv('id.csv',
+                header = TRUE,
+                stringsAsFactors = FALSE,
+                colClasses = c('numeric', 'numeric'))
+
+  setwd(file.path(wdir, entity))
+  hiatus_tb <- read.csv('hiatus.csv',
+                        header = TRUE,
+                        stringsAsFactors = FALSE,
+                        colClasses = c('numeric', 'numeric'))
+  unknown_age <- read.csv('not_used_dates.csv', header = TRUE)
+
+  sample <- data.frame(sample_id = id$sample_id,
+                       depth_eval = id$depth_sample)
+
+  print('------- MC Simulations----------')
+  mc_runs <- mc_ensemble(linReg = TRUE,
+                         age = dating_tb$corr_age,
+                         age_error = dating_tb$corr_age_uncert,
+                         N = 2000,
+                         wdir = wdir,
+                         entity = entity)
+  print('--------lin Reg ------------')
+  N <- dim(mc_runs)[1]
+  lr <- mc_linReg(N,
+                  hiatus_tb$depth_sample,
+                  dating_tb$depth_dating,
+                  mc_runs,
+                  depth_sample$depth_sample)
+
+  lr <-  merge(sample,
+               lr,
+               by = 'depth_eval',
+               all.x = TRUE,
+               all.y = TRUE)
+  lr <- select(lr, sample_id, depth_eval, everything())
+
+  print('---------------save data Lin Reg --------------')
+  setwd(file.path(wdir, entity, '/linReg'))
+  write.table(as.matrix(mc_runs),
+              'dating_mc_linReg_ensemble.txt',
+              col.names = FALSE,
+              row.names = FALSE)
+  write.table(as.matrix(lr),
+              'mc_linReg_ensemble.txt',
+              col.names = FALSE,
+              row.names = FALSE)
+
+  print('--------------median and quantiles--------------')
+  stats <- get_median_quantiles(lr[, 3:N + 2], q1 = 0.05, q2 = 0.95)
+  age_median <- stats[, 1]
+  age_sd_low <- stats[, 2]
+  age_sd_high <- stats[, 3]
+  lin_reg <- cbind(lr$sample_id,
+                   age_median,
+                   age_sd_high - age_median,
+                   age_median - age_sd_low)
+  colnames(lin_reg) <- c('sample_id',
+                         'lin_reg_age',
+                         'lin_reg_age_uncert_pos',
+                         'lin_reg_age_uncert_neg')
+  write.csv(lin_reg,
+            'linReg_chronology.csv',
+            row.names = FALSE,
+            sep = ',')
+
+  pdf('final_age_model.pdf', 6, 4)
+  matplot(x = age_median,
+          y = lr$depth_eval,
+          col = 'black',
+          lty = 1,
+          type = 'l',
+          lwd = 1,
+          ylim = c(max(lr$depth_eval), 0),
+          xlab = 'Age [yrs BP]',
+          ylab = 'Depth from top [mm]')
+  lines(x = age_sd_high,
+        y = lr$depth_eval,
+        lty = 2,
+        col = 'red')
+  lines(x = age_sd_low,
+        y = lr$depth_eval,
+        lty = 2,
+        col = 'red')
+  points(x = dating_tb$corr_age,
+         y = dating_tb$depth_dating,
+         lty = 2,
+         col = 'orange',
+         pch = 4)
+  arrows(dating_tb$corr_age - dating_tb$corr_age_uncert,
+         dating_tb$depth_dating,
+         dating_tb$corr_age + dating_tb$corr_age_uncert,
+         dating_tb$depth_dating,
+         length = 0.05,
+         angle = 90,
+         code = 3,
+         col = 'orange')
+  if (!plyr::empty(data.frame(hiatus_tb))) {
+    abline(h = hiatus_tb$depth_sample,
+           col = 'grey',
+           lty = 2)
+  }
+  dev.off()
+}
+
 #' Determine median and quantiles for Bacon MC ensemble.
 #'
 #' @importFrom stats median
@@ -207,11 +335,13 @@ get_bacon_median_quantile <- function(depth_eval,
   bacon_quantile <- apply(bacon_mcmc,
                           2,
                           function(x) {
-                            quantile(x, probs = c(q1, q2), na.rm = T)
+                            quantile(x, probs = c(q1, q2), na.rm = TRUE)
                           })
 
-  data <- cbind(depth_eval, bacon_age, bacon_age_uncert_pos = bacon_quantile[2,]-bacon_age,
-                bacon_age_uncert_neg = bacon_age - bacon_quantile[1,])
+  data <- cbind(depth_eval,
+                bacon_age,
+                bacon_age_uncert_pos = bacon_quantile[2, ] - bacon_age,
+                bacon_age_uncert_neg = bacon_age - bacon_quantile[1, ])
   h <- data.frame(depth_eval = hiatus_tb$depth_sample_bacon,
                   bacon_age = replicate(dim(hiatus_tb)[1], NA),
                   bacon_age_uncert_pos = replicate(dim(hiatus_tb)[1], NA),
