@@ -1,11 +1,13 @@
 # library(ageR)
-wdir <- here::here("runs")
+wdir <- here::here("runs/002")
 # prefix <- "rpd001"
 `%>%` <- dplyr::`%>%`
-dir.create(file.path(wdir, 'Bacon_runs/'),
-           showWarnings = FALSE,
-           recursive = TRUE)
-setwd(file.path(wdir, 'Bacon_runs/'))
+dir.create(wdir, showWarnings = FALSE, recursive = FALSE)
+
+# dir.create(file.path(wdir, 'Bacon_runs/'),
+#            showWarnings = FALSE,
+#            recursive = TRUE)
+# setwd(file.path(wdir, 'Bacon_runs/'))
 conn <- ageR::open_conn_mysql("RPD-latest", "root")
 # out <- ageR::select_query_mysql(conn, "SELECT * FROM `RPD-latest`.date_info LIMIT 10;")
 # query <- paste0(
@@ -36,51 +38,57 @@ query <- paste0(
        age_C14 AS age,
        error,
        avg_depth*100 AS depth,
-       latitude
+       latitude,
+       date_type,
+       thickness
 FROM date_info INNER JOIN entity
     ON date_info.ID_ENTITY = entity.ID_ENTITY
 WHERE latitude >= 45")
-bacon_input <- ageR::select_query_mysql(conn, query)
-bacon_input <- bacon_input %>%
+rpd <- ageR::select_query_mysql(conn, query)
+rpd <- rpd %>%
   dplyr::filter(!is.na(age)) %>%
   dplyr::filter(!is.na(error)) %>%
   dplyr::filter(!is.na(depth)) %>%
   dplyr::mutate(error =  ifelse(error <= 0, 1, error)) %>%
-  dplyr::arrange(depth)
-bacon_input$latitude <- NULL
+  dplyr::arrange(depth) %>%
+  dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0))
+rpd$latitude <- NULL
 
 # query <- "SELECT ID_SAMPLE AS id, sample_depth AS depth FROM sample"
 # sample_tb <- ageR::select_query_mysql(conn, query)
 # sample_tb <- sample_tb %>%
 #   dplyr::filter(depth != -9999)
 
-entities <- sort(unique(bacon_input$entity_name))
+entities <- sort(unique(rpd$entity_name))
 entities_id <- c()
 entities_clean_names <- c()
 message(paste0(length(entities), " were found."))
 pb <- progress::progress_bar$new(
   format = "(:current/:total) [:bar] :percent",
   total = length(entities), clear = FALSE, width = 60)
-for (e in entities) {
+for (entity in entities) {
   pb$tick()
-  nent <- iconv(e, to = 'ASCII//TRANSLIT') # Remove accented characters
+  nent <- iconv(entity, to = 'ASCII//TRANSLIT') # Remove accented characters
   nent <- gsub("[[:punct:]]", "", nent)
   nent <- gsub(" ", "-", nent)
   entities_clean_names <- c(entities_clean_names, nent)
-  dir.create(file.path(wdir, '/Bacon_runs/', nent),
-             showWarnings = FALSE,
-             recursive = TRUE)
-  setwd(file.path(wdir, '/Bacon_runs/', nent))
-  idx <- bacon_input$entity_name == e
-  entities_id <- c(entities_id, bacon_input[idx, 2][1])
-  write.csv(bacon_input[idx, -c(1:2)], paste0(nent, ".csv"), row.names = FALSE)
+  idx <- rpd$entity_name == entity
+  entities_id <- c(entities_id, rpd[idx, 2][1])
 
   query <- paste0("SELECT ID_SAMPLE AS id, sample_depth*100 AS depth
                    FROM sample
-                   WHERE ID_ENTITY = ", bacon_input[idx, 2][1])
+                   WHERE ID_ENTITY = ", rpd[idx, 2][1])
   sample_tb <- ageR::select_query_mysql(conn, query, quiet = TRUE)
   sample_tb <- sample_tb %>%
     dplyr::filter(depth != -9999)
+
+  # Write core data
+  dir.create(file.path(wdir, nent, "core"),
+             showWarnings = FALSE,
+             recursive = TRUE)
+  setwd(file.path(wdir, nent, "core"))
+  write.csv(rpd[idx, -c(1:2)], paste0(nent, ".csv"), row.names = FALSE)
+  write.csv(sample_tb, paste0(nent, "_depths.csv"), row.names = FALSE)
   write.table(sample_tb$depth,
               paste0(nent, "_depths.txt"),
               row.names = FALSE,
@@ -88,44 +96,82 @@ for (e in entities) {
   write.csv(sample_tb$id,
             paste0(nent, "_sample_ids.csv"),
             row.names = FALSE)
-  # query <- paste0("SELECT sample_depth AS depth
-  #                  FROM sample
-  #                  WHERE ID_ENTITY = ", bacon_input[idx, 2][1])
-  # depths <- ageR::select_query_mysql(conn, query, quiet = TRUE)
-  # write.table(depths, paste0(nent, "_depths.txt"),
-  #             row.names = FALSE,
-  #             col.names = FALSE)
-#   write.table(sample_tb$depth, paste0(nent, "_depths.txt"),
-#               row.names = FALSE,
-#               col.names = FALSE)
-#   write.csv(sample_tb$id, paste0(nent, "_sample_ids.csv"), row.names = FALSE)
+
+  # Data for the Bacon model
+  dir.create(file.path(wdir, nent, '/Bacon_runs/', nent),
+             showWarnings = FALSE,
+             recursive = TRUE)
+  setwd(file.path(wdir, nent, '/Bacon_runs/', nent))
+  write.csv(rpd[idx, c("labID", "age", "error", "depth", "cc")],
+            paste0(nent, ".csv"), row.names = FALSE)
+  . <- file.symlink(from = paste0("../../core/", nent, "_depths.txt"),
+                    to = paste0("."))
+  . <- file.symlink(from = paste0("../../core/", nent, "_sample_ids.csv"),
+                    to = paste0("."))
+  # Empty data frame for "not used dates"
+  setwd(file.path(wdir))
+  not_used_dates <- data.frame(depth = NA, error = NA)[-1, ]
+  write.csv(not_used_dates, "not_used_dates.csv", row.names = FALSE)
+
+  # Empty data frame for Hiatus
+  hiatus_tb <- data.frame(sample_id = NA, depth_sample_bacon = NA)[-1, ]
+  write.csv(hiatus_tb, "hiatus.csv", row.names = FALSE)
+
+  # Data for the Bchron model
+  dir.create(file.path(wdir, nent, '/Bchron/'),
+             showWarnings = FALSE,
+             recursive = TRUE)
+  setwd(file.path(wdir, nent, '/Bchron/'))
+  # c("labID", "age", "error", "depth", "thickness", "calib_used")
+  # mutate(calib_curve_new = case_when(
+  #   calib_used == 'NULL' ~ 'normal',
+  #   calib_used == 'unknown' ~ 'unknown',
+  #   calib_used == "not calibrated" ~ 'ask again',
+  #   calib_used == "INTCAL13 NH" ~ 'intcal13'))
+  write.csv(rpd[idx, c("labID", "age", "error", "depth", "thickness")],
+            paste0(nent, ".csv"), row.names = FALSE)
+  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+                    to = paste0("."))
+
+
+  # Data for the Linear Interpolation model
+  dir.create(file.path(wdir, nent, '/linInterp/'),
+             showWarnings = FALSE,
+             recursive = TRUE)
+  setwd(file.path(wdir, nent, '/linInterp/'))
+  write.csv(rpd[idx, c("labID", "age", "error", "depth", "date_type")],
+            paste0(nent, ".csv"), row.names = FALSE)
+  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+                    to = paste0("."))
+
+  # Data for the Linear Regression model
+  dir.create(file.path(wdir, nent, '/linReg/'),
+             showWarnings = FALSE,
+             recursive = TRUE)
+  setwd(file.path(wdir, nent, '/linReg/'))
+  write.csv(rpd[idx, c("labID", "age", "error", "depth", "date_type")],
+            paste0(nent, ".csv"), row.names = FALSE)
+  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+                    to = paste0("."))
+
+  # Data for the StalAge model
+  dir.create(file.path(wdir, nent, '/StalAge/'),
+             showWarnings = FALSE,
+             recursive = TRUE)
+  setwd(file.path(wdir, nent, '/StalAge/'))
+  write.csv(rpd[idx, c("labID", "age", "error", "depth")],
+            paste0(nent, ".csv"), row.names = FALSE)
+  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+                    to = paste0("."))
 }
-setwd(file.path(wdir, "Bacon_runs/"))
+setwd(file.path(wdir))
 entities <- data.frame(id = entities_id,
                        original = entities,
                        clean = entities_clean_names)
 write.csv(entities, "entities.csv", row.names = FALSE)
 
-# query <- "SELECT sample_depth AS depth FROM sample"
-# depths <- ageR::select_query_mysql(conn, query)
-# write.csv(depths, paste0(prefix, "_depths.csv"), row.names = FALSE)
-
-# query <- "SELECT ID_SAMPLE AS id FROM sample"
-# ids <- ageR::select_query_mysql(conn, query)
-# write.csv(ids, paste0(prefix, "_sample_ids.csv"), row.names = FALSE)
-
-# Empty data frame for Hiatus
-hiatus_tb <- data.frame(sample_id = NA, depth_sample_bacon = NA)[-1, ]
-write.csv(hiatus_tb, "hiatus.csv", row.names = FALSE)
-
-# Empty data frame for "not used dates"
-setwd(file.path(wdir))
-not_used_dates <- data.frame(depth = NA, error = NA)[-1, ]
-write.csv(not_used_dates, "not_used_dates.csv", row.names = FALSE)
-
 # charcoal <- ageR::select_all(conn, table = "charcoal")
 ageR::close_conn(conn)
 
-
-ageR::runBacon(wdir, entities_clean_names[1])
+# ageR::runBacon(wdir, entities_clean_names[1])
 # ageR::runBacon(wdir, entities_clean_names[2])
