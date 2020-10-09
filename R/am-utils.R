@@ -14,20 +14,27 @@
 #' @param linInterp Logical. TRUE if the artificial hiatus ages is to be added
 #'     to the lin. Interp. input file.
 #' @return The modified date file.
-# @example add_hiatus(dating_tb, hiatus, bchron = TRUE)
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 add_hiatus <- function(data,
                        hiatus_tb,
                        stalage = FALSE,
                        bchron = FALSE,
                        linInterp = FALSE) {
+  # Local binding
+  . <- corr_age <- corr_age_uncert <- lead <- thickness_new <- NULL
+  calib_curve_new <- NULL
+
   age <- unlist(data[, 2])
   depth_dating <- unlist(data[, 4])
-  x_out <- unlist(hiatus_tb$depth_sample)
+  x_out <- unlist(hiatus_tb[, 2])
 
   e <- approx(x = depth_dating,
               y = age,
@@ -39,11 +46,11 @@ add_hiatus <- function(data,
                 y = age,
                 xout = x_out,
                 method = "linear")
-    h <- data.frame(dating_id = hiatus_tb$sample_id,
+    h <- data.frame(dating_id = hiatus_tb[, 1],
                     corr_age = e$y,
-                    corr_age_uncert = rep(NA, length(hiatus_tb$depth_sample)),
+                    corr_age_uncert = rep(NA, length(hiatus_tb[, 2])),
                     depth_dating = e$x,
-                    date_type = rep("Hiatus", length(hiatus_tb$depth_sample)))
+                    date_type = rep("Hiatus", length(hiatus_tb[, 2])))
     new <- rbind(data, h)
     new <-new %>%
       dplyr::arrange(., corr_age) %>%
@@ -64,7 +71,7 @@ add_hiatus <- function(data,
                 method = "linear")
     h <- data.frame(dating_id = hiatus_tb$sample_id,
                     corr_age = e$y,
-                    corr_age_uncert = rep(NA, length(hiatus_tb$depth_sample)),
+                    corr_age_uncert = rep(NA, length(hiatus_tb[, 2])),
                     depth_dating = e$x)
     new <- rbind(data, h)
     new <- new %>%
@@ -88,9 +95,9 @@ add_hiatus <- function(data,
 
     h <- data.frame(dating_id = hiatus_tb$sample_id,
                     corr_age = e$y,
-                    corr_age_uncert = rep(NA, length(hiatus_tb$depth_sample)),
+                    corr_age_uncert = rep(NA, length(hiatus_tb[, 2])),
                     depth_dating_new = e$x,
-                    thickness_new = rep(NA, length(hiatus_tb$depth_sample)),
+                    thickness_new = rep(NA, length(hiatus_tb[, 2])),
                     calib_curve_new = "normal")
 
     new <- rbind(data, h)
@@ -127,16 +134,17 @@ add_hiatus <- function(data,
 #' @param q2 quantile 2
 #' @return Table containing the sample depths, median ages and uncertainties.
 #'
-#' @export
-#'
 # @examples
 # \dontrun{
 #     get_bacon_median_quantile(depth_tb, hiatus_depth, bacon_mcmc, 0.05, 0.95)
 # }
-#'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 get_bacon_median_quantile <- function(depth_eval,
                                       hiatus_tb,
@@ -155,7 +163,7 @@ get_bacon_median_quantile <- function(depth_eval,
                 bacon_age,
                 bacon_age_uncert_pos = bacon_quantile[2, ] - bacon_age,
                 bacon_age_uncert_neg = bacon_age - bacon_quantile[1, ])
-  h <- data.frame(depth_eval = hiatus_tb$depth_sample_bacon,
+  h <- data.frame(depth_eval = hiatus_tb[, 2],
                   bacon_age = replicate(dim(hiatus_tb)[1], NA),
                   bacon_age_uncert_pos = replicate(dim(hiatus_tb)[1], NA),
                   bacon_age_uncert_neg = replicate(dim(hiatus_tb)[1], NA))
@@ -172,11 +180,18 @@ get_bacon_median_quantile <- function(depth_eval,
 #' @param hiatus_tb Table conatining hiatus depths and sample_id's
 #' @return Interpolated ages for sample depths.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 get_lin_interp <- function(data, depth_eval, hiatus_tb) {
+  # Local binding
+  approxExtrap <- lin_interp_age <- NULL
+
   age <- unlist(data[, 2])
   depth_dating <- unlist(data[, 1])
   x_out <- unlist(depth_eval)
@@ -204,9 +219,13 @@ get_lin_interp <- function(data, depth_eval, hiatus_tb) {
 #'
 # @example get_median_quantile(mcmc, 0.05, 0.95)
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 get_median_quantiles <- function(upd, q1, q2) {
   age_median <- apply(upd, 1, median)
@@ -224,9 +243,13 @@ get_median_quantiles <- function(upd, q1, q2) {
 #' @param hiatus_tb Table conatining hiatus depths and sample_id's
 #' @return Table containing slopes and interceptions for each section.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 linear_regression <- function(data, hiatus_tb) { # data = c("depth","age")
   # initialize
@@ -272,9 +295,13 @@ linear_regression <- function(data, hiatus_tb) { # data = c("depth","age")
 #' @param hiatus_tb Table containing hiatus depths and sample_id's.
 #' @return Lin. regression fitted ages for sample depths.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 lin_reg_ages <- function(m, depth_eval, hiatus_tb) {
   # initialize
@@ -345,9 +372,13 @@ lin_reg_ages <- function(m, depth_eval, hiatus_tb) {
 #' @param depth_eval Sample depths.
 #' @return Lin. regression fitted ages for sample depths.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 lin_reg_no_hiatus <- function(data, depth_eval) {
   m_lR<- lm(data[,2]~data[,1])
@@ -373,9 +404,13 @@ lin_reg_no_hiatus <- function(data, depth_eval) {
 #'
 #' @return Lin. reg. ensemble of N interations for sample depths.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 mc_ensemble <- function(linReg = FALSE,
                         linInterp = FALSE,
@@ -468,11 +503,16 @@ mc_ensemble <- function(linReg = FALSE,
 #' @param depth_dating Dating depths.
 #' @param age_ensemble Mc ensemble of dating table.
 #' @param depth_sample Sample depths.
+#'
 #' @return Lin. interp. ensemble of N interations for sample depths.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 mc_linInt <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample){
   for (j in 1:N) {
@@ -498,11 +538,18 @@ mc_linInt <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample){
 #' @param depth_sample Sample depths.
 #' @return Lin. reg. ensemble of N interations for sample depths.
 #'
+#' @export
+#' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
+#'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 mc_linReg <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample) {
+  # Local binding
+  linear_regression_ages <- NULL
+
   for (i in 1:N) {
     if (i == 1) {
       if (plyr::empty(data.frame(hiatus_tb))) {
