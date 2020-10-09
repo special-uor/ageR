@@ -24,4 +24,5 @@ Imports:
 Suggests:
     badger,
     hexSticker,
-    knitr
+    knitr,
+    testthat

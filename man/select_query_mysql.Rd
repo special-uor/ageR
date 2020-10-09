@@ -20,9 +20,9 @@ data frame containing the selected records
 Retrieves records that meet the criteria declared in the query
 }
 \examples{
-\dontrun{
-    conn <- conn_mysql("sys", "root")
-    out <- select_query_mysql(conn, "SELECT * FROM table_name")
-    close_conn_mysql(conn)
+\donttest{
+conn <- open_conn_mysql("sys", "root")
+out <- select_query_mysql(conn, "SELECT variable, value FROM sys_config")
+close_conn(conn)
 }
 }

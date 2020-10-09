@@ -19,6 +19,11 @@ Interpolate ages using lin. reg. for single MC simulation; no hiatus.
 }
 \references{
 Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+\url{https://doi.org/10.5194/essd-2020-39},
 \url{https://github.com/paleovar/SISAL.AM}
+}
+\author{
+Kira Rehfeld, \url{https://github.com/krehfeld} &
+        Carla Roesch, \url{https://github.com/CarlaRoesch}
 }

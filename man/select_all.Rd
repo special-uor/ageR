@@ -24,3 +24,10 @@ data frame with records
 \description{
 Select all the records inside a particular table
 }
+\examples{
+\donttest{
+conn <- open_conn_mysql("sys", "root")
+out <- select_all(conn, "sys_config")
+close_conn(conn)
+}
+}

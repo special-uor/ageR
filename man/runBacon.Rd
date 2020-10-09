@@ -27,6 +27,7 @@ Blauuw, M. et al., Bayesian Analysis 6, 457-474 (2011)
 Blauuw, M. et al., rbacon (2019), R package version 2.3.9.1
 
 Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+\url{https://doi.org/10.5194/essd-2020-39},
 \url{https://github.com/paleovar/SISAL.AM}
 }
