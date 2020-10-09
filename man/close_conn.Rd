@@ -21,7 +21,7 @@ close_conn(conn, ...)
 Close connection to database
 }
 \examples{
-\donttest{
+\dontrun{
 conn <- open_conn_mysql("sys", "root")
 close_conn(conn)
 }

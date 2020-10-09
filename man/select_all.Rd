@@ -25,7 +25,7 @@ data frame with records
 Select all the records inside a particular table
 }
 \examples{
-\donttest{
+\dontrun{
 conn <- open_conn_mysql("sys", "root")
 out <- select_all(conn, "sys_config")
 close_conn(conn)

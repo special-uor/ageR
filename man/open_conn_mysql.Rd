@@ -24,7 +24,7 @@ open_conn_mysql(dbname, user, password = NULL, host = "localhost", port = 3306)
 Uses \code{RMariaDB} to open a connection to a MySQL database
 }
 \examples{
-\donttest{
+\dontrun{
 conn <- open_conn_mysql("sys", "root")
 }
 }
