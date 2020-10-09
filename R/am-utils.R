@@ -475,12 +475,12 @@ mc_ensemble <- function(linReg = FALSE,
 mc_linInt <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample){
   for (j in 1:N) {
     if (j == 1) {
-      age_mc <- ageR::get_lin_interp(cbind(depth_dating, age_ensemble[j, ]),
-                                     depth_sample,hiatus_tb)
+      age_mc <- get_lin_interp(cbind(depth_dating, age_ensemble[j, ]),
+                               depth_sample,hiatus_tb)
       sample_ensemble <- age_mc
     } else {
-      age_mc <- ageR::get_lin_interp(cbind(depth_dating, age_ensemble[j, ]),
-                                     depth_sample,hiatus_tb)
+      age_mc <- get_lin_interp(cbind(depth_dating, age_ensemble[j, ]),
+                               depth_sample,hiatus_tb)
       sample_ensemble <- cbind(sample_ensemble, age_mc[, 2])
     }
   }
@@ -504,24 +504,24 @@ mc_linReg <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample) {
   for (i in 1:N) {
     if (i == 1) {
       if (plyr::empty(data.frame(hiatus_tb))) {
-        age_mc <- ageR::lin_reg_no_hiatus(cbind(depth_dating,
-                                                age_ensemble[i, ]),
-                                          depth_sample)
+        age_mc <- lin_reg_no_hiatus(cbind(depth_dating,
+                                          age_ensemble[i, ]),
+                                    depth_sample)
       } else {
-        m <- ageR::linear_regression(cbind(depth_dating, age_ensemble[i, ]),
-                                     hiatus_tb)
-        age_mc <- ageR::linear_regression_ages(m, depth_sample, hiatus_tb)
+        m <- linear_regression(cbind(depth_dating, age_ensemble[i, ]),
+                               hiatus_tb)
+        age_mc <- linear_regression_ages(m, depth_sample, hiatus_tb)
       }
       sample_ensemble <- age_mc
     } else {
       if (plyr::empty(data.frame(hiatus_tb))) {
-        age_mc <- ageR::lin_reg_no_hiatus(cbind(depth_dating,
-                                                age_ensemble[i, ]),
-                                          depth_sample)
+        age_mc <- lin_reg_no_hiatus(cbind(depth_dating,
+                                          age_ensemble[i, ]),
+                                    depth_sample)
       } else {
-        m <- ageR::linear_regression(cbind(depth_dating, age_ensemble[i, ]),
-                                     hiatus_tb)
-        age_mc <- ageR::linear_regression_ages(m, depth_sample, hiatus_tb)
+        m <- linear_regression(cbind(depth_dating, age_ensemble[i, ]),
+                               hiatus_tb)
+        age_mc <- linear_regression_ages(m, depth_sample, hiatus_tb)
       }
       sample_ensemble <- cbind(sample_ensemble, age_mc[, 2])
     }
