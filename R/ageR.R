@@ -28,9 +28,27 @@
 #' Blauuw, M. et al., rbacon (2019), R package version 2.3.9.1
 #'
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
+  setwd(file.path(wdir, entity))
+  filenames <- file.path(c(file.path("Bacon_runs/",
+                                     entity,
+                                     c(paste0(entity, "_depths.txt"),
+                                       paste0(entity, "_sample_ids.csv"),
+                                       paste0(entity, ".csv"))),
+                           "hiatus.csv",
+                           "not_used_dates.csv"))
+  idx <- unlist(lapply(filenames, file.exists))
+  if (!all(idx)) {
+    stop(paste0("\nThe following input ",
+                ifelse(sum(!idx) > 1, "files were", "file was"),
+                " not found inside the working directory [",
+                file.path(entity),
+                "]\n",
+                paste0("- ", filenames[!idx], collapse = "\n")))
+  }
   setwd(file.path(wdir, entity, "Bacon_runs", entity))
   depth_eval <- matrix(read.table(paste0(entity, "_depths.txt"),
                                 col.names = ""))[[1]]
@@ -38,14 +56,22 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
                          header = TRUE,
                          stringsAsFactors = FALSE,
                          colClasses = c("numeric"))
-  hiatus_tb <- read.csv(file.path("../../hiatus.csv"),
-                        header = TRUE,
-                        stringsAsFactors = FALSE,
-                        colClasses = c("numeric", "numeric"))
+
   core <- read.csv(paste0(entity, ".csv"),
                    header = TRUE,
                    stringsAsFactors = FALSE,
                    colClasses = c("character", "numeric", "numeric", "numeric"))
+
+  setwd(file.path(wdir, entity))
+  unknown_age <- read.csv("not_used_dates.csv", header = TRUE)
+  # if (file.exists(file.path("hiatus.csv"))) {
+  hiatus_tb <- read.csv(file.path("hiatus.csv"),
+                        header = TRUE,
+                        stringsAsFactors = FALSE,
+                        colClasses = c("numeric", "numeric"))
+  # } else {
+  #   hiatus_tb <- data.frame(sample_id = NA, depth_sample = NA)[-1, ]
+  # }
 
   accMean<- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
   ballpacc <- lm(core[,2] * 1.1 ~ core[, 4])$coefficients[2]
@@ -56,22 +82,25 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
   k <- seq(floor(min(depth_eval, na.rm = TRUE)),
            ceiling(max(depth_eval, na.rm = TRUE)),
            by = 5)
-  if (k < 10) {
+  if (k[1] < 10) {
     thickness <- pretty(5 * (k/10), 10)
     thickness <- min(thickness[thickness > 0])
-  } else if (k > 20) {
+  } else if (k[1] > 20) {
     thickness <- max(pretty(5 * (k/20)))
+  } else {
+    thickness <- 5 # Default thickness
   }
 
   j <- 2000
   tho <- c()
 
-  setwd(file.path(wdir, "Bacon_runs"))
-  unknown_age <- read.csv("../../not_used_dates.csv", header = TRUE)
-  setwd(file.path(wdir))
   print("#------------ run bacon ---------------#")
   if (nrow(hiatus_tb) == 0) {
     tryCatch({
+      # pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
+      #     width = 6,
+      #     height = 6,
+      #     )
       rbacon::Bacon(core = entity,
                     depths.file = TRUE,
                     thick = thickness,
@@ -81,7 +110,9 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
                     suggest = FALSE,
                     ask = FALSE,
                     ssize = j,
-                    th0 = tho)
+                    th0 = tho,
+                    plot.pdf = TRUE)
+      # dev.off()
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
@@ -89,17 +120,22 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
     })
   } else {
     tryCatch({
+      pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
+          width = 6,
+          height = 6)
       rbacon::Bacon(core = entity,
                     depths.file = TRUE,
                     thick = thickness,
                     acc.mean = accMean ,
                     postbomb = postbomb,
-                    hiatus.depths = hiatus_tb$depth_sample_bacon,
+                    hiatus.depths = hiatus_tb[, 2],
                     cc = cc,
                     suggest = FALSE,
                     ask = FALSE,
                     ssize = j,
-                    th0 = tho)
+                    th0 = tho,
+                    plot.pdf = FALSE)
+      dev.off()
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
@@ -123,16 +159,16 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
   names(h) <- names(bacon_mcmc)
 
   bacon_mcmc <- rbind(bacon_mcmc, h)
-  bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[,2]),]
+  bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[, 2]), ]
 
-  sample_id <- bacon_mcmc[,1]
+  sample_id <- bacon_mcmc[, 1]
 
   setwd(file.path(wdir, entity, "Bacon_runs", entity))
   write.table(bacon_mcmc,
               "mc_bacon_ensemble.txt",
               col.names = FALSE,
               row.names = FALSE)
-  write.csv(cbind(sample_id, bacon_age[ ,2:4]),
+  write.csv(cbind(sample_id, bacon_age[, 2:4]),
             "bacon_chronology.csv",
             row.names = FALSE)
 
@@ -154,22 +190,22 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
         y = bacon_age[, 1] * 10,
         lty = 2,
         col = "red")
-  points(x = core$corr_age,
-    y = core$depth_dating_new * 10,
+  points(x = core[, 2],
+    y = core[, 4] * 10,
     lty = 2,
     col = "orange",
     pch = 4)
-  arrows(core$corr_age - core$corr_age_uncert,
-         core$depth_dating_new * 10,
-         core$corr_age + core$corr_age_uncert,
-         core$depth_dating_new * 10,
+  arrows(core[, 2] - core[, 3],
+         core[, 4] * 10,
+         core[, 2] + core[, 3],
+         core[, 4] * 10,
          length = 0.05,
          angle = 90,
          code = 3,
          col = "orange"
   )
   if (!plyr::empty(data.frame(hiatus_tb))) {
-    abline(h = hiatus_tb$depth_sample_bacon * 10,
+    abline(h = hiatus_tb[, 2] * 10,
            col = "grey",
            lty = 2)
   }
@@ -187,9 +223,13 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
 #' Telford, R. J. et al., Quaternary Science Reviews 23, 1-5 (2004)
 #'
 #' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2019)
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 runLinReg <- function(wdir, entity, N = 2000) {
+  # Local binding
+  sample_id <- depth_eval <- NULL
+
   print("---------------- Read in data -------------")
   setwd(file.path(wdir, entity, "linReg"))
   dating_tb <- read.csv(paste0(entity, ".csv"),
