@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' conn <- open_conn_mysql("sys", "root")
 #' }
 open_conn_mysql <- function(dbname,
@@ -52,7 +52,7 @@ close_conn <- function(conn, ...) {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' conn <- open_conn_mysql("sys", "root")
 #' close_conn(conn)
 #' }
@@ -78,7 +78,7 @@ close_conn.default <- function(conn, ...) {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' conn <- open_conn_mysql("sys", "root")
 #' out <- select_query_mysql(conn, "SELECT variable, value FROM sys_config")
 #' close_conn(conn)
@@ -122,7 +122,7 @@ select_all <- function(conn, ...) {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' conn <- open_conn_mysql("sys", "root")
 #' out <- select_all(conn, "sys_config")
 #' close_conn(conn)
