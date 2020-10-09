@@ -199,7 +199,7 @@ runLinReg <- function(wdir, entity, N = 2000) {
                            header = TRUE,
                            stringsAsFactors = FALSE,
                            colClasses = c("numeric", "numeric"))
-  id <-read.csv(paste0(entity, "ids.csv"),
+  id <-read.csv(paste0(entity, "_ids.csv"),
                 header = TRUE,
                 stringsAsFactors = FALSE,
                 colClasses = c("numeric", "numeric"))
@@ -211,30 +211,30 @@ runLinReg <- function(wdir, entity, N = 2000) {
                         colClasses = c("numeric", "numeric"))
   unknown_age <- read.csv("not_used_dates.csv", header = TRUE)
 
-  sample <- data.frame(sample_id = id$sample_id,
-                       depth_eval = id$depth_sample)
+  sample <- data.frame(sample_id = id[, 1],#$sample_id,
+                       depth_eval = id[, 2]) #id$depth_sample)
 
   print("------- MC Simulations----------")
-  mc_runs <- ageR::mc_ensemble(linReg = TRUE,
-                               age = dating_tb$corr_age,
-                               age_error = dating_tb$corr_age_uncert,
-                               N = 2000,
-                               wdir = wdir,
-                               entity = entity)
+  mc_runs <- mc_ensemble(linReg = TRUE,
+                         age = dating_tb[, 2], #$corr_age,
+                         age_error = dating_tb[, 3], #$corr_age_uncert,
+                         N = 2000,
+                         wdir = wdir,
+                         entity = entity)
   print("--------lin Reg ------------")
   N <- dim(mc_runs)[1]
   lr <- mc_linReg(N,
-                  hiatus_tb$depth_sample,
-                  dating_tb$depth_dating,
+                  hiatus_tb[, 2], # $depth_sample,
+                  dating_tb[, 4], #$depth_dating,
                   mc_runs,
-                  depth_sample$depth_sample)
+                  depth_sample[, 2]) #$depth_sample)
 
   lr <-  merge(sample,
                lr,
                by = "depth_eval",
                all.x = TRUE,
                all.y = TRUE)
-  lr <- select(lr, sample_id, depth_eval, everything())
+  lr <- dplyr::select(lr, sample_id, depth_eval, dplyr::everything())
 
   print("---------------save data Lin Reg --------------")
   setwd(file.path(wdir, entity, "/linReg"))
@@ -262,8 +262,7 @@ runLinReg <- function(wdir, entity, N = 2000) {
                          "lin_reg_age_uncert_neg")
   write.csv(lin_reg,
             "linReg_chronology.csv",
-            row.names = FALSE,
-            sep = ",")
+            row.names = FALSE)
 
   pdf("final_age_model.pdf", 6, 4)
   matplot(x = age_median,
@@ -283,21 +282,21 @@ runLinReg <- function(wdir, entity, N = 2000) {
         y = lr$depth_eval,
         lty = 2,
         col = "red")
-  points(x = dating_tb$corr_age,
-         y = dating_tb$depth_dating,
+  points(x = dating_tb[, 2], #$corr_age,
+         y = dating_tb[, 4], #$depth_dating,
          lty = 2,
          col = "orange",
          pch = 4)
-  arrows(dating_tb$corr_age - dating_tb$corr_age_uncert,
-         dating_tb$depth_dating,
-         dating_tb$corr_age + dating_tb$corr_age_uncert,
-         dating_tb$depth_dating,
+  arrows(dating_tb[, 2] - dating_tb[, 3],
+         dating_tb[, 4],
+         dating_tb[, 2] + dating_tb[, 3],
+         dating_tb[, 4],
          length = 0.05,
          angle = 90,
          code = 3,
          col = "orange")
   if (!plyr::empty(data.frame(hiatus_tb))) {
-    abline(h = hiatus_tb$depth_sample,
+    abline(h = hiatus_tb[, 2], #$depth_sample,
            col = "grey",
            lty = 2)
   }
