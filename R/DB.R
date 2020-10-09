@@ -12,8 +12,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#'     conn <- conn_mysql("sys", "root")
+#' \donttest{
+#' conn <- open_conn_mysql("sys", "root")
 #' }
 open_conn_mysql <- function(dbname,
                             user,
@@ -52,9 +52,9 @@ close_conn <- function(conn, ...) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#'     conn <- conn_mysql("sys", "root")
-#'     close_conn(conn)
+#' \donttest{
+#' conn <- open_conn_mysql("sys", "root")
+#' close_conn(conn)
 #' }
 close_conn.MariaDBConnection <- function(conn, ...) {
   RMariaDB::dbDisconnect(conn)
@@ -78,10 +78,10 @@ close_conn.default <- function(conn, ...) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#'     conn <- conn_mysql("sys", "root")
-#'     out <- select_query_mysql(conn, "SELECT * FROM table_name")
-#'     close_conn_mysql(conn)
+#' \donttest{
+#' conn <- open_conn_mysql("sys", "root")
+#' out <- select_query_mysql(conn, "SELECT variable, value FROM sys_config")
+#' close_conn(conn)
 #' }
 select_query_mysql <- function(conn, query, quiet = FALSE) {
   # Verify that the query has a SELECT token
@@ -120,6 +120,13 @@ select_all <- function(conn, ...) {
 #'
 #' @rdname select_all
 #' @export
+#'
+#' @examples
+#' \donttest{
+#' conn <- open_conn_mysql("sys", "root")
+#' out <- select_all(conn, "sys_config")
+#' close_conn(conn)
+#' }
 select_all.MariaDBConnection <- function(conn, table, quiet = FALSE, ...) {
   query <- paste0("SELECT * FROM ", table)
   return(ageR::select_query_mysql(conn, query, quiet))
