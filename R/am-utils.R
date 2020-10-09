@@ -361,6 +361,8 @@ lin_reg_no_hiatus <- function(data, depth_eval) {
 
 #' Generate age ensembles depending on AM method.
 #'
+#' @importFrom stats rnorm
+#'
 #' @param linReg Logical. TRUE if MC ensemble is to be generated for lin. reg.
 #' @param linInterp Logival. TRUE if MC ensemble is to be generated for lin. interp.
 #' @param age Dates.
