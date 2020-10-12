@@ -182,3 +182,37 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
     warning(paste0(am, " is not a valid age model."))
   }
 }
+
+
+#' Show file structure
+#'
+#' Show expected file structure for each age model.
+#'
+#' @param entity Entity name.
+#' @param am Age model name.
+#'
+#' @return File (tree) structure.
+#' @export
+#'
+#' @examples
+#' ageR::file_structure("Reading")
+file_structure <- function(entity, am = "bacon") {
+  if (tolower(am) == "bacon") {
+    paths <- file.path(entity, c(file.path("Bacon_runs",
+                                           entity,
+                                           c(paste0(entity, "_depths.txt"),
+                                             paste0(entity, "_sample_ids.csv"),
+                                             paste0(entity, ".csv"))),
+                                 "hiatus.csv",
+                                 "not_used_dates.csv"))
+    tree <- data.tree::as.Node(data.frame(pathString = paths))
+    data.tree::SetGraphStyle(tree, rankdir = "TB")
+    data.tree::SetNodeStyle(tree,
+                            style = "filled,rounded",
+                            shape = "box")
+    plot(tree)
+    print(tree)
+  } else {
+    warning(paste0(am, " is not a valid age model."))
+  }
+}
