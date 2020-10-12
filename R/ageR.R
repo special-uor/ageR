@@ -32,23 +32,24 @@
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
 runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
-  setwd(file.path(wdir, entity))
-  filenames <- file.path(c(file.path("Bacon_runs/",
-                                     entity,
-                                     c(paste0(entity, "_depths.txt"),
-                                       paste0(entity, "_sample_ids.csv"),
-                                       paste0(entity, ".csv"))),
-                           "hiatus.csv",
-                           "not_used_dates.csv"))
-  idx <- unlist(lapply(filenames, file.exists))
-  if (!all(idx)) {
-    stop(paste0("\nThe following input ",
-                ifelse(sum(!idx) > 1, "files were", "file was"),
-                " not found inside the working directory [",
-                file.path(entity),
-                "]\n",
-                paste0("- ", filenames[!idx], collapse = "\n")))
-  }
+  # setwd(file.path(wdir, entity))
+  # filenames <- file.path(c(file.path("Bacon_runs/",
+  #                                    entity,
+  #                                    c(paste0(entity, "_depths.txt"),
+  #                                      paste0(entity, "_sample_ids.csv"),
+  #                                      paste0(entity, ".csv"))),
+  #                          "hiatus.csv",
+  #                          "not_used_dates.csv"))
+  # idx <- unlist(lapply(filenames, file.exists))
+  # if (!all(idx)) {
+  #   stop(paste0("\nThe following input ",
+  #               ifelse(sum(!idx) > 1, "files were", "file was"),
+  #               " not found inside the working directory [",
+  #               file.path(entity),
+  #               "]\n",
+  #               paste0("- ", filenames[!idx], collapse = "\n")))
+  # }
+  check_files(wdir, entity)
   setwd(file.path(wdir, entity, "Bacon_runs", entity))
   depth_eval <- matrix(read.table(paste0(entity, "_depths.txt"),
                                 col.names = ""))[[1]]
