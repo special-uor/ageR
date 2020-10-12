@@ -15,7 +15,6 @@
 #'     to the lin. Interp. input file.
 #' @return The modified date file.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -23,6 +22,9 @@
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 add_hiatus <- function(data,
                        hiatus_tb,
                        stalage = FALSE,
@@ -138,7 +140,6 @@ add_hiatus <- function(data,
 # \dontrun{
 #     get_bacon_median_quantile(depth_tb, hiatus_depth, bacon_mcmc, 0.05, 0.95)
 # }
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -146,6 +147,9 @@ add_hiatus <- function(data,
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 get_bacon_median_quantile <- function(depth_eval,
                                       hiatus_tb,
                                       bacon_mcmc,
@@ -180,7 +184,6 @@ get_bacon_median_quantile <- function(depth_eval,
 #' @param hiatus_tb Table conatining hiatus depths and sample_id's
 #' @return Interpolated ages for sample depths.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -188,6 +191,9 @@ get_bacon_median_quantile <- function(depth_eval,
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 get_lin_interp <- function(data, depth_eval, hiatus_tb) {
   # Local binding
   approxExtrap <- lin_interp_age <- NULL
@@ -219,7 +225,6 @@ get_lin_interp <- function(data, depth_eval, hiatus_tb) {
 #'
 # @example get_median_quantile(mcmc, 0.05, 0.95)
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -227,6 +232,9 @@ get_lin_interp <- function(data, depth_eval, hiatus_tb) {
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 get_median_quantiles <- function(upd, q1, q2) {
   age_median <- apply(upd, 1, median)
   age_sd <- apply(upd,
@@ -243,7 +251,6 @@ get_median_quantiles <- function(upd, q1, q2) {
 #' @param hiatus_tb Table conatining hiatus depths and sample_id's
 #' @return Table containing slopes and interceptions for each section.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -251,6 +258,9 @@ get_median_quantiles <- function(upd, q1, q2) {
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 linear_regression <- function(data, hiatus_tb) { # data = c("depth","age")
   # initialize
   j <- length(hiatus_tb)
@@ -295,7 +305,6 @@ linear_regression <- function(data, hiatus_tb) { # data = c("depth","age")
 #' @param hiatus_tb Table containing hiatus depths and sample_id's.
 #' @return Lin. regression fitted ages for sample depths.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -303,6 +312,9 @@ linear_regression <- function(data, hiatus_tb) { # data = c("depth","age")
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 lin_reg_ages <- function(m, depth_eval, hiatus_tb) {
   # initialize
   d <- length(unlist(depth_eval))
@@ -372,7 +384,6 @@ lin_reg_ages <- function(m, depth_eval, hiatus_tb) {
 #' @param depth_eval Sample depths.
 #' @return Lin. regression fitted ages for sample depths.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -380,6 +391,9 @@ lin_reg_ages <- function(m, depth_eval, hiatus_tb) {
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 lin_reg_no_hiatus <- function(data, depth_eval) {
   m_lR<- lm(data[,2]~data[,1])
 
@@ -404,7 +418,6 @@ lin_reg_no_hiatus <- function(data, depth_eval) {
 #'
 #' @return Lin. reg. ensemble of N interations for sample depths.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -412,6 +425,9 @@ lin_reg_no_hiatus <- function(data, depth_eval) {
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 mc_ensemble <- function(linReg = FALSE,
                         linInterp = FALSE,
                         age,
@@ -506,7 +522,6 @@ mc_ensemble <- function(linReg = FALSE,
 #'
 #' @return Lin. interp. ensemble of N interations for sample depths.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -514,6 +529,9 @@ mc_ensemble <- function(linReg = FALSE,
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 mc_linInt <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample){
   for (j in 1:N) {
     if (j == 1) {
@@ -538,7 +556,6 @@ mc_linInt <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample){
 #' @param depth_sample Sample depths.
 #' @return Lin. reg. ensemble of N interations for sample depths.
 #'
-#' @export
 #' @author Kira Rehfeld, \url{https://github.com/krehfeld} &
 #'         Carla Roesch, \url{https://github.com/CarlaRoesch}
 #' @references
@@ -546,6 +563,9 @@ mc_linInt <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample){
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @noRd
+#' @keywords internal
 mc_linReg <- function(N, hiatus_tb, depth_dating, age_ensemble, depth_sample) {
   # Local binding
   linear_regression_ages <- NULL
