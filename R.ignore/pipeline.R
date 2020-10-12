@@ -36,10 +36,7 @@ pb <- progress::progress_bar$new(
   total = length(entities), clear = FALSE, width = 60)
 for (entity in entities) {
   pb$tick()
-  nent <- iconv(entity, to = 'ASCII//TRANSLIT') # Remove accented characters
-  # nent <- gsub("[[:punct:]]", "", nent)
-  nent <- gsub("(?![_-])[[:punct:]]", "", nent, perl = TRUE)
-  # nent <- gsub(" ", "-", nent)
+  nent <- cln_str(entity)
   entities_clean_names <- c(entities_clean_names, nent)
   idx <- rpd$entity_name == entity
   entities_id <- c(entities_id, rpd[idx, 2][1])
