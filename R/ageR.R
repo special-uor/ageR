@@ -74,8 +74,8 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
   #   hiatus_tb <- data.frame(sample_id = NA, depth_sample = NA)[-1, ]
   # }
 
-  accMean<- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
-  ballpacc <- lm(core[,2] * 1.1 ~ core[, 4])$coefficients[2]
+  accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
+  ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
   ballpacc <- abs(accMean - ballpacc)
   ballpacc <- ballpacc[ballpacc > 0]
   accMean <- accMean[order(ballpacc)[1]]
