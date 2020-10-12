@@ -17,6 +17,7 @@ LazyData: true
 RoxygenNote: 7.1.1
 Language: en-GB
 Imports:
+    data.tree,
     dplyr,
     plyr,
     rbacon,
