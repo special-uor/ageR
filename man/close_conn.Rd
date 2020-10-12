@@ -26,3 +26,10 @@ conn <- open_conn_mysql("sys", "root")
 close_conn(conn)
 }
 }
+\seealso{
+Other DB: 
+\code{\link{open_conn_mysql}()},
+\code{\link{select_all}()},
+\code{\link{select_query_mysql}()}
+}
+\concept{DB}

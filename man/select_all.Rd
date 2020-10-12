@@ -31,3 +31,10 @@ out <- select_all(conn, "sys_config")
 close_conn(conn)
 }
 }
+\seealso{
+Other DB: 
+\code{\link{close_conn}()},
+\code{\link{open_conn_mysql}()},
+\code{\link{select_query_mysql}()}
+}
+\concept{DB}

@@ -27,4 +27,12 @@ Uses \code{RMariaDB} to open a connection to a MySQL database
 \dontrun{
 conn <- open_conn_mysql("sys", "root")
 }
+
 }
+\seealso{
+Other DB: 
+\code{\link{close_conn}()},
+\code{\link{select_all}()},
+\code{\link{select_query_mysql}()}
+}
+\concept{DB}
