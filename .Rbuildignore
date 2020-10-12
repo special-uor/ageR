@@ -5,3 +5,6 @@
 ^R\.ignore$
 ^\.github$
 ^\runs$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
