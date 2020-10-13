@@ -18,6 +18,7 @@ RoxygenNote: 7.1.1
 Language: en-GB
 Imports:
     data.tree,
+    DiagrammeR,
     dplyr,
     plyr,
     rbacon,
