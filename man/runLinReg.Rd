@@ -14,7 +14,7 @@ runLinReg(wdir, entity, N = 2000)
 \item{N}{number of iterations.}
 }
 \value{
-saves MC ensembel, lin_reg_chronology and AM plot.
+saves MC esemble, lin_reg_chronology and AM plot.
 }
 \description{
 Age model function for linear regression.

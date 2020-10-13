@@ -22,9 +22,11 @@ create_input(data, wdir, entity = NULL, am = "bacon")
       \item \code{depth}: depth in cm.
       \item (Optional) \code{cc}: calibration curve.
         \itemize{
-          \item \code{cc = 1}: IntCal20 (northern hemisphere terrestrial).
-          \item \code{cc = 2}: Marine20 (marine).
-          \item \code{cc = 3}: SHCal20 (southern hemisphere terrestrial).
+          \item \code{cc = 1}: \code{IntCal20}
+          (northern hemisphere terrestrial).
+          \item \code{cc = 2}: \code{Marine20} (marine).
+          \item \code{cc = 3}: \code{SHCal20}
+          (southern hemisphere terrestrial).
         }
     }
  \item (Optional) \code{hiatus}: data frame with information of hiatus
@@ -42,11 +44,11 @@ create_input(data, wdir, entity = NULL, am = "bacon")
 \item{am}{Age model name.}
 }
 \value{
-
+Input files for the age model.
 }
 \description{
 Create input for age models, based on the file structure and input files
-oraanisation needed.
+organisation needed.
 }
 \details{
 If only \code{wdir} is passed, the value of \code{entity} will be extracted
@@ -63,5 +65,5 @@ test_data <-list(sample = data.frame(id = 1:100,
                                    age = c(720, 2700, 4660),
                                    error = c(70, 50, 110),
                                    depth = c(83, 212, 418)))
-ageR::create_input(test_data, here::here(), "Reading")
+ageR::create_input(test_data, getwd(), "Reading")
 }
