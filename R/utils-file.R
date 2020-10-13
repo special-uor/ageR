@@ -64,7 +64,7 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
 #' Create input for age model
 #'
 #' Create input for age models, based on the file structure and input files
-#' oraanisation needed.
+#' organisation needed.
 #'
 #' If only \code{wdir} is passed, the value of \code{entity} will be extracted
 #' from the last portion of \code{wdir}. For example, if
@@ -88,9 +88,11 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
 #'       \item \code{depth}: depth in cm.
 #'       \item (Optional) \code{cc}: calibration curve.
 #'         \itemize{
-#'           \item \code{cc = 1}: IntCal20 (northern hemisphere terrestrial).
-#'           \item \code{cc = 2}: Marine20 (marine).
-#'           \item \code{cc = 3}: SHCal20 (southern hemisphere terrestrial).
+#'           \item \code{cc = 1}: \code{IntCal20}
+#'           (northern hemisphere terrestrial).
+#'           \item \code{cc = 2}: \code{Marine20} (marine).
+#'           \item \code{cc = 3}: \code{SHCal20}
+#'           (southern hemisphere terrestrial).
 #'         }
 #'     }
 #'  \item (Optional) \code{hiatus}: data frame with information of hiatus
@@ -104,7 +106,7 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
 #' @param entity Entity name.
 #' @param am Age model name.
 #'
-#' @return
+#' @return Input files for the age model.
 #'
 #' @export
 #'
@@ -115,7 +117,7 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
 #'                                    age = c(720, 2700, 4660),
 #'                                    error = c(70, 50, 110),
 #'                                    depth = c(83, 212, 418)))
-#' ageR::create_input(test_data, here::here(), "Reading")
+#' ageR::create_input(test_data, getwd(), "Reading")
 create_input <- function(data, wdir, entity = NULL, am = "bacon") {
   if (is.null(entity)) {
     entity <- basename(wdir)
@@ -166,17 +168,23 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
               row.names = FALSE)
 
     # Empty data frame for "not used dates"
-    setwd(file.path(wdir, entity))
+    path <- file.path(wdir, entity)
     not_used_dates <- data.frame(depth = NA, error = NA)[-1, ]
-    write.csv(not_used_dates, "not_used_dates.csv", row.names = FALSE)
+    write.csv(not_used_dates,
+              file.path(path, "not_used_dates.csv"),
+              row.names = FALSE)
 
     if ("hiatus" %in% names(data) &&
         !any(c("id", "sample") %in% names(data$haitus))) {
-      write.csv(data$hiatus, "hiatus.csv", row.names = FALSE)
+      write.csv(data$hiatus,
+                file.path(path, "hiatus.csv"),
+                row.names = FALSE)
     } else {
       # Empty data frame for Hiatus
       hiatus_tb <- data.frame(id = NA, depth = NA)[-1, ]
-      write.csv(hiatus_tb, "hiatus.csv", row.names = FALSE)
+      write.csv(hiatus_tb,
+                file.path(path, "hiatus.csv"),
+                row.names = FALSE)
     }
   } else {
     warning(paste0(am, " is not a valid age model."))
