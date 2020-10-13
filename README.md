@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ageR: Age Models
+# ageR: Supervised Age Modelling
 
 <!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> -->
 
@@ -16,8 +16,10 @@ status](https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg)](ht
 <!-- [![](https://codecov.io/gh/special-uor/ageR/branch/master/graph/badge.svg?token=Q6SYL7AOGR)](https://codecov.io/gh/special-uor/ageR) -->
 <!-- badges: end -->
 
-The goal of ageR is to
-…
+The goal of ageR is to provide functions that facilitate the creation of
+age models using different data sources, including data bases, comma and
+tab separated
+files.
 
 ## Installation
 
@@ -43,7 +45,7 @@ remotes::install_github("special-uor/ageR")
 
 #### Input structure
 
-For an entiy X, the input structure should look like
+For an entity X, the input structure should look like
 
 ``` r
 ageR::file_structure(entity = "X", am = "bacon")

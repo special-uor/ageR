@@ -1,6 +1,6 @@
 Package: ageR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Supervised Age Modelling
 Version: 0.1.0
 Authors@R: c(
     person(given = "Roberto",
@@ -9,8 +9,8 @@ Authors@R: c(
            email = "r.villegas-diaz@reading.ac.uk",
            comment = c(ORCID = "0000-0001-5036-8661")),
     person("SPECIAL Research Group @ University of Reading", role = c("cph")))
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Provides functions to facilitate the creation of age models using 
+    different data sources, including data bases, comma and tab separated files.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

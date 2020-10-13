@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ageR: Age Models 
+# ageR: Supervised Age Modelling
 <!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> -->
 
 <!-- badges: start -->
@@ -24,7 +24,9 @@ knitr::opts_chunk$set(
 <!-- `r badger::badge_codecov("special-uor/ageR", "Q6SYL7AOGR")` -->
 <!-- badges: end -->
 
-The goal of ageR is to ...
+The goal of ageR is to provide functions that facilitate the creation of age 
+models using different data sources, including data bases, comma and tab 
+separated files.
 
 ## Installation
 
@@ -44,7 +46,7 @@ remotes::install_github("special-uor/ageR")
 ## Example
 ### Bacon model
 #### Input structure
-For an entiy X, the input structure should look like
+For an entity X, the input structure should look like
 ```{r bacon-file-structure}
 ageR::file_structure(entity = "X", am = "bacon")
 ```
