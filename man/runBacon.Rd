@@ -4,16 +4,18 @@
 \alias{runBacon}
 \title{Age model function for Bacon.}
 \usage{
-runBacon(wdir, entity, postbomb = 0, cc = 0)
+runBacon(wdir, entity, postbomb = 0, cc = 0, ...)
 }
 \arguments{
-\item{wdir}{path where input files are stored.}
+\item{wdir}{Path where input files are stored.}
 
-\item{entity}{name of the entity.}
+\item{entity}{Name of the entity.}
 
-\item{postbomb}{postbomb curve}
+\item{postbomb}{Postbomb curve.}
 
-\item{cc}{calibration curve}
+\item{cc}{Calibration curve.}
+
+\item{...}{Optional parameters for \code{link[rbacon::Bacon]{rbacon::Bacon}}.}
 }
 \value{
 saves MC ensemble, bacon_chronology and AM plot.
