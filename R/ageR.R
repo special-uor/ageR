@@ -13,10 +13,11 @@
 #' @importFrom utils write.csv
 #' @importFrom utils write.table
 #'
-#' @param wdir path where input files are stored.
-#' @param entity name of the entity.
-#' @param postbomb postbomb curve
-#' @param cc calibration curve
+#' @param wdir Path where input files are stored.
+#' @param entity Name of the entity.
+#' @param postbomb Postbomb curve.
+#' @param cc Calibration curve.
+#' @param ... Optional parameters for \code{link[rbacon::Bacon]{rbacon::Bacon}}.
 #'
 #' @return saves MC ensemble, bacon_chronology and AM plot.
 #'
@@ -31,26 +32,8 @@
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
-runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
-  # setwd(file.path(wdir, entity))
-  # filenames <- file.path(c(file.path("Bacon_runs/",
-  #                                    entity,
-  #                                    c(paste0(entity, "_depths.txt"),
-  #                                      paste0(entity, "_sample_ids.csv"),
-  #                                      paste0(entity, ".csv"))),
-  #                          "hiatus.csv",
-  #                          "not_used_dates.csv"))
-  # idx <- unlist(lapply(filenames, file.exists))
-  # if (!all(idx)) {
-  #   stop(paste0("\nThe following input ",
-  #               ifelse(sum(!idx) > 1, "files were", "file was"),
-  #               " not found inside the working directory [",
-  #               file.path(entity),
-  #               "]\n",
-  #               paste0("- ", filenames[!idx], collapse = "\n")))
-  # }
+runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
   check_files(wdir, entity)
-  # setwd(file.path(wdir, entity, "Bacon_runs", entity))
   path <- file.path(wdir, entity, 'Bacon_runs', entity)
   depth_eval <- matrix(read.table(file.path(path,
                                             paste0(entity, "_depths.txt")),
@@ -62,20 +45,14 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
 
   core <- read.csv(file.path(path, paste0(entity, ".csv")),
                    header = TRUE,
-                   stringsAsFactors = FALSE,
-                   colClasses = c("character", "numeric", "numeric", "numeric"))
+                   stringsAsFactors = FALSE)
 
-  # setwd(file.path(wdir, entity))
   path <- file.path(wdir, entity)
   unknown_age <- read.csv(file.path(path, "not_used_dates.csv"), header = TRUE)
-  # if (file.exists(file.path("hiatus.csv"))) {
   hiatus_tb <- read.csv(file.path(path, file.path("hiatus.csv")),
                         header = TRUE,
                         stringsAsFactors = FALSE,
                         colClasses = c("numeric", "numeric"))
-  # } else {
-  #   hiatus_tb <- data.frame(sample_id = NA, depth_sample = NA)[-1, ]
-  # }
 
   accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
   ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
@@ -103,8 +80,7 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
     tryCatch({
       pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
           width = 6,
-          height = 6,
-          )
+          height = 6)
       rbacon::Bacon(core = entity,
                     coredir = file.path(wdir, entity, "Bacon_runs"),
                     depths.file = TRUE,
@@ -116,7 +92,8 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
                     ask = FALSE,
                     ssize = j,
                     th0 = tho,
-                    plot.pdf = FALSE)
+                    plot.pdf = FALSE,
+                    ...)
       dev.off()
     },
     error = function(e) {
@@ -140,12 +117,13 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
                     ask = FALSE,
                     ssize = j,
                     th0 = tho,
-                    plot.pdf = FALSE)
+                    plot.pdf = FALSE,
+                    ...)
       dev.off()
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
-                  file = "bacon_error.txt")
+                  file = file.path(path, "bacon_error.txt"))
     })
   }
 
