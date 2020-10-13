@@ -28,10 +28,65 @@ The goal of ageR is to ...
 
 ## Installation
 
-You can install the released version of ageR from [CRAN](https://CRAN.R-project.org) with:
+<!-- You can install the released version of ageR from [CRAN](https://CRAN.R-project.org) with: -->
 
+<!-- ``` r -->
+<!-- install.packages("ageR") -->
+<!-- ``` -->
+
+You can install the development version from 
+[GitHub](https://github.com/special-uor) with:
 ``` r
-install.packages("ageR")
+# install.packages("remotes")
+remotes::install_github("special-uor/ageR")
 ```
 
 ## Example
+### Bacon model
+#### Input structure
+For an entiy X, the input structure should look like
+```{r bacon-file-structure}
+ageR::file_structure(entity = "X", am = "bacon")
+```
+
+The function `ageR::create_input` can be used to automatically create the 
+appropriate file structure (as shown previously).
+
+#### Create input structure
+1. Start by creating a data frame for the sampling depths, this should have two 
+numeric columns called `id` and `depth`:
+```{r bacon-create-input-step1}
+sample_depths <- data.frame(id = 1:100,
+                            depth = seq(0, 500, length.out = 100))
+knitr::kable(head(sample_depths))
+```
+
+2. Create a data frame with the core's data, this should have at least four 
+columns. The first column can be of character type and the remaining must be
+numeric. The column names should be `labID`, `age`, `error`, and `depth`. 
+Optionally, a fifth column, `cc`, can be included to manually select the 
+calibration curve for each observation.
+```{r bacon-create-input-step2}
+core <- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
+                   age = c(50, 200, 1150, 2060, 4050),
+                   error = c(10, 15, 5, 1, 70),
+                   depth = c(5, 100, 230, 300, 450),
+                   cc = 1)
+knitr::kable(core)
+```
+
+3. Call the `ageR::create_input` function. The first parameter should be a list
+containing the previous data frames, which must be called `sample` and `core`. 
+Next, a working directory (`wdir`), the entity's name, and optionally the age 
+model's name (by default is Bacon).
+```{r bacon-create-input-step3, eval = FALSE}
+ageR::create_input(data = list(sample = sample_depths, core = core), 
+                   wdir = "./", 
+                   entity = "X",
+                   am = "bacon")
+```
+
+#### Run bacon
+```{r bacon-run, eval = FALSE}
+ageR::runBacon(wdir = "./", entity = "X", postbomb = 0, cc = 0)
+```
