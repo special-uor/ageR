@@ -18,7 +18,7 @@
 #' @param postbomb postbomb curve
 #' @param cc calibration curve
 #'
-#' @return saves MC esemble, bacon_chronology and AM plot.
+#' @return saves MC ensemble, bacon_chronology and AM plot.
 #'
 #' @export
 #'
@@ -218,7 +218,7 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
 #' @param wdir path where input files are stored.
 #' @param entity name of the entity.
 #' @param N number of iterations.
-#' @return saves MC esemble, lin_reg_chronology and AM plot.
+#' @return saves MC ensemble, lin_reg_chronology and AM plot.
 #' @export
 #' @references
 #' Telford, R. J. et al., Quaternary Science Reviews 23, 1-5 (2004)
