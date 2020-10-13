@@ -16,7 +16,7 @@ runBacon(wdir, entity, postbomb = 0, cc = 0)
 \item{cc}{calibration curve}
 }
 \value{
-saves MC esemble, bacon_chronology and AM plot.
+saves MC ensemble, bacon_chronology and AM plot.
 }
 \description{
 Age model function for Bacon.
