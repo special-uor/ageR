@@ -50,23 +50,26 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
   #               paste0("- ", filenames[!idx], collapse = "\n")))
   # }
   check_files(wdir, entity)
-  setwd(file.path(wdir, entity, "Bacon_runs", entity))
-  depth_eval <- matrix(read.table(paste0(entity, "_depths.txt"),
-                                col.names = ""))[[1]]
-  sample_id <-  read.csv(paste0(entity, "_sample_ids.csv"),
+  # setwd(file.path(wdir, entity, "Bacon_runs", entity))
+  path <- file.path(wdir, entity, 'Bacon_runs', entity)
+  depth_eval <- matrix(read.table(file.path(path,
+                                            paste0(entity, "_depths.txt")),
+                                  col.names = ""))[[1]]
+  sample_id <-  read.csv(file.path(path, paste0(entity, "_sample_ids.csv")),
                          header = TRUE,
                          stringsAsFactors = FALSE,
                          colClasses = c("numeric"))
 
-  core <- read.csv(paste0(entity, ".csv"),
+  core <- read.csv(file.path(path, paste0(entity, ".csv")),
                    header = TRUE,
                    stringsAsFactors = FALSE,
                    colClasses = c("character", "numeric", "numeric", "numeric"))
 
-  setwd(file.path(wdir, entity))
-  unknown_age <- read.csv("not_used_dates.csv", header = TRUE)
+  # setwd(file.path(wdir, entity))
+  path <- file.path(wdir, entity)
+  unknown_age <- read.csv(file.path(path, "not_used_dates.csv"), header = TRUE)
   # if (file.exists(file.path("hiatus.csv"))) {
-  hiatus_tb <- read.csv(file.path("hiatus.csv"),
+  hiatus_tb <- read.csv(file.path(path, file.path("hiatus.csv")),
                         header = TRUE,
                         stringsAsFactors = FALSE,
                         colClasses = c("numeric", "numeric"))
@@ -98,11 +101,12 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
   print("#------------ run bacon ---------------#")
   if (nrow(hiatus_tb) == 0) {
     tryCatch({
-      # pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
-      #     width = 6,
-      #     height = 6,
-      #     )
+      pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
+          width = 6,
+          height = 6,
+          )
       rbacon::Bacon(core = entity,
+                    coredir = file.path(wdir, entity, "Bacon_runs"),
                     depths.file = TRUE,
                     thick = thickness,
                     acc.mean = accMean,
@@ -112,12 +116,12 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
                     ask = FALSE,
                     ssize = j,
                     th0 = tho,
-                    plot.pdf = TRUE)
-      # dev.off()
+                    plot.pdf = FALSE)
+      dev.off()
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
-                  file = "bacon_error.txt")
+                  file = file.path(path, "bacon_error.txt"))
     })
   } else {
     tryCatch({
@@ -125,6 +129,7 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
           width = 6,
           height = 6)
       rbacon::Bacon(core = entity,
+                    coredir = file.path(wdir, entity, "Bacon_runs"),
                     depths.file = TRUE,
                     thick = thickness,
                     acc.mean = accMean ,
@@ -146,9 +151,9 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
 
   print("--------------save data -----------------")
   bacon_mcmc <- sapply(depth_eval, rbacon::Bacon.Age.d)
-  bacon_age <- ageR::get_bacon_median_quantile(depth_eval,
-                                               hiatus_tb,
-                                               bacon_mcmc)
+  bacon_age <- get_bacon_median_quantile(depth_eval,
+                                         hiatus_tb,
+                                         bacon_mcmc)
   bacon_mcmc <- rbind(depth_eval, bacon_mcmc)
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_id, bacon_mcmc)
@@ -164,16 +169,17 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0) {
 
   sample_id <- bacon_mcmc[, 1]
 
-  setwd(file.path(wdir, entity, "Bacon_runs", entity))
+  # setwd(file.path(wdir, entity, "Bacon_runs", entity))
+  path <- file.path(wdir, entity, 'Bacon_runs', entity)
   write.table(bacon_mcmc,
-              "mc_bacon_ensemble.txt",
+              file.path(path, "mc_bacon_ensemble.txt"),
               col.names = FALSE,
               row.names = FALSE)
   write.csv(cbind(sample_id, bacon_age[, 2:4]),
-            "bacon_chronology.csv",
+            file.path(path, "bacon_chronology.csv"),
             row.names = FALSE)
 
-  pdf("final_age_model.pdf", 6, 4)
+  pdf(file.path(path, "final_age_model.pdf"), 6, 4)
   matplot(x = bacon_age[, 2],
           y = bacon_age[, 1] * 10,
           col = "black",
