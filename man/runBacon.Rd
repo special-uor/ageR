@@ -4,7 +4,15 @@
 \alias{runBacon}
 \title{Age model function for Bacon.}
 \usage{
-runBacon(wdir, entity, postbomb = 0, cc = 0, ...)
+runBacon(
+  wdir,
+  entity,
+  postbomb = 0,
+  cc = 0,
+  alt_depths = NULL,
+  quiet = FALSE,
+  ...
+)
 }
 \arguments{
 \item{wdir}{Path where input files are stored.}
@@ -15,10 +23,14 @@ runBacon(wdir, entity, postbomb = 0, cc = 0, ...)
 
 \item{cc}{Calibration curve.}
 
+\item{alt_depths}{List of arrays with new depths.}
+
+\item{quiet}{Boolean to hide status messages.}
+
 \item{...}{Optional parameters for \code{link[rbacon::Bacon]{rbacon::Bacon}}.}
 }
 \value{
-saves MC ensemble, bacon_chronology and AM plot.
+Saves MC ensemble, bacon_chronology and AM plot.
 }
 \description{
 Age model function for Bacon.

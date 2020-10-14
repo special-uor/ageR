@@ -9,7 +9,7 @@ create_input(data, wdir, entity = NULL, am = "bacon")
 \arguments{
 \item{data}{List with named data frames containing the input data.
 \itemize{
-  \item \code{sample}: data frame with samples information.
+  \item \code{sample_depths}: data frame with sampling depths information.
     \itemize{
       \item \code{id}: depth ID.
       \item \code{depth}: depth in cm.
@@ -59,8 +59,9 @@ the function will return an error message, because the path is too short.
 To use the current working directory, \code{wdir = "./"}.
 }
 \examples{
-test_data <-list(sample = data.frame(id = 1:100,
-                                     depth = seq(0, 500, length = 100)),
+test_data <-list(sample_depths = data.frame(id = 1:100,
+                                            depth =
+                                              seq(0, 500, length = 100)),
                  core = data.frame(labID = "RDG",
                                    age = c(720, 2700, 4660),
                                    error = c(70, 50, 110),
