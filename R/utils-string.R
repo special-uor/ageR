@@ -32,3 +32,35 @@ cln_str <- function(str, rm_wht = FALSE, keep = c("_-")) {
     new_str <- gsub(" ", "-", new_str)
   return(new_str)
 }
+
+#' Display message inside a box
+#'
+#' @param str String to display.
+#' @param limit Maximum number of characters, output width.
+#'
+#' @examples
+#' msg("A")
+#' msg("AB")
+#' msg("ABC")
+#' msg("ABCD")
+#' msg("ABCD", limit = 30)
+#' @noRd
+#' @keywords internal
+msg <- function(str, limit = 80) {
+  len <- nchar(str)
+  if (len > limit) {
+    message(msg)
+  } else {
+    pad_r <- floor((limit - len - 2) / 2)
+    pad_l <- ceiling((limit - len - 2) / 2)
+    print(len)
+    print(pad_r)
+    print(pad_l)
+    print(pad_r + pad_l)
+    message(paste0(rep("-", limit), collapse = ""), "\n|",
+            paste0(rep(" ", pad_r - 1), collapse = ""), " ",
+            str, " ",
+            paste0(rep(" ", pad_l - 1), collapse = ""), "|\n",
+            paste0(rep("-", limit), collapse = ""), "\n")
+  }
+}
