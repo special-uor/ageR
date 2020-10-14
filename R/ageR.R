@@ -141,30 +141,32 @@ runBacon <- function(wdir,
   # Create path variable for Bacon inputs
   path <- file.path(wdir, entity, 'Bacon_runs', entity)
 
-  # List alternative depths files
-  alt_depths_files <- list.files(path, "*_depths.alt.txt")
+  # List alternative depth files
+  alt_depth_files <- list.files(path, "*_depths.alt.txt")
   if (!is.null(alt_depths)) {
     if (is.null(names(alt_depths))) {
-      alt_depths_names <- paste0(entity,
-                                 "alt_depths_",
+      alt_depth_names <- paste0(entity,
+                                 "alt_depth_",
                                  seq_len(length(alt_depths)))
     } else {
-      alt_depths_names <- names(alt_depths)
+      alt_depth_names <- names(alt_depths)
     }
     for (i in seq_len(length(alt_depths))) {
       depths <- as.numeric(alt_depths[[i]])
       depths <- rbacon::Bacon.hist(depths)
+      colnames(depths) <- c("min", "max", "median", "mean")
       write.csv(depths,
-                file.path(path, paste0(alt_depths_names[i], ".csv")),
+                file.path(path, paste0(alt_depth_names[i], ".csv")),
                 row.names = FALSE)
     }
-  } else if(length(alt_depths_files)) {
-    for (i in seq_len(length(alt_depths_files))) {
-      msg(alt_depths_files[i], quiet)
-      depths <- matrix(read.table(file.path(path, alt_depths_files[i]),
+  } else if(length(alt_depth_files)) {
+    for (i in seq_len(length(alt_depth_files))) {
+      msg(alt_depth_files[i], quiet)
+      depths <- matrix(read.table(file.path(path, alt_depth_files[i]),
                                   col.names = ""))[[1]]
       depths <- rbacon::Bacon.hist(depths)
-      new_name <- gsub(".alt.txt", "", alt_depths_files[i])
+      new_name <- gsub(".alt.txt", "", alt_depth_files[i])
+      colnames(depths) <- c("min", "max", "median", "mean")
       write.csv(depths,
                 file.path(path, paste0(new_name, ".csv")),
                 row.names = FALSE)
