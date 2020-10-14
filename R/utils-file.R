@@ -75,7 +75,7 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
 #'
 #' @param data List with named data frames containing the input data.
 #' \itemize{
-#'   \item \code{sample}: data frame with samples information.
+#'   \item \code{sample_depths}: data frame with sampling depths information.
 #'     \itemize{
 #'       \item \code{id}: depth ID.
 #'       \item \code{depth}: depth in cm.
@@ -111,8 +111,9 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
 #' @export
 #'
 #' @examples
-#' test_data <-list(sample = data.frame(id = 1:100,
-#'                                      depth = seq(0, 500, length = 100)),
+#' test_data <-list(sample_depths = data.frame(id = 1:100,
+#'                                             depth =
+#'                                               seq(0, 500, length = 100)),
 #'                  core = data.frame(labID = "RDG",
 #'                                    age = c(720, 2700, 4660),
 #'                                    error = c(70, 50, 110),
@@ -136,10 +137,11 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
 
   if (tolower(am) == "bacon") {
     # Verify input data format
-    if (!any(c("sample", "core") %in% names(data))) {
+    if (!any(c("sample_depths", "core") %in% names(data))) {
       stop("Wrong format for the data parameter")
     } else if (!any(c("id", "sample") %in% names(data$sample))) {
-      stop(paste0("\nThe sample structure must contain 2 variables:",
+      stop(paste0("\nThe sampling depths (sample_depths) structure ",
+                  "must contain 2 variables:",
                   "\n - id",
                   "\n - depth"))
     } else if (!any(c("labID", "age", "error", "depth")
@@ -175,7 +177,7 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
               row.names = FALSE)
 
     if ("hiatus" %in% names(data) &&
-        !any(c("id", "sample") %in% names(data$haitus))) {
+        all(c("id", "depth") %in% names(data$hiatus))) {
       write.csv(data$hiatus,
                 file.path(path, "hiatus.csv"),
                 row.names = FALSE)
