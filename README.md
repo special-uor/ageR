@@ -32,7 +32,7 @@ files.
 <!-- ``` -->
 
 You can install the development version from
-[GitHub](https://github.com/special-uor) with:
+[GitHub](https://github.com/special-uor/ageR) with:
 
 ``` r
 # install.packages("remotes")
@@ -67,23 +67,22 @@ the appropriate file structure (as shown previously).
 
 1.  Start by creating a data frame for the sampling depths, this should
     have two numeric columns called `id` and `depth`:
-
-<!-- end list -->
-
-``` r
-sample_depths <- data.frame(id = 1:100,
-                            depth = seq(0, 500, length.out = 100))
-knitr::kable(head(sample_depths))
-```
-
-| id |     depth |
-| -: | --------: |
-|  1 |  0.000000 |
-|  2 |  5.050505 |
-|  3 | 10.101010 |
-|  4 | 15.151515 |
-|  5 | 20.202020 |
-|  6 | 25.252525 |
+    
+    ``` r
+    sample_depths <- data.frame(id = 1:100,
+                                depth = seq(0, 500, length.out = 100))
+    knitr::kable(head(sample_depths))
+    ```
+    
+    | id |     depth |
+    | -: | --------: |
+    |  1 |  0.000000 |
+    |  2 |  5.050505 |
+    |  3 | 10.101010 |
+    |  4 | 15.151515 |
+    |  5 | 20.202020 |
+    |  6 | 25.252525 |
+    
 
 2.  Create a data frame with the core’s data, this should have at least
     four columns. The first column can be of character type and the
@@ -91,43 +90,58 @@ knitr::kable(head(sample_depths))
     `age`, `error`, and `depth`. Optionally, a fifth column, `cc`, can
     be included to manually select the calibration curve for each
     observation.
+    
+    ``` r
+    core <- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
+                       age = c(50, 200, 1150, 2060, 4050),
+                       error = c(10, 15, 5, 1, 70),
+                       depth = c(5, 100, 230, 300, 450),
+                       cc = 1)
+    knitr::kable(core)
+    ```
+    
+    | labID |  age | error | depth | cc |
+    | :---- | ---: | ----: | ----: | -: |
+    | X001  |   50 |    10 |     5 |  1 |
+    | X002  |  200 |    15 |   100 |  1 |
+    | X003  | 1150 |     5 |   230 |  1 |
+    | X004  | 2060 |     1 |   300 |  1 |
+    | X005  | 4050 |    70 |   450 |  1 |
+    
 
-<!-- end list -->
+3.  (Optional) Create a data frame with the hiatuses depths, this should
+    have two numeric columns called `id` and `depth`:
+    
+    ``` r
+    hiatus <- data.frame(id = c(1, 2),
+                         depth = c(50, 150))
+    knitr::kable(hiatus)
+    ```
+    
+    | id | depth |
+    | -: | ----: |
+    |  1 |    50 |
+    |  2 |   150 |
+    
 
-``` r
-core <- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
-                   age = c(50, 200, 1150, 2060, 4050),
-                   error = c(10, 15, 5, 1, 70),
-                   depth = c(5, 100, 230, 300, 450),
-                   cc = 1)
-knitr::kable(core)
-```
-
-| labID |  age | error | depth | cc |
-| :---- | ---: | ----: | ----: | -: |
-| X001  |   50 |    10 |     5 |  1 |
-| X002  |  200 |    15 |   100 |  1 |
-| X003  | 1150 |     5 |   230 |  1 |
-| X004  | 2060 |     1 |   300 |  1 |
-| X005  | 4050 |    70 |   450 |  1 |
-
-3.  Call the `ageR::create_input` function. The first parameter should
+4.  Call the `ageR::create_input` function. The first parameter should
     be a list containing the previous data frames, which must be called
-    `sample` and `core`. Next, a working directory (`wdir`), the
-    entity’s name, and optionally the age model’s name (by default is
-    Bacon).
-
-<!-- end list -->
-
-``` r
-ageR::create_input(data = list(sample = sample_depths, core = core), 
-                   wdir = "./", 
-                   entity = "X",
-                   am = "bacon")
-```
+    `sample_depths`, `core`, and `hiatus` (if included). Next, a working
+    directory (`wdir`), the entity’s name, and optionally the age
+    model’s name (by default is Bacon).
+    
+    ``` r
+    ageR::create_input(data = list(sample_depths = sample_depths, 
+                                   core = core,
+                                   # Optional
+                                   hiatus = hiatus), 
+                       wdir = "./", 
+                       entity = "X",
+                       am = "bacon")
+    ```
 
 #### Run bacon
 
 ``` r
-ageR::runBacon(wdir = "./", entity = "X", postbomb = 0, cc = 0)
+ageR::runBacon(wdir = "./", entity = "X", postbomb = 0, cc = 1)
 ```
