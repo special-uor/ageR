@@ -17,9 +17,11 @@
 #' @param entity Name of the entity.
 #' @param postbomb Postbomb curve.
 #' @param cc Calibration curve.
+#' @param alt_depths List of arrays with new depths.
+#' @param quiet Boolean to hide status messages.
 #' @param ... Optional parameters for \code{link[rbacon::Bacon]{rbacon::Bacon}}.
 #'
-#' @return saves MC ensemble, bacon_chronology and AM plot.
+#' @return Saves MC ensemble, bacon_chronology and AM plot.
 #'
 #' @export
 #'
@@ -32,8 +34,16 @@
 #' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 #' \url{https://doi.org/10.5194/essd-2020-39},
 #' \url{https://github.com/paleovar/SISAL.AM}
-runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
+runBacon <- function(wdir,
+                     entity,
+                     postbomb = 0,
+                     cc = 0,
+                     alt_depths = NULL,
+                     quiet = FALSE,
+                     ...) {
+  msg("Checking input files", quiet)
   check_files(wdir, entity)
+  msg("Loading input files", quiet)
   path <- file.path(wdir, entity, 'Bacon_runs', entity)
   depth_eval <- matrix(read.table(file.path(path,
                                             paste0(entity, "_depths.txt")),
@@ -54,6 +64,7 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
                         stringsAsFactors = FALSE,
                         colClasses = c("numeric", "numeric"))
 
+  msg("Setting up environment", quiet)
   accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
   ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
   ballpacc <- abs(accMean - ballpacc)
@@ -75,11 +86,11 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
   j <- 2000
   tho <- c()
 
-  print("#------------ run bacon ---------------#")
+  msg("Running Bacon", quiet)
   if (nrow(hiatus_tb) == 0) {
     tryCatch({
       pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
-          width = 6,
+          width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
                     coredir = file.path(wdir, entity, "Bacon_runs"),
@@ -103,7 +114,7 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
   } else {
     tryCatch({
       pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
-          width = 6,
+          width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
                     coredir = file.path(wdir, entity, "Bacon_runs"),
@@ -127,11 +138,55 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
     })
   }
 
-  print("--------------save data -----------------")
+  # Create path variable for Bacon inputs
+  path <- file.path(wdir, entity, 'Bacon_runs', entity)
+
+  # List alternative depths files
+  alt_depths_files <- list.files(path, "*_depths.alt.txt")
+  if (!is.null(alt_depths)) {
+    if (is.null(names(alt_depths))) {
+      alt_depths_names <- paste0(entity,
+                                 "alt_depths_",
+                                 seq_len(length(alt_depths)))
+    } else {
+      alt_depths_names <- names(alt_depths)
+    }
+    for (i in seq_len(length(alt_depths))) {
+      depths <- as.numeric(alt_depths[[i]])
+      depths <- rbacon::Bacon.hist(depths)
+      write.csv(depths,
+                file.path(path, paste0(alt_depths_names[i], ".csv")),
+                row.names = FALSE)
+    }
+  } else if(length(alt_depths_files)) {
+    for (i in seq_len(length(alt_depths_files))) {
+      msg(alt_depths_files[i], quiet)
+      depths <- matrix(read.table(file.path(path, alt_depths_files[i]),
+                                  col.names = ""))[[1]]
+      depths <- rbacon::Bacon.hist(depths)
+      new_name <- gsub(".alt.txt", "", alt_depths_files[i])
+      write.csv(depths,
+                file.path(path, paste0(new_name, ".csv")),
+                row.names = FALSE)
+    }
+  }
+
+  msg("Saving results", quiet)
   bacon_mcmc <- sapply(depth_eval, rbacon::Bacon.Age.d)
+  # 95% CI
   bacon_age <- get_bacon_median_quantile(depth_eval,
                                          hiatus_tb,
-                                         bacon_mcmc)
+                                         bacon_mcmc,
+                                         q1 = 0.05,
+                                         q2 = 0.95)
+  colnames(bacon_age)[3:4] <- paste0("uncert_", c(5, 95))
+  # 75% CI
+  bacon_age_75 <- get_bacon_median_quantile(depth_eval,
+                                            hiatus_tb,
+                                            bacon_mcmc,
+                                            q1 = 0.25,
+                                            q2 = 0.75)
+  colnames(bacon_age_75)[3:4] <- paste0("uncert_", c(25, 75))
   bacon_mcmc <- rbind(depth_eval, bacon_mcmc)
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_id, bacon_mcmc)
@@ -148,12 +203,12 @@ runBacon <- function(wdir, entity, postbomb = 0, cc = 0, ...) {
   sample_id <- bacon_mcmc[, 1]
 
   # setwd(file.path(wdir, entity, "Bacon_runs", entity))
-  path <- file.path(wdir, entity, 'Bacon_runs', entity)
+  # path <- file.path(wdir, entity, 'Bacon_runs', entity)
   write.table(bacon_mcmc,
               file.path(path, "mc_bacon_ensemble.txt"),
               col.names = FALSE,
               row.names = FALSE)
-  write.csv(cbind(sample_id, bacon_age[, 2:4]),
+  write.csv(cbind(sample_id, bacon_age[, 2:4], bacon_age_75[, 3:4]),
             file.path(path, "bacon_chronology.csv"),
             row.names = FALSE)
 
