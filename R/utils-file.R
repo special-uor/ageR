@@ -168,13 +168,21 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
     write.csv(data$sample$id,
               file.path(path, paste0(entity, "_sample_ids.csv")),
               row.names = FALSE)
-
-    # Empty data frame for "not used dates"
-    path <- file.path(wdir, entity)
-    not_used_dates <- data.frame(depth = NA, error = NA)[-1, ]
-    write.csv(not_used_dates,
-              file.path(path, "not_used_dates.csv"),
-              row.names = FALSE)
+    print(names(data))
+    if ("not_used" %in% names(data)) {
+      print(data$not_used)
+      path <- file.path(wdir, entity)
+      write.csv(data$not_used,
+                file.path(path, "not_used_dates.csv"),
+                row.names = FALSE)
+    } else {
+      # Empty data frame for "not used dates"
+      path <- file.path(wdir, entity)
+      not_used_dates <- data.frame(depth = NA, error = NA)[-1, ]
+      write.csv(not_used_dates,
+                file.path(path, "not_used_dates.csv"),
+                row.names = FALSE)
+    }
 
     if ("hiatus" %in% names(data) &&
         all(c("id", "depth") %in% names(data$hiatus))) {
