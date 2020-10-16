@@ -1,5 +1,6 @@
 # Iberian Pollen data location
-wdir <- "/path/to/iberian-pollen-data/"
+wdir <- "/path/to/iberian-pollen-data"
+
 # Import pipe operator from dplyr
 `%>%` <- dplyr::`%>%`
 
@@ -28,7 +29,7 @@ sites_of_interest <- c("El Tiemblo",
 # Create Bacon input for each site
 for (site in sites_of_interest) {
   core <- all_sites_dates %>%
-    dplyr::filter(., Site.name == site) %>%
+    dplyr::filter(Site.name == site) %>%
     dplyr::mutate(labID = ifelse(Date.code == "", "UNK", Date.code)) %>%
     dplyr::mutate(age = as.numeric(ifelse(Radiocarbon.Age == "",
                                           Calibrated.age,
@@ -36,7 +37,9 @@ for (site in sites_of_interest) {
     dplyr::mutate(error = ifelse(is.na(Error), 1, Error)) %>%
     dplyr::mutate(depth = Depth..cm.) %>%
     dplyr::mutate(cc = ifelse(is.na(Error) | depth == 0, 0, 1)) %>%
-    dplyr::select(., labID, age, error, depth, cc)
+    dplyr::select(labID, age, error, depth, cc)
+
+  not_used_dates <- NULL
 
   # Find corresponding depths file: depths/<ENTITY>_depths.txt
   depths_filepath <- paste0(file.path(wdir, "depths/"),
@@ -45,11 +48,25 @@ for (site in sites_of_interest) {
 
   if (file.exists(depths_filepath)) {
     message(paste0("Processing: ", site))
-    depths <- matrix(read.table(depths_filepath,
-                                col.names = ""))[[1]]
+    # depths <- matrix(read.taAble(depths_filepath,
+    #                             col.names = ""))[[1]]
+    depths <- depths0
+    # print(cbind(depths0, depths))
     depths <- data.frame(id = seq_len(length(depths)),
                          depth = as.numeric(depths))
-    ageR::create_input(list(sample = depths, core = core),
+    hiatus <- NULL
+
+    if (site == "Laguna Guallar") {
+      core <- rbind(c("TOP", -57, 1, 0, 0),
+                    core,
+                    c("UNK", 9888, 80, 120, 1),
+                    c("UNK", 10529, 80, 170, 1))
+      hiatus <- data.frame(id = c(1, 2), depth = c(49, 90))
+    }
+    ageR::create_input(list(sample_depths = depths,
+                            core = core,
+                            hiatus = hiatus,
+                            not_used = not_used_dates),
                        wdir = file.path(wdir, "runs"),
                        entity = ageR:::cln_str(site))
     depths_C_filepath <- paste0(file.path(wdir, "depths/"),
@@ -63,11 +80,13 @@ for (site in sites_of_interest) {
                                   col.names = ""))[[1]]
       depths <- data.frame(id = seq_len(length(depths)),
                            depth = as.numeric(depths))
-      ageR::create_input(list(sample = depths, core = core),
-                         wdir = file.path(wdir, "runs"),
-                         entity = paste0(ageR:::cln_str(site), "_C"))
-      sites_of_interest <- c(sites_of_interest,
-                             paste0(ageR:::cln_str(site), "_C"))
+
+      entity <- ageR:::cln_str(site)
+      path <- file.path(wdir, "runs", entity, 'Bacon _runs', entity)
+      write.table(depths$depth,
+                  file.path(path, paste0(entity, "_Carbon_depths.alt.txt")),
+                  row.names = FALSE,
+                  col.names = FALSE)
     }
   } else {
     warning(paste0("Depths file not found: \n", depths_filepath))
