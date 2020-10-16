@@ -16,7 +16,7 @@
 #' conn <- open_conn_mysql("sys", "root")
 #' }
 #'
-#' @family DB
+#' @family DB functions
 open_conn_mysql <- function(dbname,
                             user,
                             password = NULL,
@@ -47,7 +47,7 @@ open_conn_mysql <- function(dbname,
 #' @rdname close_conn
 #' @export
 #'
-#' @family DB
+#' @family DB functions
 close_conn <- function(conn, ...) {
   UseMethod("close_conn", conn)
 }
@@ -87,7 +87,7 @@ close_conn.default <- function(conn, ...) {
 #' out <- select_query_mysql(conn, "SELECT variable, value FROM sys_config")
 #' close_conn(conn)
 #' }
-#' @family DB
+#' @family DB functions
 select_query_mysql <- function(conn, query, quiet = FALSE) {
   # Verify that the query has a SELECT token
   if (!("SELECT" %in% unlist(strsplit(toupper(query), " "))))
@@ -117,7 +117,7 @@ select_query_mysql <- function(conn, query, quiet = FALSE) {
 #' @rdname select_all
 #' @export
 #'
-#' @family DB
+#' @family DB functions
 select_all <- function(conn, ...) {
   UseMethod("select_all", conn)
 }
@@ -145,7 +145,8 @@ select_all.MariaDBConnection <- function(conn, table, quiet = FALSE, ...) {
 #'
 #' @return \code{TRUE} if \code{conn} a \code{MariaDBConnection} connection
 #'     object, \code{FALSE} otherwise
-#' @family DB
+#'
+#' @family DB functions
 #' @noRd
 #' @keywords internal
 is.MariaDBConnection <- function(conn) {
