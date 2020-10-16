@@ -41,6 +41,25 @@ for (site in sites_of_interest) {
 
   idx <- c()
   not_used_dates <- NULL
+  # for (i in seq_len(nrow(core))[-1]) {
+  #   # Previous
+  #   ## Drop younger and deeper
+  #   if (core$age[i] < core$age[i - 1]) {
+  #     idx <- c(idx, i)
+  #   }
+  #   # ## Drop older and shallow
+  #   # if (any(core$age[i] < core$age[1:i - 1])) {
+  #   #   idx <- c(idx, which(core$age[i] < core$age[1:i - 1]))
+  #   # }
+  #   idx <- unique(idx)
+  # }
+  #
+  # if (length(idx) > 0) {
+  #   print(core[idx, ])
+  #   not_used_dates <- core[idx, ]
+  #   core <- core[-idx, ]
+  # }
+
   depths0 <- all_sites_pollen %>%
     dplyr::filter(Site.Name == site) %>%
     dplyr::select(Depth..cm.)
@@ -102,3 +121,5 @@ for (site in sites_of_interest) {
 for (site in sites_of_interest) {
   ageR::runBacon(file.path(wdir, "runs"), ageR:::cln_str(site), cc = 1)
 }
+
+# mc_bacon <- read.csv(file.path(wdir, "runs/Las Vinuelas/Bacon_runs/Las Vinuelas/mc_bacon_ensemble.txt"), sep = "", header = FALSE)
