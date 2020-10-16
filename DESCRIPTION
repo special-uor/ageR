@@ -20,9 +20,11 @@ Imports:
     data.tree,
     DiagrammeR,
     dplyr,
+    ggplot2,
     plyr,
     rbacon,
-    RMariaDB
+    RMariaDB,
+    scales
 Suggests:
     badger,
     hexSticker,
