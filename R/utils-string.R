@@ -11,10 +11,11 @@
 #' @return New string without special characters.
 #'
 #' @examples
-#' ageR::cln_str("ÀÊ?")
-#' ageR::cln_str("ÀÊ?_AE?")
-#' ageR::cln_str("ÀÊ? AE?")
-#' ageR::cln_str("ÀÊ? AE?", rm_wht = TRUE)
+#' ageR:::cln_str("ÀÊ?")
+#' ageR:::cln_str("ÀÊ?_AE?")
+#' ageR:::cln_str("ÀÊ?.AE?")
+#' ageR:::cln_str("ÀÊ?.AE?", keep = "\\._-")
+#' ageR:::cln_str("ÀÊ? AE?", rm_wht = TRUE)
 #'
 #' @noRd
 #' @keywords internal
@@ -40,12 +41,13 @@ cln_str <- function(str, rm_wht = FALSE, keep = c("_-")) {
 #' @param limit Maximum number of characters, output width.
 #'
 #' @examples
-#' msg("A")
-#' msg("AB")
-#' msg("ABC")
-#' msg("ABCD")
-#' msg("ABCD", limit = 30)
-#' msg("ABCD", quiet = TRUE)
+#' ageR:::msg("A")
+#' ageR:::msg("AB")
+#' ageR:::msg("ABC")
+#' ageR:::msg("ABCD")
+#' ageR:::msg("ABCD", limit = 30)
+#' ageR:::msg("ABCD", quiet = TRUE)
+#'
 #' @noRd
 #' @keywords internal
 msg <- function(str, quiet = FALSE, limit = 80) {
