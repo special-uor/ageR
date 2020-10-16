@@ -153,8 +153,9 @@ runBacon <- function(wdir,
     }
     for (i in seq_len(length(alt_depths))) {
       depths <- as.numeric(alt_depths[[i]])
-      depths <- rbacon::Bacon.hist(depths)
-      colnames(depths) <- c("min", "max", "median", "mean")
+      out <- rbacon::Bacon.hist(depths)
+      depths <- cbind(depths, out)
+      colnames(depths) <- c("depth", "min", "max", "median", "mean")
       write.csv(depths,
                 file.path(path, paste0(alt_depth_names[i], ".csv")),
                 row.names = FALSE)
@@ -164,9 +165,10 @@ runBacon <- function(wdir,
       msg(alt_depth_files[i], quiet)
       depths <- matrix(read.table(file.path(path, alt_depth_files[i]),
                                   col.names = ""))[[1]]
-      depths <- rbacon::Bacon.hist(depths)
+      out <- rbacon::Bacon.hist(depths)
+      depths <- cbind(depths, out)
+      colnames(depths) <- c("depth", "min", "max", "median", "mean")
       new_name <- gsub(".alt.txt", "", alt_depth_files[i])
-      colnames(depths) <- c("min", "max", "median", "mean")
       write.csv(depths,
                 file.path(path, paste0(new_name, ".csv")),
                 row.names = FALSE)
@@ -204,47 +206,55 @@ runBacon <- function(wdir,
 
   sample_id <- bacon_mcmc[, 1]
 
-  # setwd(file.path(wdir, entity, "Bacon_runs", entity))
-  # path <- file.path(wdir, entity, 'Bacon_runs', entity)
   write.table(bacon_mcmc,
               file.path(path, "mc_bacon_ensemble.txt"),
               col.names = FALSE,
               row.names = FALSE)
-  write.csv(cbind(sample_id, bacon_age[, 2:4], bacon_age_75[, 3:4]),
+  chronology <- cbind(sample_id, bacon_age, bacon_age_75[, 3:4])
+  colnames(chronology)[2] <- "depths"
+  write.csv(chronology,
             file.path(path, "bacon_chronology.csv"),
             row.names = FALSE)
 
+  if (nrow(unknown_age) > 0) {
+    core$col <- "#E69F00"
+    unknown_age$col <- "#56B4E9"
+    core <- rbind(core, unknown_age)
+    print(core)
+  }
+  out <- rbacon::Bacon.hist(core$depth)
+  core$age <- out[, 3]
   pdf(file.path(path, "final_age_model.pdf"), 6, 4)
-  matplot(x = bacon_age[, 2],
-          y = bacon_age[, 1] * 10,
+  matplot(y = bacon_age[, 2],
+          x = bacon_age[, 1] * 10,
           col = "black",
           lty = 1,
           type = "l",
           lwd = 1,
-          ylim = c(max(depth_eval * 10), 0),
-          xlab = "Age [yrs BP]",
-          ylab = "Depth from top [mm]")
-  lines(x = bacon_age[, 3] + bacon_age[, 2],
-        y = bacon_age[, 1] * 10,
+          xlim = c(0, max(depth_eval * 10)),
+          ylab = "cal Age [yrs BP]",
+          xlab = "Depth from top [mm]")
+  lines(y = bacon_age[, 3] + bacon_age[, 2],
+        x = bacon_age[, 1] * 10,
         lty = 2,
         col = "red")
-  lines(x = bacon_age[, 2] - bacon_age[, 4],
-        y = bacon_age[, 1] * 10,
+  lines(y = bacon_age[, 2] - bacon_age[, 4],
+        x = bacon_age[, 1] * 10,
         lty = 2,
         col = "red")
-  points(x = core[, 2],
-    y = core[, 4] * 10,
+  points(y = core[, 2],
+    x = core[, 4] * 10,
     lty = 2,
-    col = "orange",
+    col = core$col,
     pch = 4)
-  arrows(core[, 2] - core[, 3],
-         core[, 4] * 10,
-         core[, 2] + core[, 3],
-         core[, 4] * 10,
+  arrows(y0 = core[, 2] - core[, 3],
+         x0 = core[, 4] * 10,
+         y1 = core[, 2] + core[, 3],
+         x1 = core[, 4] * 10,
          length = 0.05,
          angle = 90,
          code = 3,
-         col = "orange"
+         col = core$col
   )
   if (!plyr::empty(data.frame(hiatus_tb))) {
     abline(h = hiatus_tb[, 2] * 10,
