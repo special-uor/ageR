@@ -39,14 +39,19 @@ for (site in sites_of_interest) {
     dplyr::mutate(cc = ifelse(is.na(Error) | depth == 0, 0, 1)) %>%
     dplyr::select(labID, age, error, depth, cc)
 
+  idx <- c()
   not_used_dates <- NULL
-
+  depths0 <- all_sites_pollen %>%
+    dplyr::filter(Site.Name == site) %>%
+    dplyr::select(Depth..cm.)
+  depths0 <- depths0[, 1]
   # Find corresponding depths file: depths/<ENTITY>_depths.txt
   depths_filepath <- paste0(file.path(wdir, "depths/"),
                             toupper(gsub(" ", "_", ageR:::cln_str(site))),
                             "_depths.txt")
 
-  if (file.exists(depths_filepath)) {
+  # if (file.exists(depths_filepath)) {
+  if (length(depths0) > 0) {
     message(paste0("Processing: ", site))
     # depths <- matrix(read.taAble(depths_filepath,
     #                             col.names = ""))[[1]]
