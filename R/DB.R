@@ -28,14 +28,6 @@ open_conn_mysql <- function(dbname,
                               dbname = dbname,
                               host = host,
                               port = port)
-  # Create connection
-  # convert <- DBI::dbConnect(odbc::odbc(),
-  #                           driver   = "/usr/local/lib/psqlodbcw.so",
-  #                           database = "idep96v2",
-  #                           UID      = rstudioapi::askForPassword("Database user"),
-  #                           PWD      = rstudioapi::askForPassword("Database password"),
-  #                           server   = "localhost",
-  #                           Port     = 5432)
   return(conn)
 }
 
