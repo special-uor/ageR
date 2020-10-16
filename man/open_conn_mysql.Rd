@@ -30,9 +30,9 @@ conn <- open_conn_mysql("sys", "root")
 
 }
 \seealso{
-Other DB: 
+Other DB functions: 
 \code{\link{close_conn}()},
 \code{\link{select_all}()},
 \code{\link{select_query_mysql}()}
 }
-\concept{DB}
+\concept{DB functions}

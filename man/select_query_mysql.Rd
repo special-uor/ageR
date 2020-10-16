@@ -27,9 +27,9 @@ close_conn(conn)
 }
 }
 \seealso{
-Other DB: 
+Other DB functions: 
 \code{\link{close_conn}()},
 \code{\link{open_conn_mysql}()},
 \code{\link{select_all}()}
 }
-\concept{DB}
+\concept{DB functions}
