@@ -1,54 +1,35 @@
 #' Age model function for Bacon.
 #'
-#' @importFrom grDevices dev.off
-#' @importFrom grDevices pdf
-#' @importFrom graphics abline
-#' @importFrom graphics arrows
-#' @importFrom graphics lines
-#' @importFrom graphics matplot
-#' @importFrom graphics points
-#' @importFrom stats lm
-#' @importFrom utils read.csv
-#' @importFrom utils read.table
-#' @importFrom utils write.csv
-#' @importFrom utils write.table
-#'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
 #' @param postbomb Postbomb curve.
 #' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
-#' @param ... Optional parameters for \code{link[rbacon::Bacon]{rbacon::Bacon}}.
+#' @param acc_step Accumulation rate step. Use to calculate alternative
+#'     scenarios.
+#' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #'
-#' @return Saves MC ensemble, bacon_chronology and AM plot.
-#'
+#' @return
 #' @export
 #'
-#' @references
-#' Blauuw, M. et al., Bayesian Analysis 6, 457-474 (2011)
-#'
-#' Blauuw, M. et al., rbacon (2019), R package version 2.3.9.1
-#'
-#' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
-#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
-#' \url{https://doi.org/10.5194/essd-2020-39},
-#' \url{https://github.com/paleovar/SISAL.AM}
-runBacon <- function(wdir,
-                     entity,
-                     postbomb = 0,
-                     cc = 0,
-                     alt_depths = NULL,
-                     quiet = FALSE,
-                     ...) {
+#' @examples
+Bacon <- function(wdir,
+                  entity,
+                  postbomb = 0,
+                  cc = 0,
+                  alt_depths = NULL,
+                  quiet = FALSE,
+                  acc_step = 5,
+                  ...) {
   msg("Checking input files", quiet)
   check_files(wdir, entity)
   msg("Loading input files", quiet)
   path <- file.path(wdir, entity, 'Bacon_runs', entity)
-  depth_eval <- matrix(read.table(file.path(path,
-                                            paste0(entity, "_depths.txt")),
-                                  col.names = ""))[[1]]
-  sample_id <-  read.csv(file.path(path, paste0(entity, "_sample_ids.csv")),
+  depths_eval <- matrix(read.table(file.path(path,
+                                             paste0(entity, "_depths.txt")),
+                                   col.names = ""))[[1]]
+  sample_ids <-  read.csv(file.path(path, paste0(entity, "_sample_ids.csv")),
                          header = TRUE,
                          stringsAsFactors = FALSE,
                          colClasses = c("numeric"))
@@ -69,10 +50,10 @@ runBacon <- function(wdir,
   ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
   ballpacc <- abs(accMean - ballpacc)
   ballpacc <- ballpacc[ballpacc > 0]
-  accMean <- accMean[order(ballpacc)[1]]
+  accMean <- sce_seq(accMean[order(ballpacc)[1]], step = acc_step)
 
-  k <- seq(floor(min(depth_eval, na.rm = TRUE)),
-           ceiling(max(depth_eval, na.rm = TRUE)),
+  k <- seq(floor(min(depths_eval, na.rm = TRUE)),
+           ceiling(max(depths_eval, na.rm = TRUE)),
            by = 5)
   if (k[1] < 10) {
     thickness <- pretty(5 * (k/10), 10)
@@ -86,6 +67,103 @@ runBacon <- function(wdir,
   j <- 2000
   tho <- c()
 
+  # Create subfolders for each scenario
+  scenarios <- data.frame(acc.mean = accMean,
+                          thick = thickness)
+  print(scenarios)
+
+  # Run scenarios in parallel
+  idx <- 1:10
+  # foreach (i = idx) %do% {
+  #   runBacon(wdir = wdir,
+  #            entity = entity,
+  #            postbomb = postbomb,
+  #            cc = cc,
+  #            alt_depths = alt_depths,
+  #            quiet = quiet,
+  #            depths_eval = depths_eval,
+  #            hiatus_tb = hiatus_tbL,
+  #            sample_ids = sample_ids,
+  #            coredir = coredir,
+  #            acc.mean = 20,
+  #            ssize = 2000,
+  #            th0 = c(),
+  #            ...)
+  # }
+}
+
+#' Run Bacon.
+#'
+#' @importFrom grDevices dev.off
+#' @importFrom grDevices pdf
+#' @importFrom graphics abline
+#' @importFrom graphics arrows
+#' @importFrom graphics lines
+#' @importFrom graphics matplot
+#' @importFrom graphics points
+#' @importFrom stats lm
+#' @importFrom utils read.csv
+#' @importFrom utils read.table
+#' @importFrom utils write.csv
+#' @importFrom utils write.table
+#'
+#' @param wdir Path where input files are stored.
+#' @param entity Name of the entity.
+#' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages.
+#'     0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3
+#' @param cc Calibration curve.
+#' @param alt_depths List of arrays with new depths.
+#' @param quiet Boolean to hide status messages.
+#' @param depths_eval Numeric array with the sampling depths.
+#' @param hiatus_tb Data frame containing information of hiatuses.
+#' @param sample_ids Numeric array with IDs for the sampling depths.
+#' @param coredir Folder where the core's files core are and/or will be located.
+#' @param acc.mean The accumulation rate prior consists of a gamma distribution
+#'     with two parameters. Its mean is set by acc.mean (default
+#'     acc.mean=20 yr/cm (or whatever age or depth units are chosen), which can
+#'     be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
+#'     Multiple values can be given in case of hiatuses or boundaries, e.g.,
+#'     Bacon(hiatus.depths=23, acc.mean=c(5,20)).
+#' @param ssize The approximate amount of iterations to store at the end of the
+#'     MCMC run. Default 2000; decrease for faster (but less reliable) runs or
+#'     increase for cores where the MCMC mixing (panel at upper-left corner of
+#'     age-model graph) appears problematic.
+#' @param th0 Starting years for the MCMC iterations.
+#' @param thick Bacon will divide the core into sections of equal thickness
+#'     specified by \code{thick} (default \code{thick = 5}).
+#' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+#'
+#' @return Saves MC ensemble, bacon_chronology and AM plot.
+#'
+#' @references
+#' Blauuw, M. et al., Bayesian Analysis 6, 457-474 (2011)
+#'
+#' Blauuw, M. et al., rbacon (2019), R package version 2.3.9.1
+#'
+#' Comas-Bru, L. et al., SISALv2: A comprehensive speleothem isotope database
+#' with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
+#' \url{https://doi.org/10.5194/essd-2020-39},
+#' \url{https://github.com/paleovar/SISAL.AM}
+#'
+#' @keywords internal
+runBacon <- function(wdir,
+                     entity,
+                     postbomb = 0,
+                     cc = 0,
+                     alt_depths = NULL,
+                     quiet = FALSE,
+                     depths = NULL,
+                     hiatus_tb = NULL,
+                     sample_ids = NULL,
+                     coredir = NULL,
+                     acc.mean = 20,
+                     ssize = 2000,
+                     th0 = c(),
+                     thick = 5,
+                     ...) {
+  if (is.null(core_dir))
+    core_dir <- file.path(wdir, entity, "Bacon_runs")
+
   msg("Running Bacon", quiet)
   if (nrow(hiatus_tb) == 0) {
     tryCatch({
@@ -93,16 +171,16 @@ runBacon <- function(wdir,
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
-                    coredir = file.path(wdir, entity, "Bacon_runs"),
+                    coredir = coredir,
                     depths.file = TRUE,
-                    thick = thickness,
-                    acc.mean = accMean,
+                    thick = thick,
+                    acc.mean = acc.mean,
                     postbomb = postbomb,
                     cc = cc,
                     suggest = FALSE,
                     ask = FALSE,
-                    ssize = j,
-                    th0 = tho,
+                    ssize = ssize,
+                    th0 = th0,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
@@ -176,24 +254,24 @@ runBacon <- function(wdir,
   }
 
   msg("Saving results", quiet)
-  bacon_mcmc <- sapply(depth_eval, rbacon::Bacon.Age.d)
+  bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
   # 95% CI
-  bacon_age <- get_bacon_median_quantile(depth_eval,
+  bacon_age <- get_bacon_median_quantile(depths_eval,
                                          hiatus_tb,
                                          bacon_mcmc,
                                          q1 = 0.05,
                                          q2 = 0.95)
   colnames(bacon_age)[3:4] <- paste0("uncert_", c(5, 95))
   # 75% CI
-  bacon_age_75 <- get_bacon_median_quantile(depth_eval,
+  bacon_age_75 <- get_bacon_median_quantile(depths_eval,
                                             hiatus_tb,
                                             bacon_mcmc,
                                             q1 = 0.25,
                                             q2 = 0.75)
   colnames(bacon_age_75)[3:4] <- paste0("uncert_", c(25, 75))
-  bacon_mcmc <- rbind(depth_eval, bacon_mcmc)
+  bacon_mcmc <- rbind(depths_eval, bacon_mcmc)
   bacon_mcmc <- t(bacon_mcmc)
-  bacon_mcmc <- cbind(sample_id, bacon_mcmc)
+  bacon_mcmc <- cbind(sample_ids, bacon_mcmc)
 
   h <- cbind(hiatus_tb,
              matrix(NA,
@@ -204,13 +282,13 @@ runBacon <- function(wdir,
   bacon_mcmc <- rbind(bacon_mcmc, h)
   bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[, 2]), ]
 
-  sample_id <- bacon_mcmc[, 1]
+  sample_ids <- bacon_mcmc[, 1]
 
   write.table(bacon_mcmc,
               file.path(path, "mc_bacon_ensemble.txt"),
               col.names = FALSE,
               row.names = FALSE)
-  chronology <- cbind(sample_id, bacon_age, bacon_age_75[, 3:4])
+  chronology <- cbind(sample_ids, bacon_age, bacon_age_75[, 3:4])
   colnames(chronology)[2] <- "depths"
   write.csv(chronology,
             file.path(path, "bacon_chronology.csv"),
@@ -245,10 +323,10 @@ runBacon <- function(wdir,
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(core))) +
     ggplot2::labs(x = "Depth from top [mm]",
                   y = "cal Age [yrs BP]") +
-    # ggplot2::coord_cartesian(xlim = c(0, max(depth_eval * 10))) +
-    # ggplot2::coord_cartesian(xlim = c(0, max(depth_eval * 10)),
+    # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10))) +
+    # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10)),
     #                          ylim = c(0, max(df$q95))) +
-    # ggplot2::scale_x_continuous(limits = c(0, max(depth_eval * 10))) +
+    # ggplot2::scale_x_continuous(limits = c(0, max(depths_eval * 10))) +
     # ggplot2::scale_y_continuous(limits = c(0, max(df$q95))) +
     ggplot2::theme_bw()
   ggplot2::ggsave(file.path(path, "final_age_model_alt.pdf"),
@@ -262,7 +340,7 @@ runBacon <- function(wdir,
           lty = 1,
           type = "l",
           lwd = 1,
-          xlim = c(0, max(depth_eval * 10)),
+          xlim = c(0, max(depths_eval * 10)),
           ylab = "cal Age [yrs BP]",
           xlab = "Depth from top [mm]")
   lines(y = bacon_age[, 3] + bacon_age[, 2],
