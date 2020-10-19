@@ -2,7 +2,7 @@
 % Please edit documentation in R/ageR.R
 \name{runBacon}
 \alias{runBacon}
-\title{Age model function for Bacon.}
+\title{Run Bacon.}
 \usage{
 runBacon(
   wdir,
@@ -11,6 +11,14 @@ runBacon(
   cc = 0,
   alt_depths = NULL,
   quiet = FALSE,
+  depths = NULL,
+  hiatus_tb = NULL,
+  sample_ids = NULL,
+  coredir = NULL,
+  acc.mean = 20,
+  ssize = 2000,
+  th0 = c(),
+  thick = 5,
   ...
 )
 }
@@ -19,7 +27,8 @@ runBacon(
 
 \item{entity}{Name of the entity.}
 
-\item{postbomb}{Postbomb curve.}
+\item{postbomb}{Use a postbomb curve for negative (i.e. postbomb) 14C ages.
+0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 
 \item{cc}{Calibration curve.}
 
@@ -27,13 +36,38 @@ runBacon(
 
 \item{quiet}{Boolean to hide status messages.}
 
-\item{...}{Optional parameters for \code{link[rbacon::Bacon]{rbacon::Bacon}}.}
+\item{hiatus_tb}{Data frame containing information of hiatuses.}
+
+\item{sample_ids}{Numeric array with IDs for the sampling depths.}
+
+\item{coredir}{Folder where the core's files core are and/or will be located.}
+
+\item{acc.mean}{The accumulation rate prior consists of a gamma distribution
+with two parameters. Its mean is set by acc.mean (default
+acc.mean=20 yr/cm (or whatever age or depth units are chosen), which can
+be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
+Multiple values can be given in case of hiatuses or boundaries, e.g.,
+Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
+
+\item{ssize}{The approximate amount of iterations to store at the end of the
+MCMC run. Default 2000; decrease for faster (but less reliable) runs or
+increase for cores where the MCMC mixing (panel at upper-left corner of
+age-model graph) appears problematic.}
+
+\item{th0}{Starting years for the MCMC iterations.}
+
+\item{thick}{Bacon will divide the core into sections of equal thickness
+specified by \code{thick} (default \code{thick = 5}).}
+
+\item{...}{Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.}
+
+\item{depths_eval}{Numeric array with the sampling depths.}
 }
 \value{
 Saves MC ensemble, bacon_chronology and AM plot.
 }
 \description{
-Age model function for Bacon.
+Run Bacon.
 }
 \references{
 Blauuw, M. et al., Bayesian Analysis 6, 457-474 (2011)
@@ -45,3 +79,4 @@ with multiple age-depth models, Earth Syst. Sci. Data Discuss (2020)
 \url{https://doi.org/10.5194/essd-2020-39},
 \url{https://github.com/paleovar/SISAL.AM}
 }
+\keyword{internal}
