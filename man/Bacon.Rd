@@ -2,7 +2,7 @@
 % Please edit documentation in R/ageR.R
 \name{Bacon}
 \alias{Bacon}
-\title{Age model function for Bacon.}
+\title{Age model function for Bacon}
 \usage{
 Bacon(
   wdir,
@@ -37,5 +37,5 @@ scenarios.}
 
 }
 \description{
-Age model function for Bacon.
+Age model function for Bacon
 }

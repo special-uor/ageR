@@ -11,9 +11,10 @@ runBacon(
   cc = 0,
   alt_depths = NULL,
   quiet = FALSE,
-  depths = NULL,
+  depths_eval = NULL,
   hiatus_tb = NULL,
   sample_ids = NULL,
+  unknown_age = NULL,
   coredir = NULL,
   acc.mean = 20,
   ssize = 2000,
@@ -36,9 +37,13 @@ runBacon(
 
 \item{quiet}{Boolean to hide status messages.}
 
+\item{depths_eval}{Numeric array with the sampling depths.}
+
 \item{hiatus_tb}{Data frame containing information of hiatuses.}
 
 \item{sample_ids}{Numeric array with IDs for the sampling depths.}
+
+\item{unknown_age}{Data frame containing information of unused ages.}
 
 \item{coredir}{Folder where the core's files core are and/or will be located.}
 
@@ -60,8 +65,6 @@ age-model graph) appears problematic.}
 specified by \code{thick} (default \code{thick = 5}).}
 
 \item{...}{Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.}
-
-\item{depths_eval}{Numeric array with the sampling depths.}
 }
 \value{
 Saves MC ensemble, bacon_chronology and AM plot.
