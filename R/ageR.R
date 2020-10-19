@@ -1,4 +1,6 @@
-#' Age model function for Bacon.
+#' Age model function for Bacon
+#'
+#' @importFrom foreach `%do%`
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -13,7 +15,7 @@
 #' @return
 #' @export
 #'
-#' @examples
+# @examples
 Bacon <- function(wdir,
                   entity,
                   postbomb = 0,
@@ -70,26 +72,49 @@ Bacon <- function(wdir,
   # Create subfolders for each scenario
   scenarios <- data.frame(acc.mean = accMean,
                           thick = thickness)
-  print(scenarios)
+  wd0 <- getwd()
+  setwd(file.path(wdir, entity))
+  for (i in seq_len(nrow(scenarios))) {
+    sce_name <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
+    print(file.path(wdir, entity, sce_name))
+    dir.create(file.path(wdir, entity, sce_name, entity),
+               showWarnings = FALSE,
+               recursive = TRUE)
+    path0 <- file.path("../../Bacon_runs", entity)
+    path1 <- file.path(sce_name, entity)
+    filenames <- paste0(entity, c(".csv", "_sample_ids.csv", "_depths.txt"))
+    . <- lapply(filenames, function(x) {
+      to <- file.path(path1, x)
+      if (file.exists(to))
+        file.remove(to)
+      . <- file.symlink(from = file.path(path0, x),
+                        to = to)
+    })
+  }
+  setwd(wd0)
 
   # Run scenarios in parallel
-  idx <- 1:10
-  # foreach (i = idx) %do% {
-  #   runBacon(wdir = wdir,
-  #            entity = entity,
-  #            postbomb = postbomb,
-  #            cc = cc,
-  #            alt_depths = alt_depths,
-  #            quiet = quiet,
-  #            depths_eval = depths_eval,
-  #            hiatus_tb = hiatus_tbL,
-  #            sample_ids = sample_ids,
-  #            coredir = coredir,
-  #            acc.mean = 20,
-  #            ssize = 2000,
-  #            th0 = c(),
-  #            ...)
-  # }
+  idx <- seq_len(nrow(scenarios))
+  foreach::foreach (i = idx) %do% {
+    coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
+    msg(coredir)
+    runBacon(wdir = wdir,
+             entity = entity,
+             postbomb = postbomb,
+             cc = cc,
+             alt_depths = alt_depths,
+             quiet = quiet,
+             depths_eval = depths_eval,
+             hiatus_tb = hiatus_tb,
+             sample_ids = sample_ids,
+             unknown_age = unknown_age,
+             coredir = coredir,
+             acc.mean = scenarios[i, 1],
+             ssize = 2000,
+             th0 = c(),
+             thick = scenarios[i, 2],
+             ...)
+  }
 }
 
 #' Run Bacon.
@@ -117,6 +142,7 @@ Bacon <- function(wdir,
 #' @param depths_eval Numeric array with the sampling depths.
 #' @param hiatus_tb Data frame containing information of hiatuses.
 #' @param sample_ids Numeric array with IDs for the sampling depths.
+#' @param unknown_age Data frame containing information of unused ages.
 #' @param coredir Folder where the core's files core are and/or will be located.
 #' @param acc.mean The accumulation rate prior consists of a gamma distribution
 #'     with two parameters. Its mean is set by acc.mean (default
@@ -152,22 +178,27 @@ runBacon <- function(wdir,
                      cc = 0,
                      alt_depths = NULL,
                      quiet = FALSE,
-                     depths = NULL,
+                     depths_eval = NULL,
                      hiatus_tb = NULL,
                      sample_ids = NULL,
+                     unknown_age = NULL,
                      coredir = NULL,
                      acc.mean = 20,
                      ssize = 2000,
                      th0 = c(),
                      thick = 5,
                      ...) {
-  if (is.null(core_dir))
-    core_dir <- file.path(wdir, entity, "Bacon_runs")
+  if (is.null(coredir))
+    coredir <- "Bacon_runs"
+    # coredir <- file.path(wdir, entity, "Bacon_runs")
+
+  # Create path variable for Bacon inputs
+  path <- file.path(wdir, entity, coredir, entity)
 
   msg("Running Bacon", quiet)
   if (nrow(hiatus_tb) == 0) {
     tryCatch({
-      pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
+      pdf(file.path(path, paste0(entity, ".pdf")),
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
@@ -184,6 +215,10 @@ runBacon <- function(wdir,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
+      . <- file.link(from = file.path(path, paste0(entity, ".pdf")),
+                     to = file.path(wdir,
+                                    entity,
+                                    paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
@@ -191,11 +226,11 @@ runBacon <- function(wdir,
     })
   } else {
     tryCatch({
-      pdf(file.path(wdir, entity, "Bacon_runs", entity, paste0(entity, ".pdf")),
+      pdf(file.path(path, paste0(entity, ".pdf")),
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
-                    coredir = file.path(wdir, entity, "Bacon_runs"),
+                    coredir = coredir,
                     depths.file = TRUE,
                     thick = thickness,
                     acc.mean = accMean ,
@@ -209,15 +244,16 @@ runBacon <- function(wdir,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
+      . <- file.link(from = file.path(path, paste0(entity, ".pdf")),
+                     to = file.path(wdir,
+                                    entity,
+                                    paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
                   file = file.path(path, "bacon_error.txt"))
     })
   }
-
-  # Create path variable for Bacon inputs
-  path <- file.path(wdir, entity, 'Bacon_runs', entity)
 
   # List alternative depth files
   alt_depth_files <- list.files(path, "*_depths.alt.txt")
@@ -294,11 +330,10 @@ runBacon <- function(wdir,
             file.path(path, "bacon_chronology.csv"),
             row.names = FALSE)
 
+  core$col <- "#E69F00"
   if (nrow(unknown_age) > 0) {
-    core$col <- "#E69F00"
     unknown_age$col <- "#56B4E9"
     core <- rbind(core, unknown_age)
-    print(core)
   }
   out <- rbacon::Bacon.hist(core$depth)
   core$age <- out[, 3]
@@ -322,7 +357,8 @@ runBacon <- function(wdir,
     # ggplot2::scale_colour_manual(values = core$col) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(core))) +
     ggplot2::labs(x = "Depth from top [mm]",
-                  y = "cal Age [yrs BP]") +
+                  y = "cal Age [yrs BP]",
+                  title = entity) +
     # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10))) +
     # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10)),
     #                          ylim = c(0, max(df$q95))) +
@@ -333,6 +369,11 @@ runBacon <- function(wdir,
                   alt_plot,
                   width = 8,
                   height = 6)
+
+  . <- file.link(from = file.path(path, "final_age_model_alt.pdf"),
+                 to = file.path(wdir,
+                                entity,
+                                paste0(entity, "_ALT-", coredir, ".pdf")))
   pdf(file.path(path, "final_age_model.pdf"), 6, 4)
   matplot(y = bacon_age[, 2],
           x = bacon_age[, 1] * 10,
