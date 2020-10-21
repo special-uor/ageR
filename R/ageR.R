@@ -1,9 +1,11 @@
 #' Age model function for Bacon
 #'
 #' @importFrom foreach `%do%`
+#' @importFrom foreach `%dopar%`
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
+#' @param cpus Number of CPUs to be used on the computation of the age models.
 #' @param postbomb Postbomb curve.
 #' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
@@ -18,6 +20,7 @@
 # @examples
 Bacon <- function(wdir,
                   entity,
+                  cpus = 1,
                   postbomb = 0,
                   cc = 0,
                   alt_depths = NULL,
@@ -94,27 +97,37 @@ Bacon <- function(wdir,
   setwd(wd0)
 
   # Run scenarios in parallel
+  # Detect the number of available CPUs
+  avail_cpus <- parallel::detectCores() - 1
+  cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
+
+  # Start parallel backend
+  cl <- parallel::makeCluster(cpus, outfile = paste0("log-", entity, ".txt"))
+  doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
-  foreach::foreach (i = idx) %do% {
+  foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
-    runBacon(wdir = wdir,
-             entity = entity,
-             postbomb = postbomb,
-             cc = cc,
-             alt_depths = alt_depths,
-             quiet = quiet,
-             depths_eval = depths_eval,
-             hiatus_tb = hiatus_tb,
-             sample_ids = sample_ids,
-             unknown_age = unknown_age,
-             coredir = coredir,
-             acc.mean = scenarios[i, 1],
-             ssize = 2000,
-             th0 = c(),
-             thick = scenarios[i, 2],
-             ...)
+    out <- runBacon(wdir = wdir,
+                    entity = entity,
+                    postbomb = postbomb,
+                    cc = cc,
+                    alt_depths = alt_depths,
+                    quiet = quiet,
+                    core = core,
+                    depths_eval = depths_eval,
+                    hiatus_tb = hiatus_tb,
+                    sample_ids = sample_ids,
+                    unknown_age = unknown_age,
+                    coredir = coredir,
+                    acc.mean = scenarios[i, 1],
+                    ssize = 2000,
+                    th0 = c(),
+                    thick = scenarios[i, 2],
+                    close.connections = FALSE,
+                    ...)
   }
+  parallel::stopCluster(cl) # Stop cluster
 }
 
 #' Run Bacon.
@@ -139,6 +152,7 @@ Bacon <- function(wdir,
 #' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
+#' @param core Data frame with the core's data.
 #' @param depths_eval Numeric array with the sampling depths.
 #' @param hiatus_tb Data frame containing information of hiatuses.
 #' @param sample_ids Numeric array with IDs for the sampling depths.
@@ -178,6 +192,7 @@ runBacon <- function(wdir,
                      cc = 0,
                      alt_depths = NULL,
                      quiet = FALSE,
+                     core = NULL,
                      depths_eval = NULL,
                      hiatus_tb = NULL,
                      sample_ids = NULL,
@@ -215,10 +230,10 @@ runBacon <- function(wdir,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
-      . <- file.link(from = file.path(path, paste0(entity, ".pdf")),
-                     to = file.path(wdir,
-                                    entity,
-                                    paste0(entity, "-", coredir, ".pdf")))
+      sym_link(from = file.path(path, paste0(entity, ".pdf")),
+               to = file.path(wdir,
+                              entity,
+                              paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
@@ -244,10 +259,10 @@ runBacon <- function(wdir,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
-      . <- file.link(from = file.path(path, paste0(entity, ".pdf")),
-                     to = file.path(wdir,
-                                    entity,
-                                    paste0(entity, "-", coredir, ".pdf")))
+      sym_link(from = file.path(path, paste0(entity, ".pdf")),
+               to = file.path(wdir,
+                              entity,
+                              paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
@@ -370,10 +385,10 @@ runBacon <- function(wdir,
                   width = 8,
                   height = 6)
 
-  . <- file.link(from = file.path(path, "final_age_model_alt.pdf"),
-                 to = file.path(wdir,
-                                entity,
-                                paste0(entity, "_ALT-", coredir, ".pdf")))
+  sym_link(from = file.path(path, "final_age_model_alt.pdf"),
+           to = file.path(wdir,
+                          entity,
+                          paste0(entity, "_ALT-", coredir, ".pdf")))
   pdf(file.path(path, "final_age_model.pdf"), 6, 4)
   matplot(y = bacon_age[, 2],
           x = bacon_age[, 1] * 10,
