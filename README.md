@@ -9,7 +9,7 @@
 
 <!-- [![](https://img.shields.io/github/languages/code-size/special-uor/ageR.svg)](https://github.com/special-uor/ageR) -->
 
-[![](https://img.shields.io/badge/devel%20version-0.1.0-yellow.svg)](https://github.com/special-uor/ageR)
+[![](https://img.shields.io/badge/devel%20version-0.1.0.900-yellow.svg)](https://github.com/special-uor/ageR)
 [![R build
 status](https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg)](https://github.com/special-uor/ageR/actions)
 [![](https://www.r-pkg.org/badges/version/ageR?color=black)](https://cran.r-project.org/package=ageR)
@@ -18,8 +18,7 @@ status](https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg)](ht
 
 The goal of ageR is to provide functions that facilitate the creation of
 age models using different data sources, including data bases, comma and
-tab separated
-files.
+tab separated files.
 
 ## Installation
 
@@ -143,5 +142,14 @@ the appropriate file structure (as shown previously).
 #### Run bacon
 
 ``` r
-ageR::runBacon(wdir = "./", entity = "X", postbomb = 0, cc = 1)
+ageR::Bacon(wdir = "./", 
+            entity = "X", 
+            # Optional parameters
+            cpus = 1,
+            postbomb = 0,
+            cc = 1,
+            alt_depths = NULL,
+            quiet = FALSE,
+            acc_step = 5,
+            ...)
 ```

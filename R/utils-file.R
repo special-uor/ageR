@@ -234,3 +234,20 @@ file_structure <- function(entity, am = "bacon") {
     warning(paste0(am, " is not a valid age model."))
   }
 }
+
+#' Create symbolic link
+#'
+#' Create symbolic link \code{to} file using the function
+#' \code{\link{file.symlink}}.
+#'
+#' @param from Source file.
+#' @param to Target file (link).
+#' @param overwrite Boolean flag that deletes existing file or link.
+#'
+#' @noRd
+#' @keywords internal
+sym_link <- function(from, to, overwrite = TRUE) {
+  if (file.exists(to) && overwrite)
+    file.remove(to)
+  . <- file.symlink(from = from, to = to)
+}

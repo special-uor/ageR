@@ -1,7 +1,7 @@
 Package: ageR
 Type: Package
 Title: Supervised Age Modelling
-Version: 0.1.0
+Version: 0.1.0.900
 Authors@R: c(
     person(given = "Roberto",
            family = "Villegas-Diaz",
@@ -19,10 +19,15 @@ Language: en-GB
 Imports:
     data.tree,
     DiagrammeR,
+    doSNOW,
     dplyr,
+    foreach,
+    ggplot2,
+    parallel,
     plyr,
     rbacon,
-    RMariaDB
+    RMariaDB,
+    scales
 Suggests:
     badger,
     hexSticker,

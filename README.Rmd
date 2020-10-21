@@ -102,5 +102,14 @@ model's name (by default is Bacon).
 
 #### Run bacon
 ```{r bacon-run, eval = FALSE}
-ageR::runBacon(wdir = "./", entity = "X", postbomb = 0, cc = 1)
+ageR::Bacon(wdir = "./", 
+            entity = "X", 
+            # Optional parameters
+            cpus = 1,
+            postbomb = 0,
+            cc = 1,
+            alt_depths = NULL,
+            quiet = FALSE,
+            acc_step = 5,
+            ...)
 ```
