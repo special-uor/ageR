@@ -10,7 +10,9 @@
 #' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
-#' @param acc_step Accumulation rate step. Use to calculate alternative
+#' @param acc_step Accumulation rate step. Used to calculate alternative
+#'     scenarios.
+#' @param thick_step Core segments thickness step. Used to calculate alternative
 #'     scenarios.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #'
@@ -26,6 +28,7 @@ Bacon <- function(wdir,
                   alt_depths = NULL,
                   quiet = FALSE,
                   acc_step = 5,
+                  thick_step = 5,
                   ...) {
   msg("Checking input files", quiet)
   check_files(wdir, entity)
@@ -69,12 +72,11 @@ Bacon <- function(wdir,
     thickness <- 5 # Default thickness
   }
 
-  j <- 2000
-  tho <- c()
+  thickness <- sce_seq(thickness)
 
   # Create subfolders for each scenario
   scenarios <- data.frame(acc.mean = accMean,
-                          thick = thickness)
+                          thick = rep(thickness, each = length(accMean)))
   wd0 <- getwd()
   setwd(file.path(wdir, entity))
   for (i in seq_len(nrow(scenarios))) {
