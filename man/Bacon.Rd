@@ -13,6 +13,10 @@ Bacon(
   alt_depths = NULL,
   quiet = FALSE,
   acc_step = 5,
+  thick_step = 5,
+  thick_lower = NULL,
+  thick_upper = NULL,
+  dry_run = FALSE,
   ...
 )
 }
@@ -31,8 +35,21 @@ Bacon(
 
 \item{quiet}{Boolean to hide status messages.}
 
-\item{acc_step}{Accumulation rate step. Use to calculate alternative
+\item{acc_step}{Accumulation rate step. Used to create alternative
 scenarios.}
+
+\item{thick_step}{Core segments thickness step. Used to create alternative
+scenarios.}
+
+\item{thick_lower}{Core segments thickness lower bound. Used to create
+alternative scenarios.}
+
+\item{thick_upper}{Core segments thickness upper bound. Used to create
+alternative scenarios.}
+
+\item{dry_run}{Boolean flag to show (\code{dry_run = TRUE}) the scenarios
+that would be run with the current set of parameters, without actually
+running them.}
 
 \item{...}{Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.}
 }
