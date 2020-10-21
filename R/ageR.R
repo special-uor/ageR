@@ -10,10 +10,14 @@
 #' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
-#' @param acc_step Accumulation rate step. Used to calculate alternative
+#' @param acc_step Accumulation rate step. Used to create alternative
 #'     scenarios.
-#' @param thick_step Core segments thickness step. Used to calculate alternative
+#' @param thick_step Core segments thickness step. Used to create alternative
 #'     scenarios.
+#' @param thick_lower Core segments thickness lower bound. Used to create
+#'     alternative scenarios.
+#' @param thick_upper Core segments thickness upper bound. Used to create
+#'     alternative scenarios.
 #' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
@@ -32,6 +36,8 @@ Bacon <- function(wdir,
                   quiet = FALSE,
                   acc_step = 5,
                   thick_step = 5,
+                  thick_lower = NULL,
+                  thick_upper = NULL,
                   dry_run = FALSE,
                   ...) {
   msg("Checking input files", quiet)
@@ -64,6 +70,7 @@ Bacon <- function(wdir,
   ballpacc <- ballpacc[ballpacc > 0]
   accMean <- sce_seq(accMean[order(ballpacc)[1]], step = acc_step)
 
+  # Calculate optimal thickness for each segment of the core
   k <- seq(floor(min(depths_eval, na.rm = TRUE)),
            ceiling(max(depths_eval, na.rm = TRUE)),
            by = 5)
@@ -76,7 +83,15 @@ Bacon <- function(wdir,
     thickness <- 5 # Default thickness
   }
 
-  thickness <- sce_seq(thickness)
+  # Create range of thickness for alternative scenarios
+  if (is.null(thick_lower))
+    thick_lower <- min(k)
+  if (is.null(thick_upper))
+    thick_upper <- max(k)
+  thickness <- sce_seq(thickness,
+                       step = thick_step,
+                       lower = thick_lower,
+                       upper = thick_upper)
 
   # Create subfolders for each scenario
   scenarios <- data.frame(acc.mean = accMean,
@@ -87,6 +102,7 @@ Bacon <- function(wdir,
     print(
       knitr::kable(scenarios, col.names = c("Accumalation rate", "Thickness"))
     )
+    message("A total of ", nrow(scenarios), " scenarios.")
     return(invisible())
   }
   wd0 <- getwd()
