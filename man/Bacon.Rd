@@ -7,6 +7,7 @@
 Bacon(
   wdir,
   entity,
+  cpus = 1,
   postbomb = 0,
   cc = 0,
   alt_depths = NULL,
@@ -19,6 +20,8 @@ Bacon(
 \item{wdir}{Path where input files are stored.}
 
 \item{entity}{Name of the entity.}
+
+\item{cpus}{Number of CPUs to be used on the computation of the age models.}
 
 \item{postbomb}{Postbomb curve.}
 

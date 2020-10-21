@@ -11,6 +11,7 @@ runBacon(
   cc = 0,
   alt_depths = NULL,
   quiet = FALSE,
+  core = NULL,
   depths_eval = NULL,
   hiatus_tb = NULL,
   sample_ids = NULL,
@@ -36,6 +37,8 @@ runBacon(
 \item{alt_depths}{List of arrays with new depths.}
 
 \item{quiet}{Boolean to hide status messages.}
+
+\item{core}{Data frame with the core's data.}
 
 \item{depths_eval}{Numeric array with the sampling depths.}
 
