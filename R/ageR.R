@@ -14,6 +14,9 @@
 #'     scenarios.
 #' @param thick_step Core segments thickness step. Used to calculate alternative
 #'     scenarios.
+#' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
+#'     that would be run with the current set of parameters, without actually
+#'     running them.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #'
 #' @return
@@ -29,6 +32,7 @@ Bacon <- function(wdir,
                   quiet = FALSE,
                   acc_step = 5,
                   thick_step = 5,
+                  dry_run = FALSE,
                   ...) {
   msg("Checking input files", quiet)
   check_files(wdir, entity)
@@ -77,6 +81,14 @@ Bacon <- function(wdir,
   # Create subfolders for each scenario
   scenarios <- data.frame(acc.mean = accMean,
                           thick = rep(thickness, each = length(accMean)))
+
+  if (dry_run) {
+    message("The following scenarios will be executed: ")
+    print(
+      knitr::kable(scenarios, col.names = c("Accumalation rate", "Thickness"))
+    )
+    return(invisible())
+  }
   wd0 <- getwd()
   setwd(file.path(wdir, entity))
   for (i in seq_len(nrow(scenarios))) {
