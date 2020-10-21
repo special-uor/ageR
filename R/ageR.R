@@ -135,7 +135,7 @@ Bacon <- function(wdir,
   cl <- parallel::makeCluster(cpus, outfile = paste0("log-", entity, ".txt"))
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
-  foreach::foreach (i = idx) %dopar% {
+  out <- foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     out <- runBacon(wdir = wdir,
@@ -156,8 +156,38 @@ Bacon <- function(wdir,
                     thick = scenarios[i, 2],
                     close.connections = FALSE,
                     ...)
+    out
   }
   parallel::stopCluster(cl) # Stop cluster
+
+  # Remove labels
+  for (i in seq_len(length(out))) {
+    tmp <- out[[i]]
+    idx <- arrayInd(i, c(length(accMean), length(thickness)))
+    idx_x <- idx[, 1]
+    idx_y <- idx[, 2]
+    tmp$labels$x <- NULL
+    if (idx_x == 1) {
+      tmp$labels$y <- paste0("Thickness: ", thickness[idx_y], "cm")
+    } else {
+      tmp$labels$y <- NULL
+    }
+    tmp$labels$title <- paste0("Acc. Rate: ", accMean[idx_x], "yr/cm")
+    out[[i]] <- tmp
+  }
+  # out <- lapply(out, function(x) {
+  #   x$labels$x <- NULL
+  #   x$labels$y <- NULL
+  #   x
+  # })
+  pdf(file.path(wdir, paste0(entity, "-all.pdf")), width = 7 * length(accMean), height = 5 * length(thickness))
+  gridExtra::grid.arrange(grobs = out,
+                          nrow = length(thickness),
+                          top = entity,
+                          left = "cal Age [yrs BP]",
+                          bottom = "Depth from top [mm]")
+  dev.off()
+  # return(out)
 }
 
 #' Run Bacon.
@@ -419,44 +449,45 @@ runBacon <- function(wdir,
            to = file.path(wdir,
                           entity,
                           paste0(entity, "_ALT-", coredir, ".pdf")))
-  pdf(file.path(path, "final_age_model.pdf"), 6, 4)
-  matplot(y = bacon_age[, 2],
-          x = bacon_age[, 1] * 10,
-          col = "black",
-          lty = 1,
-          type = "l",
-          lwd = 1,
-          xlim = c(0, max(depths_eval * 10)),
-          ylab = "cal Age [yrs BP]",
-          xlab = "Depth from top [mm]")
-  lines(y = bacon_age[, 3] + bacon_age[, 2],
-        x = bacon_age[, 1] * 10,
-        lty = 2,
-        col = "red")
-  lines(y = bacon_age[, 2] - bacon_age[, 4],
-        x = bacon_age[, 1] * 10,
-        lty = 2,
-        col = "red")
-  points(y = core[, 2],
-    x = core[, 4] * 10,
-    lty = 2,
-    col = core$col,
-    pch = 4)
-  arrows(y0 = core[, 2] - core[, 3],
-         x0 = core[, 4] * 10,
-         y1 = core[, 2] + core[, 3],
-         x1 = core[, 4] * 10,
-         length = 0.05,
-         angle = 90,
-         code = 3,
-         col = core$col
-  )
-  if (!plyr::empty(data.frame(hiatus_tb))) {
-    abline(h = hiatus_tb[, 2] * 10,
-           col = "grey",
-           lty = 2)
-  }
-  dev.off()
+  # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
+  # matplot(y = bacon_age[, 2],
+  #         x = bacon_age[, 1] * 10,
+  #         col = "black",
+  #         lty = 1,
+  #         type = "l",
+  #         lwd = 1,
+  #         xlim = c(0, max(depths_eval * 10)),
+  #         ylab = "cal Age [yrs BP]",
+  #         xlab = "Depth from top [mm]")
+  # lines(y = bacon_age[, 3] + bacon_age[, 2],
+  #       x = bacon_age[, 1] * 10,
+  #       lty = 2,
+  #       col = "red")
+  # lines(y = bacon_age[, 2] - bacon_age[, 4],
+  #       x = bacon_age[, 1] * 10,
+  #       lty = 2,
+  #       col = "red")
+  # points(y = core[, 2],
+  #   x = core[, 4] * 10,
+  #   lty = 2,
+  #   col = core$col,
+  #   pch = 4)
+  # arrows(y0 = core[, 2] - core[, 3],
+  #        x0 = core[, 4] * 10,
+  #        y1 = core[, 2] + core[, 3],
+  #        x1 = core[, 4] * 10,
+  #        length = 0.05,
+  #        angle = 90,
+  #        code = 3,
+  #        col = core$col
+  # )
+  # if (!plyr::empty(data.frame(hiatus_tb))) {
+  #   abline(h = hiatus_tb[, 2] * 10,
+  #          col = "grey",
+  #          lty = 2)
+  # }
+  # dev.off()
+  return(alt_plot)
 }
 
 #' Age model function for linear regression.
