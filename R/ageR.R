@@ -1,6 +1,5 @@
 #' Age model function for Bacon
 #'
-#' @importFrom foreach `%do%`
 #' @importFrom foreach `%dopar%`
 #'
 #' @param wdir Path where input files are stored.
@@ -10,8 +9,21 @@
 #' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
-#' @param acc_step Accumulation rate step. Use to calculate alternative
+#' @param acc_step Accumulation rate step. Used to create alternative
 #'     scenarios.
+#' @param acc_lower Accumulation rate lower bound. Used to create alternative
+#'     scenarios.
+#' @param acc_upper Accumulation rate upper bound. Used to create alternative
+#'     scenarios.
+#' @param thick_step Core segments thickness step. Used to create alternative
+#'     scenarios.
+#' @param thick_lower Core segments thickness lower bound. Used to create
+#'     alternative scenarios.
+#' @param thick_upper Core segments thickness upper bound. Used to create
+#'     alternative scenarios.
+#' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
+#'     that would be run with the current set of parameters, without actually
+#'     running them.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #'
 #' @return
@@ -26,6 +38,12 @@ Bacon <- function(wdir,
                   alt_depths = NULL,
                   quiet = FALSE,
                   acc_step = 5,
+                  acc_lower = NULL,
+                  acc_upper = NULL,
+                  thick_step = 5,
+                  thick_lower = NULL,
+                  thick_upper = NULL,
+                  dry_run = FALSE,
                   ...) {
   msg("Checking input files", quiet)
   check_files(wdir, entity)
@@ -55,8 +73,12 @@ Bacon <- function(wdir,
   ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
   ballpacc <- abs(accMean - ballpacc)
   ballpacc <- ballpacc[ballpacc > 0]
-  accMean <- sce_seq(accMean[order(ballpacc)[1]], step = acc_step)
+  accMean <- sce_seq(accMean[order(ballpacc)[1]],
+                     step = acc_step,
+                     lower = acc_lower,
+                     upper = acc_upper)
 
+  # Calculate optimal thickness for each segment of the core
   k <- seq(floor(min(depths_eval, na.rm = TRUE)),
            ceiling(max(depths_eval, na.rm = TRUE)),
            by = 5)
@@ -69,17 +91,33 @@ Bacon <- function(wdir,
     thickness <- 5 # Default thickness
   }
 
-  j <- 2000
-  tho <- c()
+  # Create range of thickness for alternative scenarios
+  if (is.null(thick_lower))
+    thick_lower <- min(k)
+  if (is.null(thick_upper))
+    thick_upper <- max(k)
+  thickness <- sce_seq(thickness,
+                       step = thick_step,
+                       lower = thick_lower,
+                       upper = thick_upper)
 
   # Create subfolders for each scenario
   scenarios <- data.frame(acc.mean = accMean,
-                          thick = thickness)
+                          thick = rep(thickness, each = length(accMean)))
+
+  if (dry_run) {
+    message("The following scenarios will be executed: ")
+    print(
+      knitr::kable(scenarios, col.names = c("Accumalation rate", "Thickness"))
+    )
+    message("A total of ", nrow(scenarios), " scenarios.")
+    return(invisible())
+  }
   wd0 <- getwd()
   setwd(file.path(wdir, entity))
   for (i in seq_len(nrow(scenarios))) {
     sce_name <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    print(file.path(wdir, entity, sce_name))
+    # print(file.path(wdir, entity, sce_name))
     dir.create(file.path(wdir, entity, sce_name, entity),
                showWarnings = FALSE,
                recursive = TRUE)
@@ -105,7 +143,7 @@ Bacon <- function(wdir,
   cl <- parallel::makeCluster(cpus, outfile = paste0("log-", entity, ".txt"))
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
-  foreach::foreach (i = idx) %dopar% {
+  out <- foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     out <- runBacon(wdir = wdir,
@@ -126,8 +164,49 @@ Bacon <- function(wdir,
                     thick = scenarios[i, 2],
                     close.connections = FALSE,
                     ...)
+    out
   }
   parallel::stopCluster(cl) # Stop cluster
+
+  # Remove labels
+  for (i in seq_len(length(out))) {
+    tmp <- out[[i]]
+    idx <- arrayInd(i, c(length(accMean), length(thickness)))
+    idx_x <- idx[, 1]
+    idx_y <- idx[, 2]
+    tmp$labels$x <- NULL
+    if (idx_x == 1) {
+      tmp$labels$y <- paste0("Thickness: ", thickness[idx_y], "cm")
+    } else {
+      tmp$labels$y <- NULL
+    }
+    tmp$labels$title <- paste0("Acc. Rate: ", accMean[idx_x], "yr/cm")
+    out[[i]] <- tmp
+  }
+
+  # Create output filename
+  allplots <- paste0(entity, "_AR",
+                     ifelse(length(accMean) > 1,
+                            paste0(range(accMean), collapse = "-"),
+                            accMean), "_T",
+                     ifelse(length(thickness) > 1,
+                            paste0(range(thickness), collapse = "-"),
+                            thickness))
+
+  # Create PDF with all the plots
+  pdf(file.path(wdir, paste0(allplots, ".pdf")),
+      width = 7 * length(accMean),
+      height = 5 * length(thickness))
+  gridExtra::grid.arrange(grobs = out,
+                          nrow = length(thickness),
+                          top = entity,
+                          left = "cal Age [yrs BP]",
+                          bottom = "Depth from top [mm]")
+  dev.off()
+  save(out,
+       file = file.path(wdir, paste0(allplots, ".RData")))
+       #paste0(entity, "-plots.RData"))
+  # return(out)
 }
 
 #' Run Bacon.
@@ -205,10 +284,12 @@ runBacon <- function(wdir,
                      ...) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
-    # coredir <- file.path(wdir, entity, "Bacon_runs")
 
   # Create path variable for Bacon inputs
   path <- file.path(wdir, entity, coredir, entity)
+
+  # Create directory for plots
+  dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
   if (nrow(hiatus_tb) == 0) {
@@ -217,9 +298,9 @@ runBacon <- function(wdir,
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
-                    coredir = coredir,
-                    depths.file = TRUE,
                     thick = thick,
+                    coredir = file.path(wdir, entity, coredir),
+                    depths.file = TRUE,
                     acc.mean = acc.mean,
                     postbomb = postbomb,
                     cc = cc,
@@ -233,11 +314,13 @@ runBacon <- function(wdir,
       sym_link(from = file.path(path, paste0(entity, ".pdf")),
                to = file.path(wdir,
                               entity,
+                              "plots",
                               paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
                   file = file.path(path, "bacon_error.txt"))
+      stop(conditionMessage(e))
     })
   } else {
     tryCatch({
@@ -245,28 +328,30 @@ runBacon <- function(wdir,
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
-                    coredir = coredir,
+                    thick = thick,
+                    coredir = file.path(wdir, entity, coredir),
                     depths.file = TRUE,
-                    thick = thickness,
-                    acc.mean = accMean ,
+                    acc.mean = acc.mean,
                     postbomb = postbomb,
                     hiatus.depths = hiatus_tb[, 2],
                     cc = cc,
                     suggest = FALSE,
                     ask = FALSE,
-                    ssize = j,
-                    th0 = tho,
+                    ssize = ssize,
+                    th0 = th0,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
       sym_link(from = file.path(path, paste0(entity, ".pdf")),
                to = file.path(wdir,
                               entity,
+                              "plots",
                               paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
                   file = file.path(path, "bacon_error.txt"))
+      stop(conditionMessage(e))
     })
   }
 
@@ -388,45 +473,47 @@ runBacon <- function(wdir,
   sym_link(from = file.path(path, "final_age_model_alt.pdf"),
            to = file.path(wdir,
                           entity,
+                          "plots",
                           paste0(entity, "_ALT-", coredir, ".pdf")))
-  pdf(file.path(path, "final_age_model.pdf"), 6, 4)
-  matplot(y = bacon_age[, 2],
-          x = bacon_age[, 1] * 10,
-          col = "black",
-          lty = 1,
-          type = "l",
-          lwd = 1,
-          xlim = c(0, max(depths_eval * 10)),
-          ylab = "cal Age [yrs BP]",
-          xlab = "Depth from top [mm]")
-  lines(y = bacon_age[, 3] + bacon_age[, 2],
-        x = bacon_age[, 1] * 10,
-        lty = 2,
-        col = "red")
-  lines(y = bacon_age[, 2] - bacon_age[, 4],
-        x = bacon_age[, 1] * 10,
-        lty = 2,
-        col = "red")
-  points(y = core[, 2],
-    x = core[, 4] * 10,
-    lty = 2,
-    col = core$col,
-    pch = 4)
-  arrows(y0 = core[, 2] - core[, 3],
-         x0 = core[, 4] * 10,
-         y1 = core[, 2] + core[, 3],
-         x1 = core[, 4] * 10,
-         length = 0.05,
-         angle = 90,
-         code = 3,
-         col = core$col
-  )
-  if (!plyr::empty(data.frame(hiatus_tb))) {
-    abline(h = hiatus_tb[, 2] * 10,
-           col = "grey",
-           lty = 2)
-  }
-  dev.off()
+  # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
+  # matplot(y = bacon_age[, 2],
+  #         x = bacon_age[, 1] * 10,
+  #         col = "black",
+  #         lty = 1,
+  #         type = "l",
+  #         lwd = 1,
+  #         xlim = c(0, max(depths_eval * 10)),
+  #         ylab = "cal Age [yrs BP]",
+  #         xlab = "Depth from top [mm]")
+  # lines(y = bacon_age[, 3] + bacon_age[, 2],
+  #       x = bacon_age[, 1] * 10,
+  #       lty = 2,
+  #       col = "red")
+  # lines(y = bacon_age[, 2] - bacon_age[, 4],
+  #       x = bacon_age[, 1] * 10,
+  #       lty = 2,
+  #       col = "red")
+  # points(y = core[, 2],
+  #   x = core[, 4] * 10,
+  #   lty = 2,
+  #   col = core$col,
+  #   pch = 4)
+  # arrows(y0 = core[, 2] - core[, 3],
+  #        x0 = core[, 4] * 10,
+  #        y1 = core[, 2] + core[, 3],
+  #        x1 = core[, 4] * 10,
+  #        length = 0.05,
+  #        angle = 90,
+  #        code = 3,
+  #        col = core$col
+  # )
+  # if (!plyr::empty(data.frame(hiatus_tb))) {
+  #   abline(h = hiatus_tb[, 2] * 10,
+  #          col = "grey",
+  #          lty = 2)
+  # }
+  # dev.off()
+  return(alt_plot)
 }
 
 #' Age model function for linear regression.
