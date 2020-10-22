@@ -175,18 +175,29 @@ Bacon <- function(wdir,
     tmp$labels$title <- paste0("Acc. Rate: ", accMean[idx_x], "yr/cm")
     out[[i]] <- tmp
   }
-  # out <- lapply(out, function(x) {
-  #   x$labels$x <- NULL
-  #   x$labels$y <- NULL
-  #   x
-  # })
-  pdf(file.path(wdir, paste0(entity, "-all.pdf")), width = 7 * length(accMean), height = 5 * length(thickness))
+
+  # Create output filename
+  allplots <- paste0(entity, "_AR",
+                     ifelse(length(accMean) > 1,
+                            paste0(range(accMean), collapse = "-"),
+                            accMean), "_T",
+                     ifelse(length(thickness) > 1,
+                            paste0(range(thickness), collapse = "-"),
+                            thickness))
+
+  # Create PDF with all the plots
+  pdf(file.path(wdir, paste0(allplots, ".pdf")),
+      width = 7 * length(accMean),
+      height = 5 * length(thickness))
   gridExtra::grid.arrange(grobs = out,
                           nrow = length(thickness),
                           top = entity,
                           left = "cal Age [yrs BP]",
                           bottom = "Depth from top [mm]")
   dev.off()
+  save(out,
+       file = file.path(wdir, paste0(allplots, ".RData")))
+       #paste0(entity, "-plots.RData"))
   # return(out)
 }
 
