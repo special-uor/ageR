@@ -11,6 +11,10 @@
 #' @param quiet Boolean to hide status messages.
 #' @param acc_step Accumulation rate step. Used to create alternative
 #'     scenarios.
+#' @param acc_lower Accumulation rate lower bound. Used to create alternative
+#'     scenarios.
+#' @param acc_upper Accumulation rate upper bound. Used to create alternative
+#'     scenarios.
 #' @param thick_step Core segments thickness step. Used to create alternative
 #'     scenarios.
 #' @param thick_lower Core segments thickness lower bound. Used to create
@@ -34,6 +38,8 @@ Bacon <- function(wdir,
                   alt_depths = NULL,
                   quiet = FALSE,
                   acc_step = 5,
+                  acc_lower = NULL,
+                  acc_upper = NULL,
                   thick_step = 5,
                   thick_lower = NULL,
                   thick_upper = NULL,
@@ -67,7 +73,10 @@ Bacon <- function(wdir,
   ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
   ballpacc <- abs(accMean - ballpacc)
   ballpacc <- ballpacc[ballpacc > 0]
-  accMean <- sce_seq(accMean[order(ballpacc)[1]], step = acc_step)
+  accMean <- sce_seq(accMean[order(ballpacc)[1]],
+                     step = acc_step,
+                     lower = acc_lower,
+                     upper = acc_upper)
 
   # Calculate optimal thickness for each segment of the core
   k <- seq(floor(min(depths_eval, na.rm = TRUE)),
