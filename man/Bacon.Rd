@@ -13,6 +13,8 @@ Bacon(
   alt_depths = NULL,
   quiet = FALSE,
   acc_step = 5,
+  acc_lower = NULL,
+  acc_upper = NULL,
   thick_step = 5,
   thick_lower = NULL,
   thick_upper = NULL,
@@ -36,6 +38,12 @@ Bacon(
 \item{quiet}{Boolean to hide status messages.}
 
 \item{acc_step}{Accumulation rate step. Used to create alternative
+scenarios.}
+
+\item{acc_lower}{Accumulation rate lower bound. Used to create alternative
+scenarios.}
+
+\item{acc_upper}{Accumulation rate upper bound. Used to create alternative
 scenarios.}
 
 \item{thick_step}{Core segments thickness step. Used to create alternative
