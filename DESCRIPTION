@@ -23,6 +23,7 @@ Imports:
     dplyr,
     foreach,
     ggplot2,
+    gridExtra,
     parallel,
     plyr,
     rbacon,
