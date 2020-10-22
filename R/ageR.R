@@ -1,6 +1,5 @@
 #' Age model function for Bacon
 #'
-#' @importFrom foreach `%do%`
 #' @importFrom foreach `%dopar%`
 #'
 #' @param wdir Path where input files are stored.
@@ -109,7 +108,7 @@ Bacon <- function(wdir,
   setwd(file.path(wdir, entity))
   for (i in seq_len(nrow(scenarios))) {
     sce_name <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    print(file.path(wdir, entity, sce_name))
+    # print(file.path(wdir, entity, sce_name))
     dir.create(file.path(wdir, entity, sce_name, entity),
                showWarnings = FALSE,
                recursive = TRUE)
@@ -276,10 +275,12 @@ runBacon <- function(wdir,
                      ...) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
-    # coredir <- file.path(wdir, entity, "Bacon_runs")
 
   # Create path variable for Bacon inputs
   path <- file.path(wdir, entity, coredir, entity)
+
+  # Create directory for plots
+  dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
   if (nrow(hiatus_tb) == 0) {
@@ -288,9 +289,9 @@ runBacon <- function(wdir,
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
-                    coredir = coredir,
-                    depths.file = TRUE,
                     thick = thick,
+                    coredir = file.path(wdir, entity, coredir),
+                    depths.file = TRUE,
                     acc.mean = acc.mean,
                     postbomb = postbomb,
                     cc = cc,
@@ -304,11 +305,13 @@ runBacon <- function(wdir,
       sym_link(from = file.path(path, paste0(entity, ".pdf")),
                to = file.path(wdir,
                               entity,
+                              "plots",
                               paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
                   file = file.path(path, "bacon_error.txt"))
+      stop(conditionMessage(e))
     })
   } else {
     tryCatch({
@@ -316,28 +319,30 @@ runBacon <- function(wdir,
           width = 8,
           height = 6)
       rbacon::Bacon(core = entity,
-                    coredir = coredir,
+                    thick = thick,
+                    coredir = file.path(wdir, entity, coredir),
                     depths.file = TRUE,
-                    thick = thickness,
-                    acc.mean = accMean ,
+                    acc.mean = acc.mean,
                     postbomb = postbomb,
                     hiatus.depths = hiatus_tb[, 2],
                     cc = cc,
                     suggest = FALSE,
                     ask = FALSE,
-                    ssize = j,
-                    th0 = tho,
+                    ssize = ssize,
+                    th0 = th0,
                     plot.pdf = FALSE,
                     ...)
       dev.off()
       sym_link(from = file.path(path, paste0(entity, ".pdf")),
                to = file.path(wdir,
                               entity,
+                              "plots",
                               paste0(entity, "-", coredir, ".pdf")))
     },
     error = function(e) {
       write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
                   file = file.path(path, "bacon_error.txt"))
+      stop(conditionMessage(e))
     })
   }
 
@@ -459,6 +464,7 @@ runBacon <- function(wdir,
   sym_link(from = file.path(path, "final_age_model_alt.pdf"),
            to = file.path(wdir,
                           entity,
+                          "plots",
                           paste0(entity, "_ALT-", coredir, ".pdf")))
   # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
   # matplot(y = bacon_age[, 2],
