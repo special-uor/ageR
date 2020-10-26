@@ -1,14 +1,3 @@
-plot_log_posterior_base <- function(posterior) {
-  plot(x = seq_len(length(posterior)) - 1,
-       y = -posterior,
-       type = "l",
-       ylab = "Log of Objective",
-       xlab = "Iteration",
-       main = paste0("Variance: ", round(var(posterior), digits = 4)),
-       col = grey(0.4))
-  abline(h = -mean(posterior), col = "red")
-}
-
 #' Plot log of posterior
 #'
 #' @param posterior Posterior data.
@@ -72,6 +61,26 @@ plot_age_depth <- function(df, hiatuses = NULL) {
   return(p)
 }
 
-plot_acc_prior <- function(prior) {
-
+#' Plot prior accumulation rate
+#'
+#' @param prior Prior accumulation rate.
+#'
+#' @return \code{ggplot2} object.
+#'
+#' @keywords internal
+#' @noRd
+plot_acc_prior <- function(acc.mean = 20, acc.shape = 1.5, xlim = c(0, 3 * max(acc.mean))) {
+  p <- ggplot2::ggplot(data = data.frame(x = c(0, max(xlim))),
+                       ggplot2::aes(x)) +
+    ggplot2::stat_function(fun =
+                             function(x) {
+                               dgamma(x,
+                                      shape = acc.shape,
+                                      rate = acc.shape / acc.mean)},
+                           col = "green",
+                           lwd = 2) +
+    ggplot2::labs(x = "Acc. rate [yr/cm]",
+                  y = NULL) +
+    ggplot2::theme_bw()
+  return(p)
 }
