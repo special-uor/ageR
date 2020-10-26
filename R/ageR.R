@@ -445,26 +445,7 @@ runBacon <- function(wdir,
                    y = bacon_age[, 2],
                    q5 = bacon_age[, 2] + bacon_age[, 3],
                    q95 = bacon_age[, 2] - bacon_age[, 4])
-  alt_plot <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
-    ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
-    ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
-    ggplot2::geom_line(ggplot2::aes(x, q95), col = "red", lty = 2) +
-    ggplot2::geom_point(ggplot2::aes(depth * 10, age),
-                        data = core,
-                        fill = core$col,
-                        size = 2,
-                        shape = 24) +
-    # ggplot2::scale_colour_manual(values = core$col) +
-    ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(core))) +
-    ggplot2::labs(x = "Depth from top [mm]",
-                  y = "cal Age [yrs BP]",
-                  title = entity) +
-    # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10))) +
-    # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10)),
-    #                          ylim = c(0, max(df$q95))) +
-    # ggplot2::scale_x_continuous(limits = c(0, max(depths_eval * 10))) +
-    # ggplot2::scale_y_continuous(limits = c(0, max(df$q95))) +
-    ggplot2::theme_bw()
+  alt_plot <- plot_age_depth(df, hiatuses = hiatus_tb)
   ggplot2::ggsave(file.path(path, "final_age_model_alt.pdf"),
                   alt_plot,
                   width = 8,

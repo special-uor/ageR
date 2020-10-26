@@ -27,8 +27,48 @@ plot_log_posterior <- function(posterior) {
                   y = "Iteration",
                   title = paste0("Variance: ",
                                  round(var(posterior), digits = 4))) +
-    ggplot2::geom_hline(yintercept = -mean(posterior), colour = "red") +
+    ggplot2::geom_hline(yintercept = -mean(posterior), col = "red", lty = 2) +
     ggplot2::theme_bw()
+  return(p)
+}
+
+#' Plot Age-Depth
+#'
+#' @param df Data frame with age-depth and 95% CI interval.
+#' @param hiatuses Data frame with hiatuses depths.
+#'
+#' @return \code{ggplot2} object
+#'
+#' @keywords internal
+#' @noRd
+plot_age_depth <- function(df, hiatuses = NULL) {
+  p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
+    ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
+    ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
+    ggplot2::geom_line(ggplot2::aes(x, q95), col = "red", lty = 2) +
+    ggplot2::geom_point(ggplot2::aes(depth * 10, age),
+                        data = core,
+                        fill = core$col,
+                        size = 2,
+                        shape = 24) +
+    # ggplot2::scale_colour_manual(values = core$col) +
+    ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(core))) +
+    ggplot2::labs(x = "Depth from top [mm]",
+                  y = "cal Age [yrs BP]",
+                  title = entity) +
+    # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10))) +
+    # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10)),
+    #                          ylim = c(0, max(df$q95))) +
+    # ggplot2::scale_x_continuous(limits = c(0, max(depths_eval * 10))) +
+    # ggplot2::scale_y_continuous(limits = c(0, max(df$q95))) +
+    ggplot2::theme_bw()
+  if (!is.null(hiatuses))
+    for (i in seq_len(nrow(hiatuses))) {
+      p <- p +
+        ggplot2::geom_vline(xintercept = hiatuses[i, 2] * 10,
+                            col = "grey",
+                            lty = 2)
+    }
   return(p)
 }
 
