@@ -431,7 +431,7 @@ runBacon <- function(wdir,
             row.names = FALSE)
 
   core$col <- "#E69F00"
-  if (nrow(unknown_age) > 0) {
+  if (!is.null(unknown_age) && nrow(unknown_age) > 0) {
     unknown_age$col <- "#56B4E9"
     core <- rbind(core, unknown_age)
   }
@@ -475,6 +475,8 @@ runBacon <- function(wdir,
                           entity,
                           "plots",
                           paste0(entity, "_ALT-", coredir, ".pdf")))
+  # set <- get('info')
+  # return(set)
   # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
   # matplot(y = bacon_age[, 2],
   #         x = bacon_age[, 1] * 10,
