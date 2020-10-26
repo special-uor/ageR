@@ -445,7 +445,10 @@ runBacon <- function(wdir,
                    y = bacon_age[, 2],
                    q5 = bacon_age[, 2] + bacon_age[, 3],
                    q95 = bacon_age[, 2] - bacon_age[, 4])
-  alt_plot <- plot_age_depth(df, hiatuses = hiatus_tb)
+  alt_plot <- plot_age_depth(df,
+                             core = core,
+                             entity = entity,
+                             hiatuses = hiatus_tb)
   ggplot2::ggsave(file.path(path, "final_age_model_alt.pdf"),
                   alt_plot,
                   width = 8,
