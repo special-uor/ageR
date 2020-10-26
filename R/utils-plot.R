@@ -68,25 +68,54 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #' @param acc.mean Accumulation rate mean.
 #' @param acc.shape Accumulation rate shape.
 #' @param xlim X-axis limits.
-#'
+#' @param standalone Boolean flag to indicate whether or not the plot is a
+#'     layer for another plot or standalone.
+#' @param xlab \code{x}-axis label.
+#' @param ylab \code{y}-axis label.
+#' @param title Plot title.
+#' @param col Prior curve colour.
+#' @param lwd Curve thickness.
+#' @param ... Optional parameters for
+#'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
 #' @return \code{ggplot2} object.
 #'
 #' @keywords internal
 #' @noRd
 plot_acc_prior <- function(acc.mean = 20,
                            acc.shape = 1.5,
-                           xlim = c(0, 3 * max(acc.mean))) {
-  p <- ggplot2::ggplot(data = data.frame(x = c(0, max(xlim))),
-                       ggplot2::aes(x)) +
-    ggplot2::stat_function(fun =
-                             function(x) {
-                               dgamma(x,
-                                      shape = acc.shape,
-                                      rate = acc.shape / acc.mean)},
+                           xlim = c(0, 3 * max(acc.mean)),
+                           standalone = TRUE,
+                           xlab = "Acc. rate [yr/cm]",
+                           ylab = NULL,
+                           title = NULL,
                            col = "green",
-                           lwd = 2) +
-    ggplot2::labs(x = "Acc. rate [yr/cm]",
-                  y = NULL) +
-    ggplot2::theme_bw()
+                           lwd = 2,
+                           ...) {
+  if (!standalone) {
+    p <- ggplot2::stat_function(fun =
+                                  function(x) {
+                                    dgamma(x,
+                                           shape = acc.shape,
+                                           rate = acc.shape / acc.mean)},
+                                col = col,
+                                lwd = lwd,
+                                ...)
+  } else {
+    p <- ggplot2::ggplot(data = data.frame(x = c(0, max(xlim))),
+                         ggplot2::aes(x)) +
+      ggplot2::stat_function(fun =
+                               function(x) {
+                                 dgamma(x,
+                                        shape = acc.shape,
+                                        rate = acc.shape / acc.mean)},
+                             col = col,
+                             lwd = lwd,
+                             ...) +
+      ggplot2::labs(x = xlab,
+                    y = ylab,
+                    title = title) +
+      ggplot2::theme_bw()
+  }
   return(p)
 }
+
