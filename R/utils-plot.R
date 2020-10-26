@@ -6,7 +6,7 @@
 #'
 #' @keywords internal
 #' @noRd
-plot_log_posterior <- function(posterior) {
+plot_log_post <- function(posterior) {
   df <- data.frame(x = seq_len(length(posterior)) - 1,
                    y = -posterior)
   p <- ggplot2::ggplot(data = df, ggplot2::aes(x = x, y = y)) +
@@ -24,13 +24,15 @@ plot_log_posterior <- function(posterior) {
 #' Plot Age-Depth
 #'
 #' @param df Data frame with age-depth and 95% CI interval.
+#' @param core Data frame with the core data.
+#' @param entity Entity name.
 #' @param hiatuses Data frame with hiatuses depths.
 #'
 #' @return \code{ggplot2} object
 #'
 #' @keywords internal
 #' @noRd
-plot_age_depth <- function(df, hiatuses = NULL) {
+plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
   p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
     ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
     ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
@@ -63,13 +65,17 @@ plot_age_depth <- function(df, hiatuses = NULL) {
 
 #' Plot prior accumulation rate
 #'
-#' @param prior Prior accumulation rate.
+#' @param acc.mean Accumulation rate mean.
+#' @param acc.shape Accumulation rate shape.
+#' @param xlim X-axis limits.
 #'
 #' @return \code{ggplot2} object.
 #'
 #' @keywords internal
 #' @noRd
-plot_acc_prior <- function(acc.mean = 20, acc.shape = 1.5, xlim = c(0, 3 * max(acc.mean))) {
+plot_acc_prior <- function(acc.mean = 20,
+                           acc.shape = 1.5,
+                           xlim = c(0, 3 * max(acc.mean))) {
   p <- ggplot2::ggplot(data = data.frame(x = c(0, max(xlim))),
                        ggplot2::aes(x)) +
     ggplot2::stat_function(fun =
