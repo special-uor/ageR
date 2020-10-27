@@ -66,5 +66,7 @@ test_data <-list(sample_depths = data.frame(id = 1:100,
                                    age = c(720, 2700, 4660),
                                    error = c(70, 50, 110),
                                    depth = c(83, 212, 418)))
+\dontrun{
 ageR::create_input(test_data, getwd(), "Reading")
+}
 }

@@ -63,7 +63,8 @@ running them.}
 \item{...}{Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.}
 }
 \value{
-
+List with \code{ggplot2} objects and summary statistics of all the
+    scenarios computed.
 }
 \description{
 Age model function for Bacon
