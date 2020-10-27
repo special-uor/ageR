@@ -88,8 +88,8 @@ plot_acc_prior <- function(acc.mean = 20,
                            xlab = "Acc. rate [yr/cm]",
                            ylab = NULL,
                            title = NULL,
-                           col = "green",
-                           lwd = 2,
+                           col = "#00CC00",
+                           lwd = 1.5,
                            ...) {
   if (!standalone) {
     p <- ggplot2::stat_function(fun =
@@ -119,3 +119,62 @@ plot_acc_prior <- function(acc.mean = 20,
   return(p)
 }
 
+
+#' Plot accumulation rate posterior
+#'
+#' @param K Number of sections in the core.
+#' @param output Last MCMC output.
+#' @param acc.mean Accumulation rate mean.
+#' @param acc.shape Accumulation rate shape.
+#' @param hiatuses Data frame with hiatus depths.
+#' @param standalone Boolean flag to indicate whether or not the plot is a
+#'     layer for another plot or standalone.
+#'
+#' @return \code{ggplot2} object.
+#'
+#' @keywords internal
+#' @noRd
+plot_acc_post <- function(K,
+                          output,
+                          acc.mean = 20,
+                          acc.shape = 1.5,
+                          hiatuses = NULL,
+                          standalone = TRUE) {
+  idx <- 2:(K - 1)
+  post <- c()
+  for (i in idx)
+    post <- c(post, output[[i]])
+  post <- density(post, from = 0)
+  post <- cbind(c(0, post$x, max(post$x)), c(0, post$y, 0))
+  maxprior <- dgamma(x = (acc.shape - 1) / (acc.shape / acc.mean),
+                     shape = acc.shape,
+                     rate = acc.shape / acc.mean)
+  if (is.infinite(max(maxprior))) {
+    max.y <- max(post[, 2])
+  } else {
+    max.y <- max(maxprior, post[, 2])
+  }
+
+  df <- data.frame(x = post[, 1], y = post[, 2])
+  df$prior <- dgamma(x = df$x,
+                     shape = acc.shape,
+                     rate = acc.shape / acc.mean)
+  if (standalone) {
+    p <- ggplot2::ggplot(data = df, ggplot2::aes(x, y)) +
+      ggplot2::geom_area(alpha = 0.7) +
+      ggplot2::geom_line() +
+      # plot_acc_prior(acc.mean, acc.shape, standalone = FALSE) +
+      ggplot2::labs(x = "Acc. rate [yr/cm]",
+                    y = NULL) +
+      ggplot2::theme_bw()
+    # print(p)
+    # colnames(df)[2] <- "observed"
+    # return(df)
+  } else {
+    p <- ggplot2::ggplot(data = df, ggplot2::aes(x, y)) +
+      ggplot2::geom_area(alpha = 0.7) +
+      ggplot2::geom_line()
+  }
+  colnames(df)[2] <- "post"
+  return(list(plot = p, data = df))
+}
