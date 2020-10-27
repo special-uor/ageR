@@ -29,7 +29,8 @@ Bacon(
 
 \item{cpus}{Number of CPUs to be used on the computation of the age models.}
 
-\item{postbomb}{Postbomb curve.}
+\item{postbomb}{Use a postbomb curve for negative (i.e. postbomb) 14C ages.
+0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 
 \item{cc}{Calibration curve.}
 
