@@ -88,8 +88,8 @@ plot_acc_prior <- function(acc.mean = 20,
                            xlab = "Acc. rate [yr/cm]",
                            ylab = NULL,
                            title = NULL,
-                           col = "green",
-                           lwd = 2,
+                           col = "#00CC00",
+                           lwd = 1.5,
                            ...) {
   if (!standalone) {
     p <- ggplot2::stat_function(fun =
@@ -119,3 +119,163 @@ plot_acc_prior <- function(acc.mean = 20,
   return(p)
 }
 
+
+#' Plot accumulation rate posterior
+#'
+#' @param K Number of sections in the core.
+#' @param output Last MCMC output.
+#' @param acc.mean Accumulation rate mean.
+#' @param acc.shape Accumulation rate shape.
+#' @param hiatuses Data frame with hiatus depths.
+#' @param standalone Boolean flag to indicate whether or not the plot is a
+#'     layer for another plot or standalone.
+#'
+#' @return List with \code{ggplot2} object and data frame with posterior and
+#'     prior values.
+#'
+#' @keywords internal
+#' @noRd
+plot_acc_post <- function(K,
+                          output,
+                          acc.mean = 20,
+                          acc.shape = 1.5,
+                          hiatuses = NULL,
+                          standalone = TRUE) {
+  idx <- 2:(K - 1)
+  post <- c()
+  for (i in idx)
+    post <- c(post, output[[i]])
+  post <- density(post, from = 0)
+  post <- cbind(c(0, post$x, max(post$x)), c(0, post$y, 0))
+  maxprior <- dgamma(x = (acc.shape - 1) / (acc.shape / acc.mean),
+                     shape = acc.shape,
+                     rate = acc.shape / acc.mean)
+  if (is.infinite(max(maxprior))) {
+    max.y <- max(post[, 2])
+  } else {
+    max.y <- max(maxprior, post[, 2])
+  }
+
+  df <- data.frame(x = post[, 1], y = post[, 2])
+  df$prior <- dgamma(x = df$x,
+                     shape = acc.shape,
+                     rate = acc.shape / acc.mean)
+  if (standalone) {
+    p <- ggplot2::ggplot(data = df, ggplot2::aes(x, y)) +
+      ggplot2::geom_area(alpha = 0.7) +
+      ggplot2::geom_line() +
+      # plot_acc_prior(acc.mean, acc.shape, standalone = FALSE) +
+      ggplot2::labs(x = "Acc. rate [yr/cm]",
+                    y = NULL) +
+      ggplot2::theme_bw()
+    # print(p)
+    # colnames(df)[2] <- "observed"
+    # return(df)
+  } else {
+    p <- ggplot2::ggplot(data = df, ggplot2::aes(x, y)) +
+      ggplot2::geom_area(alpha = 0.7) +
+      ggplot2::geom_line()
+  }
+  colnames(df)[2] <- "post"
+  return(list(plot = p, data = df))
+}
+
+#' Plot accumulation rate
+#'
+#' Plot accumulation rate prior and posterior.
+#'
+#' @param K Number of sections in the core.
+#' @param output Last MCMC output.
+#' @param acc.mean Accumulation rate mean.
+#' @param acc.shape Accumulation rate shape.
+#' @param hiatuses Data frame with hiatus depths.
+#' @param plot Boolean flag to indicate whether a plot should be generated or
+#'     just return a data frame with posterior and prior values.
+#' @param xlab \code{x}-axis label.
+#' @param ylab \code{y}-axis label.
+#' @param title Plot title.
+#' @param ... Optional parameters for
+#'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
+#'
+#' @return List with \code{ggplot2} object and data frame with posterior and
+#'     prior values.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' out <- read.table("Bacon_runs/core/core_K.out")
+#' plot_acc(out$K, out$output)
+#' }
+plot_acc <- function(K,
+                     output,
+                     acc.mean = 20,
+                     acc.shape = 1.5,
+                     hiatuses = NULL,
+                     plot = TRUE,
+                     xlab = "Acc. rate [yr/cm]",
+                     ylab = NULL,
+                     title = NULL,
+                     ...) {
+  out <- plot_acc_post(K, output, acc.mean, acc.shape, hiatuses, FALSE)
+  p <- out$plot +
+    plot_acc_prior(acc.mean, acc.shape, standalone = FALSE, ...) +
+    ggplot2::labs(x = xlab,
+                  y = ylab,
+                  title = title) +
+    ggplot2::theme_bw()
+  if (plot)
+    print(p)
+  return(list(plot = p, data = out$data))
+}
+
+#' Plot area between curves
+#'
+#' Plot area between curves, posterior and prior.
+#'
+#' @param data Data frame with posterior and prior values. This can be obtained
+#'     with \code{\link{plot_acc}}.
+#' @param fill Filling colour between curves.
+#' @param alpha Transparency value for the shaded area between curves.
+#' @param plot Boolean flag to indicate whether a plot should be generated or
+#'     just return a data frame with posterior and prior values.
+#' @param xlab \code{x}-axis label.
+#' @param ylab \code{y}-axis label.
+#' @param title Plot title.
+#' @param ... Optional parameters for
+#'     \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' out <- read.table("Bacon_runs/core/core_K.out")
+#' out <- plot_acc(out$K, out$output)
+#' plot_abc(out$data)
+#' }
+plot_abc <- function(data,
+                     fill = "#2980B9",
+                     alpha = 0.7,
+                     plot = TRUE,
+                     xlab = NULL,
+                     ylab = NULL,
+                     title = NULL,
+                     ...) {
+  auc <- sum(with(data, abs(prior - post)))
+  title <- paste0(title,
+                  ifelse(is.null(title), "", " - "),
+                  "Area between curves: ",
+                  round(auc, digits = 4))
+  p <- ggplot2::ggplot(data, ggplot2::aes(x, post)) +
+    ggplot2::geom_line(ggplot2::aes(y = post), lwd = 1) +
+    ggplot2::geom_line(ggplot2::aes(y = prior), lwd = 1) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = prior, ymax = post),
+                         fill = fill,
+                         alpha = alpha,
+                         ...) +
+    ggplot2::labs(x = xlab,
+                  y = ylab,
+                  title = title) +
+    ggplot2::theme_bw()
+  if (plot)
+    print(p)
+}
