@@ -6,7 +6,6 @@
 #' @return List with \code{ggplot2} object and variance.
 #'
 #' @keywords internal
-#' @noRd
 plot_log_post <- function(data, varp = NULL) {
   if (!is.null(varp))
     data <- data[data > mean(data) * (1 - varp) &
@@ -27,7 +26,7 @@ plot_log_post <- function(data, varp = NULL) {
 
 #' Plot Age-Depth
 #'
-#' @param df Data frame with age-depth and 95% CI interval.
+#' @param df Data frame with age-depth and 95\% CI interval.
 #' @param core Data frame with the core data.
 #' @param entity Entity name.
 #' @param hiatuses Data frame with hiatuses depths.
@@ -35,7 +34,6 @@ plot_log_post <- function(data, varp = NULL) {
 #' @return \code{ggplot2} object.
 #'
 #' @keywords internal
-#' @noRd
 plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
   p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
     ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
@@ -84,7 +82,6 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #' @return \code{ggplot2} object.
 #'
 #' @keywords internal
-#' @noRd
 plot_acc_prior <- function(acc.mean = 20,
                            acc.shape = 1.5,
                            xlim = c(0, 3 * max(acc.mean)),
@@ -138,7 +135,6 @@ plot_acc_prior <- function(acc.mean = 20,
 #'     prior values.
 #'
 #' @keywords internal
-#' @noRd
 plot_acc_post <- function(K,
                           output,
                           acc.mean = 20,
@@ -203,13 +199,14 @@ plot_acc_post <- function(K,
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
-#' @export
 #'
 #' @examples
 #' \dontrun{
 #' out <- read.table("Bacon_runs/core/core_K.out")
 #' plot_acc(out$K, out$output)
 #' }
+#'
+#' @keywords internal
 plot_acc <- function(K,
                      output,
                      acc.mean = 20,
@@ -249,7 +246,6 @@ plot_acc <- function(K,
 #'     \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.
 #'
 #' @return List with \code{ggplot2} object and area between curves (ABC).
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -257,6 +253,8 @@ plot_acc <- function(K,
 #' out <- plot_acc(out$K, out$output)
 #' plot_abc(out$data)
 #' }
+#'
+#' @keywords internal
 plot_abc <- function(data,
                      fill = "#2980B9",
                      alpha = 0.7,
@@ -300,6 +298,8 @@ plot_abc <- function(data,
 #'     \code{\link[gridExtra:grid.arrange]{gridExtra::grid.arrange}}.
 #'
 #' @return List of gridded \code{ggplot2} objects.
+#'
+#' @keywords internal
 plot_grid <- function(plots,
                       scenarios,
                       cond_x = "x",
