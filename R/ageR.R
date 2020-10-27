@@ -169,22 +169,6 @@ Bacon <- function(wdir,
   }
   parallel::stopCluster(cl) # Stop cluster
 
-  # Remove labels
-  for (i in seq_len(length(out))) {
-    tmp <- out[[i]]
-    idx <- arrayInd(i, c(length(accMean), length(thickness)))
-    idx_x <- idx[, 1]
-    idx_y <- idx[, 2]
-    tmp$labels$x <- NULL
-    if (idx_x == 1) {
-      tmp$labels$y <- paste0("Thickness: ", thickness[idx_y], "cm")
-    } else {
-      tmp$labels$y <- NULL
-    }
-    tmp$labels$title <- paste0("Acc. Rate: ", accMean[idx_x], "yr/cm")
-    out[[i]] <- tmp
-  }
-
   # Create output filename
   allplots <- paste0(entity, "_AR",
                      ifelse(length(accMean) > 1,
@@ -194,20 +178,24 @@ Bacon <- function(wdir,
                             paste0(range(thickness), collapse = "-"),
                             thickness))
 
-  # Create PDF with all the plots
-  pdf(file.path(wdir, paste0(allplots, ".pdf")),
-      width = 7 * length(accMean),
-      height = 5 * length(thickness))
-  gridExtra::grid.arrange(grobs = out,
-                          nrow = length(thickness),
-                          top = entity,
-                          left = "cal Age [yrs BP]",
-                          bottom = "Depth from top [mm]")
-  dev.off()
-  save(out,
-       file = file.path(wdir, paste0(allplots, ".RData")))
+  # Create PDF with all the plots (age-depth)
+  ggplot2::ggsave(filename = paste0(allplots, ".pdf"),
+                  plot = plot_grid(out,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   top = entity,
+                                   left = "cal Age [yrs BP]",
+                                   bottom = "Depth [mm]"),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+  # save(out,
+  #      file = file.path(wdir, paste0(allplots, ".RData")))
        #paste0(entity, "-plots.RData"))
-  # return(out)
 }
 
 #' Run Bacon.
