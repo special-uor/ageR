@@ -1,24 +1,28 @@
 #' Plot log of posterior
 #'
-#' @param posterior Posterior data.
+#' @param data Posterior data.
+#' @param varp Variance percentage threshold.
 #'
 #' @return List with \code{ggplot2} object and variance.
 #'
 #' @keywords internal
 #' @noRd
-plot_log_post <- function(posterior) {
-  df <- data.frame(x = seq_len(length(posterior)) - 1,
-                   y = -posterior)
+plot_log_post <- function(data, varp = NULL) {
+  if (!is.null(varp))
+    data <- data[data > mean(data) * (1 - varp) &
+                 data < mean(data) * (1 + varp)]
+  df <- data.frame(x = seq_len(length(data)) - 1,
+                   y = -data)
   p <- ggplot2::ggplot(data = df, ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_line(alpha = 0.7) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
     ggplot2::labs(x = "Log of Objective",
                   y = "Iteration",
                   title = paste0("Variance: ",
-                                 round(var(posterior), digits = 4))) +
-    ggplot2::geom_hline(yintercept = -mean(posterior), col = "red", lty = 2) +
+                                 round(var(data), digits = 4))) +
+    ggplot2::geom_hline(yintercept = -mean(data), col = "red", lty = 2) +
     ggplot2::theme_bw()
-  return(list(plot = p, var = var(posterior)))
+  return(list(plot = p, var = var(data)))
 }
 
 #' Plot Age-Depth
