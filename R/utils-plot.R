@@ -281,3 +281,54 @@ plot_abc <- function(data,
     print(p)
   return(list(plot = p, abc = abc))
 }
+
+#' Create grid of plots
+#'
+#' Create grid of \code{ggplot2} objects, based on a data frame with scenarios.
+#'
+#' @param plots List with \code{ggplot2} objects.
+#' @param scenarios Data frame with scenarios, must contain only 2 variables.
+#' @param cond_x Condition on the \code{x}-axis.
+#' @param cond_y Condition on the \code{y}-axis.
+#' @param cond_x_units Units for condition on the \code{x}-axis.
+#' @param cond_y_units Units for condition on the \code{y}-axis.
+#' @param ... Optional parameters for
+#'     \code{\link[gridExtra:grid.arrange]{gridExtra::grid.arrange}}.
+#'
+#' @return List of gridded \code{ggplot2} objects.
+plot_grid <- function(plots,
+                      scenarios,
+                      cond_x = "x",
+                      cond_y = "y",
+                      cond_x_units = NULL,
+                      cond_y_units = NULL,
+                      ...) {
+  # Extract unique labels that make each scenario combination
+  labels_cond_x <- unique(scenarios[, 1])
+  labels_cond_y <- unique(scenarios[, 2])
+  # Remove labels
+  for (i in seq_len(length(plots))) {
+    tmp <- plots[[i]]
+    idx <- arrayInd(i, c(length(labels_cond_x), length(labels_cond_y))) # length(accMean), length(thickness)))
+    idx_x <- idx[, 1]
+    idx_y <- idx[, 2]
+    tmp$labels$x <- NULL
+    if (idx_x == 1) {
+      tmp$labels$y <- paste0(cond_y,
+                             ifelse(is.null(cond_y), "", ": "),
+                             labels_cond_y[idx_y],
+                             cond_y_units)
+    } else {
+      tmp$labels$y <- NULL
+    }
+    tmp$labels$title <- paste0(cond_x,
+                               ifelse(is.null(cond_x), "", ": "),
+                               labels_cond_x[idx_x],
+                               cond_x_units)
+    plots[[i]] <- tmp
+  }
+
+  return(gridExtra::grid.arrange(grobs = plots,
+                          nrow = length(labels_cond_y),
+                          ...))
+}
