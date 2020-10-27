@@ -268,7 +268,19 @@ Bacon <- function(wdir,
               stats = df))
 }
 
-#' @export
+#' Bacon quality control
+#'
+#' @param wdir Path where input files are stored.
+#' @param entity Name of the entity.
+#' @param core Data frame with the core's data.
+#' @param coredir Folder where the core's files core are and/or will be located.
+#' @param thick Bacon will divide the core into sections of equal thickness.
+#' @param acc.mean The accumulation rate prior consists of a gamma distribution
+#'     with two parameters. This is the mean.
+#' @param acc.shape The accumulation rate prior consists of a gamma distribution
+#'     with two parameters. This is the shape.
+#'
+#' @keywords internal
 bacon_qc <- function(wdir,
                      entity,
                      core = NULL,
