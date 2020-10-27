@@ -130,7 +130,8 @@ plot_acc_prior <- function(acc.mean = 20,
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
 #'
-#' @return \code{ggplot2} object.
+#' @return List with \code{ggplot2} object and data frame with posterior and
+#'     prior values.
 #'
 #' @keywords internal
 #' @noRd
