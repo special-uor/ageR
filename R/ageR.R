@@ -196,6 +196,76 @@ Bacon <- function(wdir,
   # save(out,
   #      file = file.path(wdir, paste0(allplots, ".RData")))
        #paste0(entity, "-plots.RData"))
+
+  idx <- seq_len(nrow(scenarios))
+  accs <- list()
+  abcs <- list()
+  logs <- list()
+  df <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  for (i in idx) {
+    coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
+    msg(coredir)
+    tmp <- bacon_qc(wdir = wdir,
+                    entity = entity,
+                    coredir = coredir,
+                    thick = scenarios[i, 2],
+                    acc.mean = scenarios[i, 1])
+    accs[[i]] <- tmp$acc
+    abcs[[i]] <- tmp$abc
+    logs[[i]] <- tmp$log
+    df[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+  }
+
+  # Create PDF with all the plots
+  ## Accumulation Rate
+  ggplot2::ggsave(filename = paste0(allplots, "-acc.pdf"),
+                  plot = plot_grid(accs,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   top = entity),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+  ## Accumulation Rate Posterior and Prior difference
+  ggplot2::ggsave(filename = paste0(allplots, "-acc-diff.pdf"),
+                  plot = plot_grid(abcs,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   append_title = TRUE,
+                                   top = entity),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+  ## Log posterior
+  ggplot2::ggsave(filename = paste0(allplots, "-log.pdf"),
+                  plot = plot_grid(logs,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   append_title = TRUE,
+                                   top = entity,
+                                   left = "Log of Objective",
+                                   bottom = "Iteration"),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+
+  return(list(ag = out,
+              acc = accs,
+              abc = abcs,
+              log = logs,
+              stats = df))
 }
 
 #' @export
