@@ -179,3 +179,51 @@ plot_acc_post <- function(K,
   colnames(df)[2] <- "post"
   return(list(plot = p, data = df))
 }
+
+#' Plot accumulation rate
+#'
+#' Plot accumulation rate prior and posterior.
+#'
+#' @param K Number of sections in the core.
+#' @param output Last MCMC output.
+#' @param acc.mean Accumulation rate mean.
+#' @param acc.shape Accumulation rate shape.
+#' @param hiatuses Data frame with hiatus depths.
+#' @param plot Boolean flag to indicate whether a plot should be generated or
+#'     just return a data frame with posterior and prior values.
+#' @param xlab \code{x}-axis label.
+#' @param ylab \code{y}-axis label.
+#' @param title Plot title.
+#' @param ... Optional parameters for
+#'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
+#'
+#' @return List with \code{ggplot2} object and data frame with posterior and
+#'     prior values.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' out <- read.table("Bacon_runs/core/core_K.out")
+#' plot_acc(out$K, out$output)
+#' }
+plot_acc <- function(K,
+                     output,
+                     acc.mean = 20,
+                     acc.shape = 1.5,
+                     hiatuses = NULL,
+                     plot = TRUE,
+                     xlab = "Acc. rate [yr/cm]",
+                     ylab = NULL,
+                     title = NULL,
+                     ...) {
+  out <- plot_acc_post(K, output, acc.mean, acc.shape, hiatuses, FALSE)
+  p <- out$plot +
+    plot_acc_prior(acc.mean, acc.shape, standalone = FALSE, ...) +
+    ggplot2::labs(x = xlab,
+                  y = ylab,
+                  title = title) +
+    ggplot2::theme_bw()
+  if (plot)
+    print(p)
+  return(list(plot = p, data = out$data))
+}
