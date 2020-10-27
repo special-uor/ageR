@@ -198,6 +198,40 @@ Bacon <- function(wdir,
        #paste0(entity, "-plots.RData"))
 }
 
+#' @export
+bacon_qc <- function(wdir,
+                     entity,
+                     core = NULL,
+                     coredir = NULL,
+                     thick = 5,
+                     acc.mean = 20,
+                     acc.shape = 1.5) {
+  if (is.null(coredir))
+    coredir <- "Bacon_runs"
+
+  # Create path variable for Bacon outputs
+  path <- file.path(wdir, entity, coredir, entity)
+
+  if (is.null(core)) {
+    core <- read.csv(file.path(path, paste0(entity, ".csv")),
+                     header = TRUE,
+                     stringsAsFactors = FALSE)
+  }
+  max_depth <- max(core[, 4])
+  K <- ceiling(max_depth/thick)
+  mcmc <- read.table(file.path(path, paste0(entity, "_", K, ".out")))
+  out_acc <- plot_acc(K, mcmc[, -ncol(mcmc)], acc.mean, acc.shape)
+  out_abc <- plot_abc(out_acc$data)
+  out_log <- plot_log_post(mcmc[, ncol(mcmc)])
+  return(list(acc = out_acc$plot,
+              abc = out_abc$plot,
+              log = out_log$plot,
+              diff = out_abc$abc,
+              var = out_log$var))
+}
+#
+# d <- bacon_qc(wdir, entity)
+
 #' Run Bacon.
 #'
 #' @importFrom grDevices dev.off
