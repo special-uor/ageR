@@ -292,7 +292,7 @@ bacon_qc <- function(wdir,
   mcmc <- read.table(file.path(path, paste0(entity, "_", K, ".out")))
   out_acc <- plot_acc(K, mcmc[, -ncol(mcmc)], acc.mean, acc.shape)
   out_abc <- plot_abc(out_acc$data)
-  out_log <- plot_log_post(mcmc[, ncol(mcmc)])
+  out_log <- plot_log_post(mcmc[, ncol(mcmc)], 0.1)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
               log = out_log$plot,
