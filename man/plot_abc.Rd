@@ -35,6 +35,9 @@ just return a data frame with posterior and prior values.}
 \item{...}{Optional parameters for
 \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.}
 }
+\value{
+List with \code{ggplot2} object and area between curves (ABC).
+}
 \description{
 Plot area between curves, posterior and prior.
 }
