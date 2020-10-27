@@ -244,6 +244,7 @@ plot_acc <- function(K,
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.
 #'
+#' @return List with \code{ggplot2} object and area between curves (ABC).
 #' @export
 #'
 #' @examples
@@ -260,11 +261,11 @@ plot_abc <- function(data,
                      ylab = NULL,
                      title = NULL,
                      ...) {
-  auc <- sum(with(data, abs(prior - post)))
+  abc <- sum(with(data, abs(prior - post)))
   title <- paste0(title,
                   ifelse(is.null(title), "", " - "),
                   "Area between curves: ",
-                  round(auc, digits = 4))
+                  round(abc, digits = 4))
   p <- ggplot2::ggplot(data, ggplot2::aes(x, post)) +
     ggplot2::geom_line(ggplot2::aes(y = post), lwd = 1) +
     ggplot2::geom_line(ggplot2::aes(y = prior), lwd = 1) +
@@ -278,4 +279,5 @@ plot_abc <- function(data,
     ggplot2::theme_bw()
   if (plot)
     print(p)
+  return(list(plot = p, abc = abc))
 }
