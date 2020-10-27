@@ -2,7 +2,7 @@
 #'
 #' @param posterior Posterior data.
 #'
-#' @return \code{ggplot2} object.
+#' @return List with \code{ggplot2} object and variance.
 #'
 #' @keywords internal
 #' @noRd
@@ -18,7 +18,7 @@ plot_log_post <- function(posterior) {
                                  round(var(posterior), digits = 4))) +
     ggplot2::geom_hline(yintercept = -mean(posterior), col = "red", lty = 2) +
     ggplot2::theme_bw()
-  return(p)
+  return(list(plot = p, var = var(posterior)))
 }
 
 #' Plot Age-Depth
@@ -28,7 +28,7 @@ plot_log_post <- function(posterior) {
 #' @param entity Entity name.
 #' @param hiatuses Data frame with hiatuses depths.
 #'
-#' @return \code{ggplot2} object
+#' @return \code{ggplot2} object.
 #'
 #' @keywords internal
 #' @noRd
@@ -302,6 +302,7 @@ plot_grid <- function(plots,
                       cond_y = "y",
                       cond_x_units = NULL,
                       cond_y_units = NULL,
+                      append_title = FALSE,
                       ...) {
   # Extract unique labels that make each scenario combination
   labels_cond_x <- unique(scenarios[, 1])
@@ -321,13 +322,27 @@ plot_grid <- function(plots,
     } else {
       tmp$labels$y <- NULL
     }
-    tmp$labels$title <- paste0(cond_x,
-                               ifelse(is.null(cond_x), "", ": "),
-                               labels_cond_x[idx_x],
-                               cond_x_units)
+    if (append_title) {
+      tmp$labels$title <- paste0(tmp$labels$title, " | ",
+                                 cond_x,
+                                 ifelse(is.null(cond_x), "", ": "),
+                                 labels_cond_x[idx_x],
+                                 cond_x_units)
+    } else {
+      tmp$labels$title <- paste0(cond_x,
+                                 ifelse(is.null(cond_x), "", ": "),
+                                 labels_cond_x[idx_x],
+                                 cond_x_units)
+    }
+    # Remove any additional labels
+    plot_labels <- names(tmp$labels)
+    plot_labels <- plot_labels[!(plot_labels %in% c("x", "y", "title"))]
+    tmp$labels[plot_labels] <- NULL
+
     plots[[i]] <- tmp
   }
 
+  # return(cowplot::plot_grid(plotlist = plots, nrow = length(labels_cond_y)))
   return(gridExtra::grid.arrange(grobs = plots,
                           nrow = length(labels_cond_y),
                           ...))
