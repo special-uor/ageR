@@ -1,5 +1,7 @@
 #' Plot log of posterior
 #'
+#' @importFrom stats var
+#'
 #' @param data Posterior data.
 #' @param varp Variance percentage threshold.
 #'
@@ -7,6 +9,8 @@
 #'
 #' @keywords internal
 plot_log_post <- function(data, varp = NULL) {
+  # Local binding
+  x <- y <- NULL
   if (!is.null(varp))
     data <- data[data > mean(data) * (1 - varp) &
                  data < mean(data) * (1 + varp)]
@@ -35,6 +39,8 @@ plot_log_post <- function(data, varp = NULL) {
 #'
 #' @keywords internal
 plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
+  # Local binding
+  x <- y <- q5 <- q95 <- depth <- age <- NULL
   p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
     ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
     ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
@@ -67,6 +73,9 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 
 #' Plot prior accumulation rate
 #'
+#' @importFrom stats density
+#' @importFrom stats dgamma
+#'
 #' @param acc.mean Accumulation rate mean.
 #' @param acc.shape Accumulation rate shape.
 #' @param xlim X-axis limits.
@@ -92,6 +101,8 @@ plot_acc_prior <- function(acc.mean = 20,
                            col = "#00CC00",
                            lwd = 1.5,
                            ...) {
+  # Local binding
+  x <- NULL
   if (!standalone) {
     p <- ggplot2::stat_function(fun =
                                   function(x) {
@@ -123,6 +134,8 @@ plot_acc_prior <- function(acc.mean = 20,
 
 #' Plot accumulation rate posterior
 #'
+#' @importFrom stats density
+#' @importFrom stats dgamma
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
 #' @param acc.mean Accumulation rate mean.
@@ -141,6 +154,9 @@ plot_acc_post <- function(K,
                           acc.shape = 1.5,
                           hiatuses = NULL,
                           standalone = TRUE) {
+  # Local binding
+  x <- y <- NULL
+
   idx <- 2:(K - 1)
   post <- c()
   for (i in idx)
@@ -263,6 +279,8 @@ plot_abc <- function(data,
                      ylab = NULL,
                      title = NULL,
                      ...) {
+  # Local binding
+  x <- post <- prior <- NULL
   abc <- sum(with(data, abs(prior - post)))
   title <- paste0(title,
                   ifelse(is.null(title), "", " - "),
