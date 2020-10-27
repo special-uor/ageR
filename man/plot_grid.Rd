@@ -37,3 +37,4 @@ List of gridded \code{ggplot2} objects.
 \description{
 Create grid of \code{ggplot2} objects, based on a data frame with scenarios.
 }
+\keyword{internal}

@@ -52,4 +52,6 @@ Plot accumulation rate prior and posterior.
 out <- read.table("Bacon_runs/core/core_K.out")
 plot_acc(out$K, out$output)
 }
+
 }
+\keyword{internal}

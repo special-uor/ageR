@@ -47,4 +47,6 @@ out <- read.table("Bacon_runs/core/core_K.out")
 out <- plot_acc(out$K, out$output)
 plot_abc(out$data)
 }
+
 }
+\keyword{internal}
