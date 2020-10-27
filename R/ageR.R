@@ -27,10 +27,9 @@
 #'     running them.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #'
-#' @return
+#' @return List with \code{ggplot2} objects and summary statistics of all the
+#'     scenarios computed.
 #' @export
-#'
-# @examples
 Bacon <- function(wdir,
                   entity,
                   cpus = 1,
