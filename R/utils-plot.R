@@ -227,3 +227,55 @@ plot_acc <- function(K,
     print(p)
   return(list(plot = p, data = out$data))
 }
+
+#' Plot area between curves
+#'
+#' Plot area between curves, posterior and prior.
+#'
+#' @param data Data frame with posterior and prior values. This can be obtained
+#'     with \code{\link{plot_acc}}.
+#' @param fill Filling colour between curves.
+#' @param alpha Transparency value for the shaded area between curves.
+#' @param plot Boolean flag to indicate whether a plot should be generated or
+#'     just return a data frame with posterior and prior values.
+#' @param xlab \code{x}-axis label.
+#' @param ylab \code{y}-axis label.
+#' @param title Plot title.
+#' @param ... Optional parameters for
+#'     \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' out <- read.table("Bacon_runs/core/core_K.out")
+#' out <- plot_acc(out$K, out$output)
+#' plot_abc(out$data)
+#' }
+plot_abc <- function(data,
+                     fill = "#2980B9",
+                     alpha = 0.7,
+                     plot = TRUE,
+                     xlab = NULL,
+                     ylab = NULL,
+                     title = NULL,
+                     ...) {
+  auc <- sum(with(data, abs(prior - post)))
+  title <- paste0(title,
+                  ifelse(is.null(title), "", " - "),
+                  "Area between curves: ",
+                  round(auc, digits = 4))
+  p <- ggplot2::ggplot(data, ggplot2::aes(x, post)) +
+    ggplot2::geom_line(ggplot2::aes(y = post), lwd = 1) +
+    ggplot2::geom_line(ggplot2::aes(y = prior), lwd = 1) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = prior, ymax = post),
+                         fill = fill,
+                         alpha = alpha,
+                         ...) +
+    ggplot2::labs(x = xlab,
+                  y = ylab,
+                  title = title) +
+    ggplot2::theme_bw()
+  if (plot)
+    print(p)
+}
