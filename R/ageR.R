@@ -168,16 +168,16 @@ Bacon <- function(wdir,
   parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
-  allplots <- paste0(entity, "_AR",
-                     ifelse(length(accMean) > 1,
-                            paste0(range(accMean), collapse = "-"),
-                            accMean), "_T",
-                     ifelse(length(thickness) > 1,
-                            paste0(range(thickness), collapse = "-"),
-                            thickness))
+  prefix <- paste0(entity, "_AR",
+                   ifelse(length(accMean) > 1,
+                          paste0(range(accMean), collapse = "-"),
+                          accMean), "_T",
+                   ifelse(length(thickness) > 1,
+                          paste0(range(thickness), collapse = "-"),
+                          thickness))
 
   # Create PDF with all the plots (age-depth)
-  ggplot2::ggsave(filename = paste0(allplots, ".pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, ".pdf"),
                   plot = plot_grid(out,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -192,7 +192,7 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
   # save(out,
-  #      file = file.path(wdir, paste0(allplots, ".RData")))
+  #      file = file.path(wdir, paste0(prefix, ".RData")))
        #paste0(entity, "-plots.RData"))
 
   idx <- seq_len(nrow(scenarios))
@@ -217,7 +217,7 @@ Bacon <- function(wdir,
 
   # Create PDF with all the plots
   ## Accumulation Rate
-  ggplot2::ggsave(filename = paste0(allplots, "-acc.pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, "-acc.pdf"),
                   plot = plot_grid(accs,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -230,7 +230,7 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
   ## Accumulation Rate Posterior and Prior difference
-  ggplot2::ggsave(filename = paste0(allplots, "-acc-diff.pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, "-acc-diff.pdf"),
                   plot = plot_grid(abcs,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -244,7 +244,7 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
   ## Log posterior
-  ggplot2::ggsave(filename = paste0(allplots, "-log.pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, "-log.pdf"),
                   plot = plot_grid(logs,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -259,6 +259,9 @@ Bacon <- function(wdir,
                   path = wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
+
+  # Save general stats
+  write.csv(df, paste(prefix, "-stats.csv"), row.names = FALSE)
 
   return(list(ag = out,
               acc = accs,
@@ -594,7 +597,20 @@ bacon_qc <- function(wdir,
                      stringsAsFactors = FALSE)
   }
   max_depth <- max(core[, 4])
-  K <- ceiling(max_depth/thick)
+  K <- find_K(floor(max_depth/thick) + 1, path, entity)
+  if (!file.exists(file.path(path, paste0(entity, "_", K, ".out")))) {
+    print(wdir)
+    print(entity)
+    print(coredir)
+    print(file.path(path, paste0(entity, "_", K, ".out")))
+    return(list(
+      acc = NULL,
+      abc = NULL,
+      log = NULL,
+      diff = NA,
+      var = NA
+    ))
+  }
   mcmc <- read.table(file.path(path, paste0(entity, "_", K, ".out")))
   out_acc <- plot_acc(K,
                       mcmc[, -ncol(mcmc)],
