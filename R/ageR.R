@@ -207,8 +207,9 @@ Bacon <- function(wdir,
     tmp <- bacon_qc(wdir = wdir,
                     entity = entity,
                     coredir = coredir,
+                    acc.mean = scenarios[i, 1],
                     thick = scenarios[i, 2],
-                    acc.mean = scenarios[i, 1])
+                    hiatuses = hiatuses)
     accs[[i]] <- tmp$acc
     abcs[[i]] <- tmp$abc
     logs[[i]] <- tmp$log
@@ -276,9 +277,10 @@ bacon_qc <- function(wdir,
                      entity,
                      core = NULL,
                      coredir = NULL,
-                     thick = 5,
                      acc.mean = 20,
-                     acc.shape = 1.5) {
+                     acc.shape = 1.5,
+                     thick = 5,
+                     hiatuses = NULL) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
 
@@ -293,7 +295,12 @@ bacon_qc <- function(wdir,
   max_depth <- max(core[, 4])
   K <- ceiling(max_depth/thick)
   mcmc <- read.table(file.path(path, paste0(entity, "_", K, ".out")))
-  out_acc <- plot_acc(K, mcmc[, -ncol(mcmc)], acc.mean, acc.shape)
+  out_acc <- plot_acc(K,
+                      mcmc[, -ncol(mcmc)],
+                      acc.mean,
+                      acc.shape,
+                      thick,
+                      hiatuses)
   out_abc <- plot_abc(out_acc$data)
   out_log <- plot_log_post(mcmc[, ncol(mcmc)], 0.1)
   return(list(acc = out_acc$plot,
