@@ -3,7 +3,7 @@ tictoc::tic("Retrive data from DB")
 `%>%` <- dplyr::`%>%`
 dir.create(wdir, showWarnings = FALSE, recursive = FALSE)
 
-conn <- ageR::open_conn_mysql("RPD-latest", "root")
+conn <- dabr::open_conn_mysql("RPD-latest", "root")
 query <- paste0(
 "SELECT entity_name,
        entity.ID_ENTITY as entity_id,
@@ -17,7 +17,7 @@ query <- paste0(
 FROM date_info INNER JOIN entity
     ON date_info.ID_ENTITY = entity.ID_ENTITY
 WHERE latitude >= 45")
-rpd <- ageR::select_query_mysql(conn, query)
+rpd <- dabr::select_query_mysql(conn, query)
 rpd <- rpd %>%
   dplyr::filter(!is.na(age)) %>%
   dplyr::filter(!is.na(error)) %>%
@@ -44,7 +44,7 @@ for (entity in entities) {
   query <- paste0("SELECT ID_SAMPLE AS id, sample_depth*100 AS depth
                    FROM sample
                    WHERE ID_ENTITY = ", rpd[idx, 2][1])
-  sample_tb <- ageR::select_query_mysql(conn, query, quiet = TRUE)
+  sample_tb <- dabr::select_query_mysql(conn, query, quiet = TRUE)
   sample_tb <- sample_tb %>%
     dplyr::filter(depth != -9999)
 
@@ -139,8 +139,8 @@ entities <- data.frame(id = entities_id,
                        clean = entities_clean_names)
 write.csv(entities, "entities.csv", row.names = FALSE)
 
-# charcoal <- ageR::select_all(conn, table = "charcoal")
-ageR::close_conn(conn)
+# charcoal <- dabr::select_all(conn, table = "charcoal")
+dabr::close_conn(conn)
 tictoc::toc()
 
 # wdir <- here::here("runs/004")
