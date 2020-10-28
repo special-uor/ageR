@@ -31,7 +31,7 @@ plot_log_post <- function(data, varp = NULL) {
 #' Plot Age-Depth
 #'
 #' @param df Data frame with age-depth and 95\% CI interval.
-#' @inheritParams runBacon
+#' @inheritParams run_bacon
 #'
 #' @return \code{ggplot2} object.
 #'
@@ -85,7 +85,7 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
 #'
-#' @inheritParams runBacon
+#' @inheritParams run_bacon
 #'
 #' @return \code{ggplot2} object.
 #'
@@ -139,7 +139,7 @@ plot_acc_prior <- function(acc.mean = 20,
 #' @param output Last MCMC output.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
-#' @inheritParams runBacon
+#' @inheritParams run_bacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
@@ -211,7 +211,7 @@ plot_acc_post <- function(K,
 #' @param title Plot title.
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
-#' @inheritParams runBacon
+#' @inheritParams run_bacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
