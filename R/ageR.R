@@ -63,10 +63,10 @@ Bacon <- function(wdir,
 
   path <- file.path(wdir, entity)
   unknown_age <- read.csv(file.path(path, "not_used_dates.csv"), header = TRUE)
-  hiatus_tb <- read.csv(file.path(path, file.path("hiatus.csv")),
-                        header = TRUE,
-                        stringsAsFactors = FALSE,
-                        colClasses = c("numeric", "numeric"))
+  hiatuses <- read.csv(file.path(path, file.path("hiatus.csv")),
+                       header = TRUE,
+                       stringsAsFactors = FALSE,
+                       colClasses = c("numeric", "numeric"))
 
   msg("Setting up environment", quiet)
   accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
@@ -154,7 +154,7 @@ Bacon <- function(wdir,
                     quiet = quiet,
                     core = core,
                     depths_eval = depths_eval,
-                    hiatus_tb = hiatus_tb,
+                    hiatuses = hiatuses,
                     sample_ids = sample_ids,
                     unknown_age = unknown_age,
                     coredir = coredir,
@@ -329,7 +329,7 @@ bacon_qc <- function(wdir,
 #' @param quiet Boolean to hide status messages.
 #' @param core Data frame with the core's data.
 #' @param depths_eval Numeric array with the sampling depths.
-#' @param hiatus_tb Data frame containing information of hiatuses.
+#' @param hiatuses Data frame containing information of hiatuses.
 #' @param sample_ids Numeric array with IDs for the sampling depths.
 #' @param unknown_age Data frame containing information of unused ages.
 #' @param coredir Folder where the core's files core are and/or will be located.
@@ -372,7 +372,7 @@ runBacon <- function(wdir,
                      quiet = FALSE,
                      core = NULL,
                      depths_eval = NULL,
-                     hiatus_tb = NULL,
+                     hiatuses = NULL,
                      sample_ids = NULL,
                      unknown_age = NULL,
                      coredir = NULL,
@@ -392,7 +392,7 @@ runBacon <- function(wdir,
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
-  if (nrow(hiatus_tb) == 0) {
+  if (nrow(hiatuses) == 0) {
     tryCatch({
       pdf(file.path(path, paste0(entity, ".pdf")),
           width = 8,
@@ -435,7 +435,7 @@ runBacon <- function(wdir,
                     acc.mean = acc.mean,
                     acc.shape = acc.shape,
                     postbomb = postbomb,
-                    hiatus.depths = hiatus_tb[, 2],
+                    hiatus.depths = hiatuses[, 2],
                     cc = cc,
                     suggest = FALSE,
                     ask = FALSE,
@@ -495,14 +495,14 @@ runBacon <- function(wdir,
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
-                                         hiatus_tb,
+                                         hiatuses,
                                          bacon_mcmc,
                                          q1 = 0.05,
                                          q2 = 0.95)
   colnames(bacon_age)[3:4] <- paste0("uncert_", c(5, 95))
   # 75% CI
   bacon_age_75 <- get_bacon_median_quantile(depths_eval,
-                                            hiatus_tb,
+                                            hiatuses,
                                             bacon_mcmc,
                                             q1 = 0.25,
                                             q2 = 0.75)
@@ -511,9 +511,9 @@ runBacon <- function(wdir,
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_ids, bacon_mcmc)
 
-  h <- cbind(hiatus_tb,
+  h <- cbind(hiatuses,
              matrix(NA,
-                    nrow = dim(hiatus_tb)[1],
+                    nrow = dim(hiatuses)[1],
                     ncol = dim(bacon_mcmc)[2] - 2))
   names(h) <- names(bacon_mcmc)
 
@@ -550,7 +550,7 @@ runBacon <- function(wdir,
   alt_plot <- plot_age_depth(df,
                              core = core,
                              entity = entity,
-                             hiatuses = hiatus_tb)
+                             hiatuses = hiatuses)
   ggplot2::ggsave(file.path(path, "final_age_model_alt.pdf"),
                   alt_plot,
                   width = 8,
@@ -595,8 +595,8 @@ runBacon <- function(wdir,
   #        code = 3,
   #        col = core$col
   # )
-  # if (!plyr::empty(data.frame(hiatus_tb))) {
-  #   abline(h = hiatus_tb[, 2] * 10,
+  # if (!plyr::empty(data.frame(hiatuses))) {
+  #   abline(h = hiatuses[, 2] * 10,
   #          col = "grey",
   #          lty = 2)
   # }
@@ -637,10 +637,10 @@ runLinReg <- function(wdir, entity, N = 2000) {
                 colClasses = c("numeric", "numeric"))
 
   setwd(file.path(wdir, entity))
-  hiatus_tb <- read.csv("hiatus.csv",
-                        header = TRUE,
-                        stringsAsFactors = FALSE,
-                        colClasses = c("numeric", "numeric"))
+  hiatuses <- read.csv("hiatus.csv",
+                       header = TRUE,
+                       stringsAsFactors = FALSE,
+                       colClasses = c("numeric", "numeric"))
   unknown_age <- read.csv("not_used_dates.csv", header = TRUE)
 
   sample <- data.frame(sample_id = id[, 1],#$sample_id,
@@ -656,7 +656,7 @@ runLinReg <- function(wdir, entity, N = 2000) {
   print("--------lin Reg ------------")
   N <- dim(mc_runs)[1]
   lr <- mc_linReg(N,
-                  hiatus_tb[, 2], # $depth_sample,
+                  hiatuses[, 2], # $depth_sample,
                   dating_tb[, 4], #$depth_dating,
                   mc_runs,
                   depth_sample[, 2]) #$depth_sample)
@@ -727,8 +727,8 @@ runLinReg <- function(wdir, entity, N = 2000) {
          angle = 90,
          code = 3,
          col = "orange")
-  if (!plyr::empty(data.frame(hiatus_tb))) {
-    abline(h = hiatus_tb[, 2], #$depth_sample,
+  if (!plyr::empty(data.frame(hiatuses))) {
+    abline(h = hiatuses[, 2], #$depth_sample,
            col = "grey",
            lty = 2)
   }
