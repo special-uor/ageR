@@ -2,7 +2,7 @@
 % Please edit documentation in R/ageR.R
 \name{runBacon}
 \alias{runBacon}
-\title{Run Bacon.}
+\title{Run Bacon}
 \usage{
 runBacon(
   wdir,
@@ -18,6 +18,7 @@ runBacon(
   unknown_age = NULL,
   coredir = NULL,
   acc.mean = 20,
+  acc.shape = 1.5,
   ssize = 2000,
   th0 = c(),
   thick = 5,
@@ -57,6 +58,10 @@ be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
 Multiple values can be given in case of hiatuses or boundaries, e.g.,
 Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
 
+\item{acc.shape}{The prior for the accumulation rate consists of a gamma
+distribution with two parameters. Its shape is set by acc.shape
+(default acc.shape=1.5; higher values result in more peaked shapes).}
+
 \item{ssize}{The approximate amount of iterations to store at the end of the
 MCMC run. Default 2000; decrease for faster (but less reliable) runs or
 increase for cores where the MCMC mixing (panel at upper-left corner of
@@ -73,7 +78,7 @@ specified by \code{thick} (default \code{thick = 5}).}
 Saves MC ensemble, bacon_chronology and AM plot.
 }
 \description{
-Run Bacon.
+Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 }
 \references{
 Blauuw, M. et al., Bayesian Analysis 6, 457-474 (2011)

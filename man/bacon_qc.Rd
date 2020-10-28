@@ -23,13 +23,19 @@ bacon_qc(
 
 \item{coredir}{Folder where the core's files core are and/or will be located.}
 
-\item{thick}{Bacon will divide the core into sections of equal thickness.}
+\item{thick}{Bacon will divide the core into sections of equal thickness
+specified by \code{thick} (default \code{thick = 5}).}
 
 \item{acc.mean}{The accumulation rate prior consists of a gamma distribution
-with two parameters. This is the mean.}
+with two parameters. Its mean is set by acc.mean (default
+acc.mean=20 yr/cm (or whatever age or depth units are chosen), which can
+be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
+Multiple values can be given in case of hiatuses or boundaries, e.g.,
+Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
 
-\item{acc.shape}{The accumulation rate prior consists of a gamma distribution
-with two parameters. This is the shape.}
+\item{acc.shape}{The prior for the accumulation rate consists of a gamma
+distribution with two parameters. Its shape is set by acc.shape
+(default acc.shape=1.5; higher values result in more peaked shapes).}
 }
 \description{
 Bacon quality control
