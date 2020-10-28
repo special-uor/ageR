@@ -9,11 +9,11 @@ plot_age_depth(df, core, entity = NULL, hiatuses = NULL)
 \arguments{
 \item{df}{Data frame with age-depth and 95\% CI interval.}
 
-\item{core}{Data frame with the core data.}
+\item{core}{Data frame with the core's data.}
 
-\item{entity}{Entity name.}
+\item{entity}{Name of the entity.}
 
-\item{hiatuses}{Data frame with hiatuses depths.}
+\item{hiatuses}{Data frame containing information of hiatuses.}
 }
 \value{
 \code{ggplot2} object.

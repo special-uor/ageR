@@ -18,9 +18,16 @@ plot_acc_prior(
 )
 }
 \arguments{
-\item{acc.mean}{Accumulation rate mean.}
+\item{acc.mean}{The accumulation rate prior consists of a gamma distribution
+with two parameters. Its mean is set by acc.mean (default
+acc.mean=20 yr/cm (or whatever age or depth units are chosen), which can
+be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
+Multiple values can be given in case of hiatuses or boundaries, e.g.,
+Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
 
-\item{acc.shape}{Accumulation rate shape.}
+\item{acc.shape}{The prior for the accumulation rate consists of a gamma
+distribution with two parameters. Its shape is set by acc.shape
+(default acc.shape=1.5; higher values result in more peaked shapes).}
 
 \item{xlim}{X-axis limits.}
 

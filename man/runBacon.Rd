@@ -13,7 +13,7 @@ runBacon(
   quiet = FALSE,
   core = NULL,
   depths_eval = NULL,
-  hiatus_tb = NULL,
+  hiatuses = NULL,
   sample_ids = NULL,
   unknown_age = NULL,
   coredir = NULL,
@@ -43,7 +43,7 @@ runBacon(
 
 \item{depths_eval}{Numeric array with the sampling depths.}
 
-\item{hiatus_tb}{Data frame containing information of hiatuses.}
+\item{hiatuses}{Data frame containing information of hiatuses.}
 
 \item{sample_ids}{Numeric array with IDs for the sampling depths.}
 

@@ -9,6 +9,7 @@ plot_acc_post(
   output,
   acc.mean = 20,
   acc.shape = 1.5,
+  thick = 5,
   hiatuses = NULL,
   standalone = TRUE
 )
@@ -18,11 +19,21 @@ plot_acc_post(
 
 \item{output}{Last MCMC output.}
 
-\item{acc.mean}{Accumulation rate mean.}
+\item{acc.mean}{The accumulation rate prior consists of a gamma distribution
+with two parameters. Its mean is set by acc.mean (default
+acc.mean=20 yr/cm (or whatever age or depth units are chosen), which can
+be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
+Multiple values can be given in case of hiatuses or boundaries, e.g.,
+Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
 
-\item{acc.shape}{Accumulation rate shape.}
+\item{acc.shape}{The prior for the accumulation rate consists of a gamma
+distribution with two parameters. Its shape is set by acc.shape
+(default acc.shape=1.5; higher values result in more peaked shapes).}
 
-\item{hiatuses}{Data frame with hiatus depths.}
+\item{thick}{Bacon will divide the core into sections of equal thickness
+specified by \code{thick} (default \code{thick = 5}).}
+
+\item{hiatuses}{Data frame containing information of hiatuses.}
 
 \item{standalone}{Boolean flag to indicate whether or not the plot is a
 layer for another plot or standalone.}
