@@ -9,9 +9,10 @@ bacon_qc(
   entity,
   core = NULL,
   coredir = NULL,
-  thick = 5,
   acc.mean = 20,
-  acc.shape = 1.5
+  acc.shape = 1.5,
+  thick = 5,
+  hiatuses = NULL
 )
 }
 \arguments{
@@ -23,9 +24,6 @@ bacon_qc(
 
 \item{coredir}{Folder where the core's files core are and/or will be located.}
 
-\item{thick}{Bacon will divide the core into sections of equal thickness
-specified by \code{thick} (default \code{thick = 5}).}
-
 \item{acc.mean}{The accumulation rate prior consists of a gamma distribution
 with two parameters. Its mean is set by acc.mean (default
 acc.mean=20 yr/cm (or whatever age or depth units are chosen), which can
@@ -36,6 +34,11 @@ Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
 \item{acc.shape}{The prior for the accumulation rate consists of a gamma
 distribution with two parameters. Its shape is set by acc.shape
 (default acc.shape=1.5; higher values result in more peaked shapes).}
+
+\item{thick}{Bacon will divide the core into sections of equal thickness
+specified by \code{thick} (default \code{thick = 5}).}
+
+\item{hiatuses}{Data frame containing information of hiatuses.}
 }
 \description{
 Bacon quality control

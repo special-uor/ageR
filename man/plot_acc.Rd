@@ -9,6 +9,7 @@ plot_acc(
   output,
   acc.mean = 20,
   acc.shape = 1.5,
+  thick = 5,
   hiatuses = NULL,
   plot = TRUE,
   xlab = "Acc. rate [yr/cm]",
@@ -32,6 +33,9 @@ Bacon(hiatus.depths=23, acc.mean=c(5,20)).}
 \item{acc.shape}{The prior for the accumulation rate consists of a gamma
 distribution with two parameters. Its shape is set by acc.shape
 (default acc.shape=1.5; higher values result in more peaked shapes).}
+
+\item{thick}{Bacon will divide the core into sections of equal thickness
+specified by \code{thick} (default \code{thick = 5}).}
 
 \item{hiatuses}{Data frame containing information of hiatuses.}
 
