@@ -138,11 +138,10 @@ plot_acc_prior <- function(acc.mean = 20,
 #' @importFrom stats dgamma
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
-#' @param acc.mean Accumulation rate mean.
-#' @param acc.shape Accumulation rate shape.
 #' @param hiatuses Data frame with hiatus depths.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
+#' @inheritParams runBacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
@@ -152,12 +151,17 @@ plot_acc_post <- function(K,
                           output,
                           acc.mean = 20,
                           acc.shape = 1.5,
+                          thick = 5,
                           hiatuses = NULL,
                           standalone = TRUE) {
   # Local binding
   x <- y <- NULL
-
+  depths <- seq(0, thick * (K - 1), thick)
   idx <- 2:(K - 1)
+  if (!is.null(hiatuses) & nrow(hiatuses) > 0) {
+    for (h in hiatuses[, 2])
+      idx <- idx[-max(which(depths < h))]
+  }
   post <- c()
   for (i in idx)
     post <- c(post, output[[i]])
