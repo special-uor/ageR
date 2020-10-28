@@ -23,6 +23,8 @@
 sce_seq <- function(ref, step = 5, lower = NULL, upper = NULL) {
   if (!is.null(upper) && (upper < ref))
     stop("\nThe upper bound cannot be smaller than ", ref, ".")
+  if (!is.null(lower) && (lower > ref))
+    stop("\nThe lower bound cannot be larger than ", ref, ".")
   if (is.null(lower))
     lower <- floor(ref / 2)
   if (is.null(upper))
