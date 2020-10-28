@@ -29,6 +29,8 @@ Imports:
     rbacon,
     RMariaDB,
     scales
+Remotes:
+    special-uor/dabr
 Suggests:
     badger,
     hexSticker,
