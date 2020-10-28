@@ -1,6 +1,6 @@
 #' Age model function for Bacon
 #'
-#' @importFrom foreach `%dopar%`
+#' @importFrom foreach %dopar%
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -269,15 +269,7 @@ Bacon <- function(wdir,
 
 #' Bacon quality control
 #'
-#' @param wdir Path where input files are stored.
-#' @param entity Name of the entity.
-#' @param core Data frame with the core's data.
-#' @param coredir Folder where the core's files core are and/or will be located.
-#' @param thick Bacon will divide the core into sections of equal thickness.
-#' @param acc.mean The accumulation rate prior consists of a gamma distribution
-#'     with two parameters. This is the mean.
-#' @param acc.shape The accumulation rate prior consists of a gamma distribution
-#'     with two parameters. This is the shape.
+#' @inheritParams runBacon
 #'
 #' @keywords internal
 bacon_qc <- function(wdir,
@@ -310,10 +302,10 @@ bacon_qc <- function(wdir,
               diff = out_abc$abc,
               var = out_log$var))
 }
-#
-# d <- bacon_qc(wdir, entity)
 
-#' Run Bacon.
+#' Run Bacon
+#'
+#' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 #'
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices pdf
@@ -347,6 +339,9 @@ bacon_qc <- function(wdir,
 #'     be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
 #'     Multiple values can be given in case of hiatuses or boundaries, e.g.,
 #'     Bacon(hiatus.depths=23, acc.mean=c(5,20)).
+#' @param acc.shape The prior for the accumulation rate consists of a gamma
+#'     distribution with two parameters. Its shape is set by acc.shape
+#'     (default acc.shape=1.5; higher values result in more peaked shapes).
 #' @param ssize The approximate amount of iterations to store at the end of the
 #'     MCMC run. Default 2000; decrease for faster (but less reliable) runs or
 #'     increase for cores where the MCMC mixing (panel at upper-left corner of
@@ -382,6 +377,7 @@ runBacon <- function(wdir,
                      unknown_age = NULL,
                      coredir = NULL,
                      acc.mean = 20,
+                     acc.shape = 1.5,
                      ssize = 2000,
                      th0 = c(),
                      thick = 5,
@@ -406,6 +402,7 @@ runBacon <- function(wdir,
                     coredir = file.path(wdir, entity, coredir),
                     depths.file = TRUE,
                     acc.mean = acc.mean,
+                    acc.shape = acc.shape,
                     postbomb = postbomb,
                     cc = cc,
                     suggest = FALSE,
@@ -436,6 +433,7 @@ runBacon <- function(wdir,
                     coredir = file.path(wdir, entity, coredir),
                     depths.file = TRUE,
                     acc.mean = acc.mean,
+                    acc.shape = acc.shape,
                     postbomb = postbomb,
                     hiatus.depths = hiatus_tb[, 2],
                     cc = cc,
