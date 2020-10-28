@@ -1,38 +1,44 @@
 #' Plot log of posterior
 #'
-#' @param posterior Posterior data.
+#' @importFrom stats var
 #'
-#' @return \code{ggplot2} object.
+#' @param data Posterior data.
+#' @param varp Variance percentage threshold.
+#'
+#' @return List with \code{ggplot2} object and variance.
 #'
 #' @keywords internal
-#' @noRd
-plot_log_post <- function(posterior) {
-  df <- data.frame(x = seq_len(length(posterior)) - 1,
-                   y = -posterior)
+plot_log_post <- function(data, varp = NULL) {
+  # Local binding
+  x <- y <- NULL
+  if (!is.null(varp))
+    data <- data[data > mean(data) * (1 - varp) &
+                 data < mean(data) * (1 + varp)]
+  df <- data.frame(x = seq_len(length(data)) - 1,
+                   y = -data)
   p <- ggplot2::ggplot(data = df, ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_line(alpha = 0.7) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
     ggplot2::labs(x = "Log of Objective",
                   y = "Iteration",
                   title = paste0("Variance: ",
-                                 round(var(posterior), digits = 4))) +
-    ggplot2::geom_hline(yintercept = -mean(posterior), col = "red", lty = 2) +
+                                 round(var(data), digits = 4))) +
+    ggplot2::geom_hline(yintercept = -mean(data), col = "red", lty = 2) +
     ggplot2::theme_bw()
-  return(p)
+  return(list(plot = p, var = var(data)))
 }
 
 #' Plot Age-Depth
 #'
-#' @param df Data frame with age-depth and 95% CI interval.
-#' @param core Data frame with the core data.
-#' @param entity Entity name.
-#' @param hiatuses Data frame with hiatuses depths.
+#' @param df Data frame with age-depth and 95\% CI interval.
+#' @inheritParams run_bacon
 #'
-#' @return \code{ggplot2} object
+#' @return \code{ggplot2} object.
 #'
 #' @keywords internal
-#' @noRd
 plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
+  # Local binding
+  x <- y <- q5 <- q95 <- depth <- age <- NULL
   p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
     ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
     ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
@@ -65,8 +71,9 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 
 #' Plot prior accumulation rate
 #'
-#' @param acc.mean Accumulation rate mean.
-#' @param acc.shape Accumulation rate shape.
+#' @importFrom stats density
+#' @importFrom stats dgamma
+#'
 #' @param xlim X-axis limits.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
@@ -77,10 +84,12 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #' @param lwd Curve thickness.
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
+#'
+#' @inheritParams run_bacon
+#'
 #' @return \code{ggplot2} object.
 #'
 #' @keywords internal
-#' @noRd
 plot_acc_prior <- function(acc.mean = 20,
                            acc.shape = 1.5,
                            xlim = c(0, 3 * max(acc.mean)),
@@ -91,6 +100,8 @@ plot_acc_prior <- function(acc.mean = 20,
                            col = "#00CC00",
                            lwd = 1.5,
                            ...) {
+  # Local binding
+  x <- NULL
   if (!standalone) {
     p <- ggplot2::stat_function(fun =
                                   function(x) {
@@ -122,26 +133,33 @@ plot_acc_prior <- function(acc.mean = 20,
 
 #' Plot accumulation rate posterior
 #'
+#' @importFrom stats density
+#' @importFrom stats dgamma
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
-#' @param acc.mean Accumulation rate mean.
-#' @param acc.shape Accumulation rate shape.
-#' @param hiatuses Data frame with hiatus depths.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
+#' @inheritParams run_bacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
 #'
 #' @keywords internal
-#' @noRd
 plot_acc_post <- function(K,
                           output,
                           acc.mean = 20,
                           acc.shape = 1.5,
+                          thick = 5,
                           hiatuses = NULL,
                           standalone = TRUE) {
+  # Local binding
+  x <- y <- NULL
+  depths <- seq(0, thick * (K - 1), thick)
   idx <- 2:(K - 1)
+  if (!is.null(hiatuses) & nrow(hiatuses) > 0) {
+    for (h in hiatuses[, 2])
+      idx <- idx[-max(which(depths < h))]
+  }
   post <- c()
   for (i in idx)
     post <- c(post, output[[i]])
@@ -186,9 +204,6 @@ plot_acc_post <- function(K,
 #'
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
-#' @param acc.mean Accumulation rate mean.
-#' @param acc.shape Accumulation rate shape.
-#' @param hiatuses Data frame with hiatus depths.
 #' @param plot Boolean flag to indicate whether a plot should be generated or
 #'     just return a data frame with posterior and prior values.
 #' @param xlab \code{x}-axis label.
@@ -196,27 +211,30 @@ plot_acc_post <- function(K,
 #' @param title Plot title.
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
+#' @inheritParams run_bacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
-#' @export
 #'
 #' @examples
 #' \dontrun{
 #' out <- read.table("Bacon_runs/core/core_K.out")
 #' plot_acc(out$K, out$output)
 #' }
+#'
+#' @keywords internal
 plot_acc <- function(K,
                      output,
                      acc.mean = 20,
                      acc.shape = 1.5,
+                     thick = 5,
                      hiatuses = NULL,
                      plot = TRUE,
                      xlab = "Acc. rate [yr/cm]",
                      ylab = NULL,
                      title = NULL,
                      ...) {
-  out <- plot_acc_post(K, output, acc.mean, acc.shape, hiatuses, FALSE)
+  out <- plot_acc_post(K, output, acc.mean, acc.shape, thick, hiatuses, FALSE)
   p <- out$plot +
     plot_acc_prior(acc.mean, acc.shape, standalone = FALSE, ...) +
     ggplot2::labs(x = xlab,
@@ -244,7 +262,7 @@ plot_acc <- function(K,
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.
 #'
-#' @export
+#' @return List with \code{ggplot2} object and area between curves (ABC).
 #'
 #' @examples
 #' \dontrun{
@@ -252,6 +270,8 @@ plot_acc <- function(K,
 #' out <- plot_acc(out$K, out$output)
 #' plot_abc(out$data)
 #' }
+#'
+#' @keywords internal
 plot_abc <- function(data,
                      fill = "#2980B9",
                      alpha = 0.7,
@@ -260,11 +280,13 @@ plot_abc <- function(data,
                      ylab = NULL,
                      title = NULL,
                      ...) {
-  auc <- sum(with(data, abs(prior - post)))
+  # Local binding
+  x <- post <- prior <- NULL
+  abc <- sum(with(data, abs(prior - post)))
   title <- paste0(title,
                   ifelse(is.null(title), "", " - "),
                   "Area between curves: ",
-                  round(auc, digits = 4))
+                  round(abc, digits = 4))
   p <- ggplot2::ggplot(data, ggplot2::aes(x, post)) +
     ggplot2::geom_line(ggplot2::aes(y = post), lwd = 1) +
     ggplot2::geom_line(ggplot2::aes(y = prior), lwd = 1) +
@@ -278,4 +300,73 @@ plot_abc <- function(data,
     ggplot2::theme_bw()
   if (plot)
     print(p)
+  return(list(plot = p, abc = abc))
+}
+
+#' Create grid of plots
+#'
+#' Create grid of \code{ggplot2} objects, based on a data frame with scenarios.
+#'
+#' @param plots List with \code{ggplot2} objects.
+#' @param scenarios Data frame with scenarios, must contain only 2 variables.
+#' @param cond_x Condition on the \code{x}-axis.
+#' @param cond_y Condition on the \code{y}-axis.
+#' @param cond_x_units Units for condition on the \code{x}-axis.
+#' @param cond_y_units Units for condition on the \code{y}-axis.
+#' @param ... Optional parameters for
+#'     \code{\link[gridExtra:grid.arrange]{gridExtra::grid.arrange}}.
+#'
+#' @return List of gridded \code{ggplot2} objects.
+#'
+#' @keywords internal
+plot_grid <- function(plots,
+                      scenarios,
+                      cond_x = "x",
+                      cond_y = "y",
+                      cond_x_units = NULL,
+                      cond_y_units = NULL,
+                      append_title = FALSE,
+                      ...) {
+  # Extract unique labels that make each scenario combination
+  labels_cond_x <- unique(scenarios[, 1])
+  labels_cond_y <- unique(scenarios[, 2])
+  # Remove labels
+  for (i in seq_len(length(plots))) {
+    tmp <- plots[[i]]
+    idx <- arrayInd(i, c(length(labels_cond_x), length(labels_cond_y))) # length(accMean), length(thickness)))
+    idx_x <- idx[, 1]
+    idx_y <- idx[, 2]
+    tmp$labels$x <- NULL
+    if (idx_x == 1) {
+      tmp$labels$y <- paste0(cond_y,
+                             ifelse(is.null(cond_y), "", ": "),
+                             labels_cond_y[idx_y],
+                             cond_y_units)
+    } else {
+      tmp$labels$y <- NULL
+    }
+    if (append_title) {
+      tmp$labels$title <- paste0(tmp$labels$title, " | ",
+                                 cond_x,
+                                 ifelse(is.null(cond_x), "", ": "),
+                                 labels_cond_x[idx_x],
+                                 cond_x_units)
+    } else {
+      tmp$labels$title <- paste0(cond_x,
+                                 ifelse(is.null(cond_x), "", ": "),
+                                 labels_cond_x[idx_x],
+                                 cond_x_units)
+    }
+    # Remove any additional labels
+    plot_labels <- names(tmp$labels)
+    plot_labels <- plot_labels[!(plot_labels %in% c("x", "y", "title"))]
+    tmp$labels[plot_labels] <- NULL
+
+    plots[[i]] <- tmp
+  }
+
+  # return(cowplot::plot_grid(plotlist = plots, nrow = length(labels_cond_y)))
+  return(gridExtra::grid.arrange(grobs = plots,
+                          nrow = length(labels_cond_y),
+                          ...))
 }

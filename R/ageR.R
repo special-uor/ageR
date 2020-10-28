@@ -1,6 +1,6 @@
-#' Age model function for Bacon
+#' Bacon age model
 #'
-#' @importFrom foreach `%dopar%`
+#' @importFrom foreach %dopar%
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -27,10 +27,9 @@
 #'     running them.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #'
-#' @return
+#' @return List with \code{ggplot2} objects and summary statistics of all the
+#'     scenarios computed.
 #' @export
-#'
-# @examples
 Bacon <- function(wdir,
                   entity,
                   cpus = 1,
@@ -64,10 +63,10 @@ Bacon <- function(wdir,
 
   path <- file.path(wdir, entity)
   unknown_age <- read.csv(file.path(path, "not_used_dates.csv"), header = TRUE)
-  hiatus_tb <- read.csv(file.path(path, file.path("hiatus.csv")),
-                        header = TRUE,
-                        stringsAsFactors = FALSE,
-                        colClasses = c("numeric", "numeric"))
+  hiatuses <- read.csv(file.path(path, file.path("hiatus.csv")),
+                       header = TRUE,
+                       stringsAsFactors = FALSE,
+                       colClasses = c("numeric", "numeric"))
 
   msg("Setting up environment", quiet)
   accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
@@ -147,43 +146,26 @@ Bacon <- function(wdir,
   out <- foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
-    out <- runBacon(wdir = wdir,
-                    entity = entity,
-                    postbomb = postbomb,
-                    cc = cc,
-                    alt_depths = alt_depths,
-                    quiet = quiet,
-                    core = core,
-                    depths_eval = depths_eval,
-                    hiatus_tb = hiatus_tb,
-                    sample_ids = sample_ids,
-                    unknown_age = unknown_age,
-                    coredir = coredir,
-                    acc.mean = scenarios[i, 1],
-                    ssize = 2000,
-                    th0 = c(),
-                    thick = scenarios[i, 2],
-                    close.connections = FALSE,
-                    ...)
-    out
+    run_bacon(wdir = wdir,
+              entity = entity,
+              postbomb = postbomb,
+              cc = cc,
+              alt_depths = alt_depths,
+              quiet = quiet,
+              core = core,
+              depths_eval = depths_eval,
+              hiatuses = hiatuses,
+              sample_ids = sample_ids,
+              unknown_age = unknown_age,
+              coredir = coredir,
+              acc.mean = scenarios[i, 1],
+              ssize = 2000,
+              th0 = c(),
+              thick = scenarios[i, 2],
+              close.connections = FALSE,
+              ...)
   }
   parallel::stopCluster(cl) # Stop cluster
-
-  # Remove labels
-  for (i in seq_len(length(out))) {
-    tmp <- out[[i]]
-    idx <- arrayInd(i, c(length(accMean), length(thickness)))
-    idx_x <- idx[, 1]
-    idx_y <- idx[, 2]
-    tmp$labels$x <- NULL
-    if (idx_x == 1) {
-      tmp$labels$y <- paste0("Thickness: ", thickness[idx_y], "cm")
-    } else {
-      tmp$labels$y <- NULL
-    }
-    tmp$labels$title <- paste0("Acc. Rate: ", accMean[idx_x], "yr/cm")
-    out[[i]] <- tmp
-  }
 
   # Create output filename
   allplots <- paste0(entity, "_AR",
@@ -194,23 +176,100 @@ Bacon <- function(wdir,
                             paste0(range(thickness), collapse = "-"),
                             thickness))
 
-  # Create PDF with all the plots
-  pdf(file.path(wdir, paste0(allplots, ".pdf")),
-      width = 7 * length(accMean),
-      height = 5 * length(thickness))
-  gridExtra::grid.arrange(grobs = out,
-                          nrow = length(thickness),
-                          top = entity,
-                          left = "cal Age [yrs BP]",
-                          bottom = "Depth from top [mm]")
-  dev.off()
-  save(out,
-       file = file.path(wdir, paste0(allplots, ".RData")))
+  # Create PDF with all the plots (age-depth)
+  ggplot2::ggsave(filename = paste0(allplots, ".pdf"),
+                  plot = plot_grid(out,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   top = entity,
+                                   left = "cal Age [yrs BP]",
+                                   bottom = "Depth [mm]"),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+  # save(out,
+  #      file = file.path(wdir, paste0(allplots, ".RData")))
        #paste0(entity, "-plots.RData"))
-  # return(out)
+
+  idx <- seq_len(nrow(scenarios))
+  accs <- list()
+  abcs <- list()
+  logs <- list()
+  df <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  for (i in idx) {
+    coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
+    msg(coredir)
+    tmp <- bacon_qc(wdir = wdir,
+                    entity = entity,
+                    coredir = coredir,
+                    acc.mean = scenarios[i, 1],
+                    thick = scenarios[i, 2],
+                    hiatuses = hiatuses)
+    accs[[i]] <- tmp$acc
+    abcs[[i]] <- tmp$abc
+    logs[[i]] <- tmp$log
+    df[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+  }
+
+  # Create PDF with all the plots
+  ## Accumulation Rate
+  ggplot2::ggsave(filename = paste0(allplots, "-acc.pdf"),
+                  plot = plot_grid(accs,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   top = entity),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+  ## Accumulation Rate Posterior and Prior difference
+  ggplot2::ggsave(filename = paste0(allplots, "-acc-diff.pdf"),
+                  plot = plot_grid(abcs,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   append_title = TRUE,
+                                   top = entity),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+  ## Log posterior
+  ggplot2::ggsave(filename = paste0(allplots, "-log.pdf"),
+                  plot = plot_grid(logs,
+                                   scenarios,
+                                   cond_x = "Acc. Rate",
+                                   cond_y = "Thickness",
+                                   cond_x_units = "yr/cm",
+                                   cond_y_units = "cm",
+                                   append_title = TRUE,
+                                   top = entity,
+                                   left = "Log of Objective",
+                                   bottom = "Iteration"),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness))
+
+  return(list(ag = out,
+              acc = accs,
+              abc = abcs,
+              log = logs,
+              stats = df))
 }
 
-#' Run Bacon.
+#' Run Bacon
+#'
+#' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 #'
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices pdf
@@ -234,7 +293,7 @@ Bacon <- function(wdir,
 #' @param quiet Boolean to hide status messages.
 #' @param core Data frame with the core's data.
 #' @param depths_eval Numeric array with the sampling depths.
-#' @param hiatus_tb Data frame containing information of hiatuses.
+#' @param hiatuses Data frame containing information of hiatuses.
 #' @param sample_ids Numeric array with IDs for the sampling depths.
 #' @param unknown_age Data frame containing information of unused ages.
 #' @param coredir Folder where the core's files core are and/or will be located.
@@ -244,6 +303,9 @@ Bacon <- function(wdir,
 #'     be changed to, e.g., 5, 10 or 50 for different kinds of deposits).
 #'     Multiple values can be given in case of hiatuses or boundaries, e.g.,
 #'     Bacon(hiatus.depths=23, acc.mean=c(5,20)).
+#' @param acc.shape The prior for the accumulation rate consists of a gamma
+#'     distribution with two parameters. Its shape is set by acc.shape
+#'     (default acc.shape=1.5; higher values result in more peaked shapes).
 #' @param ssize The approximate amount of iterations to store at the end of the
 #'     MCMC run. Default 2000; decrease for faster (but less reliable) runs or
 #'     increase for cores where the MCMC mixing (panel at upper-left corner of
@@ -266,23 +328,24 @@ Bacon <- function(wdir,
 #' \url{https://github.com/paleovar/SISAL.AM}
 #'
 #' @keywords internal
-runBacon <- function(wdir,
-                     entity,
-                     postbomb = 0,
-                     cc = 0,
-                     alt_depths = NULL,
-                     quiet = FALSE,
-                     core = NULL,
-                     depths_eval = NULL,
-                     hiatus_tb = NULL,
-                     sample_ids = NULL,
-                     unknown_age = NULL,
-                     coredir = NULL,
-                     acc.mean = 20,
-                     ssize = 2000,
-                     th0 = c(),
-                     thick = 5,
-                     ...) {
+run_bacon <- function(wdir,
+                      entity,
+                      postbomb = 0,
+                      cc = 0,
+                      alt_depths = NULL,
+                      quiet = FALSE,
+                      core = NULL,
+                      depths_eval = NULL,
+                      hiatuses = NULL,
+                      sample_ids = NULL,
+                      unknown_age = NULL,
+                      coredir = NULL,
+                      acc.mean = 20,
+                      acc.shape = 1.5,
+                      ssize = 2000,
+                      th0 = c(),
+                      thick = 5,
+                      ...) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
 
@@ -293,7 +356,7 @@ runBacon <- function(wdir,
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
-  if (nrow(hiatus_tb) == 0) {
+  if (nrow(hiatuses) == 0) {
     tryCatch({
       pdf(file.path(path, paste0(entity, ".pdf")),
           width = 8,
@@ -303,6 +366,7 @@ runBacon <- function(wdir,
                     coredir = file.path(wdir, entity, coredir),
                     depths.file = TRUE,
                     acc.mean = acc.mean,
+                    acc.shape = acc.shape,
                     postbomb = postbomb,
                     cc = cc,
                     suggest = FALSE,
@@ -333,8 +397,9 @@ runBacon <- function(wdir,
                     coredir = file.path(wdir, entity, coredir),
                     depths.file = TRUE,
                     acc.mean = acc.mean,
+                    acc.shape = acc.shape,
                     postbomb = postbomb,
-                    hiatus.depths = hiatus_tb[, 2],
+                    hiatus.depths = hiatuses[, 2],
                     cc = cc,
                     suggest = FALSE,
                     ask = FALSE,
@@ -394,14 +459,14 @@ runBacon <- function(wdir,
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
-                                         hiatus_tb,
+                                         hiatuses,
                                          bacon_mcmc,
                                          q1 = 0.05,
                                          q2 = 0.95)
   colnames(bacon_age)[3:4] <- paste0("uncert_", c(5, 95))
   # 75% CI
   bacon_age_75 <- get_bacon_median_quantile(depths_eval,
-                                            hiatus_tb,
+                                            hiatuses,
                                             bacon_mcmc,
                                             q1 = 0.25,
                                             q2 = 0.75)
@@ -410,9 +475,9 @@ runBacon <- function(wdir,
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_ids, bacon_mcmc)
 
-  h <- cbind(hiatus_tb,
+  h <- cbind(hiatuses,
              matrix(NA,
-                    nrow = dim(hiatus_tb)[1],
+                    nrow = dim(hiatuses)[1],
                     ncol = dim(bacon_mcmc)[2] - 2))
   names(h) <- names(bacon_mcmc)
 
@@ -449,7 +514,7 @@ runBacon <- function(wdir,
   alt_plot <- plot_age_depth(df,
                              core = core,
                              entity = entity,
-                             hiatuses = hiatus_tb)
+                             hiatuses = hiatuses)
   ggplot2::ggsave(file.path(path, "final_age_model_alt.pdf"),
                   alt_plot,
                   width = 8,
@@ -494,13 +559,56 @@ runBacon <- function(wdir,
   #        code = 3,
   #        col = core$col
   # )
-  # if (!plyr::empty(data.frame(hiatus_tb))) {
-  #   abline(h = hiatus_tb[, 2] * 10,
+  # if (!plyr::empty(data.frame(hiatuses))) {
+  #   abline(h = hiatuses[, 2] * 10,
   #          col = "grey",
   #          lty = 2)
   # }
   # dev.off()
   return(alt_plot)
+}
+
+
+#' Bacon quality control
+#'
+#' @inheritParams run_bacon
+#'
+#' @keywords internal
+bacon_qc <- function(wdir,
+                     entity,
+                     core = NULL,
+                     coredir = NULL,
+                     acc.mean = 20,
+                     acc.shape = 1.5,
+                     thick = 5,
+                     hiatuses = NULL) {
+  if (is.null(coredir))
+    coredir <- "Bacon_runs"
+
+  # Create path variable for Bacon outputs
+  path <- file.path(wdir, entity, coredir, entity)
+
+  if (is.null(core)) {
+    core <- read.csv(file.path(path, paste0(entity, ".csv")),
+                     header = TRUE,
+                     stringsAsFactors = FALSE)
+  }
+  max_depth <- max(core[, 4])
+  K <- ceiling(max_depth/thick)
+  mcmc <- read.table(file.path(path, paste0(entity, "_", K, ".out")))
+  out_acc <- plot_acc(K,
+                      mcmc[, -ncol(mcmc)],
+                      acc.mean,
+                      acc.shape,
+                      thick,
+                      hiatuses)
+  out_abc <- plot_abc(out_acc$data)
+  out_log <- plot_log_post(mcmc[, ncol(mcmc)], 0.1)
+  return(list(acc = out_acc$plot,
+              abc = out_abc$plot,
+              log = out_log$plot,
+              diff = out_abc$abc,
+              var = out_log$var))
 }
 
 #' Age model function for linear regression.
@@ -536,10 +644,10 @@ runLinReg <- function(wdir, entity, N = 2000) {
                 colClasses = c("numeric", "numeric"))
 
   setwd(file.path(wdir, entity))
-  hiatus_tb <- read.csv("hiatus.csv",
-                        header = TRUE,
-                        stringsAsFactors = FALSE,
-                        colClasses = c("numeric", "numeric"))
+  hiatuses <- read.csv("hiatus.csv",
+                       header = TRUE,
+                       stringsAsFactors = FALSE,
+                       colClasses = c("numeric", "numeric"))
   unknown_age <- read.csv("not_used_dates.csv", header = TRUE)
 
   sample <- data.frame(sample_id = id[, 1],#$sample_id,
@@ -555,7 +663,7 @@ runLinReg <- function(wdir, entity, N = 2000) {
   print("--------lin Reg ------------")
   N <- dim(mc_runs)[1]
   lr <- mc_linReg(N,
-                  hiatus_tb[, 2], # $depth_sample,
+                  hiatuses[, 2], # $depth_sample,
                   dating_tb[, 4], #$depth_dating,
                   mc_runs,
                   depth_sample[, 2]) #$depth_sample)
@@ -626,8 +734,8 @@ runLinReg <- function(wdir, entity, N = 2000) {
          angle = 90,
          code = 3,
          col = "orange")
-  if (!plyr::empty(data.frame(hiatus_tb))) {
-    abline(h = hiatus_tb[, 2], #$depth_sample,
+  if (!plyr::empty(data.frame(hiatuses))) {
+    abline(h = hiatuses[, 2], #$depth_sample,
            col = "grey",
            lty = 2)
   }

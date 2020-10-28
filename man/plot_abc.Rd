@@ -35,6 +35,9 @@ just return a data frame with posterior and prior values.}
 \item{...}{Optional parameters for
 \code{\link[ggplot2:stat_function]{ggplot2::geom_ribbon}}.}
 }
+\value{
+List with \code{ggplot2} object and area between curves (ABC).
+}
 \description{
 Plot area between curves, posterior and prior.
 }
@@ -44,4 +47,6 @@ out <- read.table("Bacon_runs/core/core_K.out")
 out <- plot_acc(out$K, out$output)
 plot_abc(out$data)
 }
+
 }
+\keyword{internal}

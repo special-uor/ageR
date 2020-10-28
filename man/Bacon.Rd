@@ -2,7 +2,7 @@
 % Please edit documentation in R/ageR.R
 \name{Bacon}
 \alias{Bacon}
-\title{Age model function for Bacon}
+\title{Bacon age model}
 \usage{
 Bacon(
   wdir,
@@ -63,8 +63,9 @@ running them.}
 \item{...}{Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.}
 }
 \value{
-
+List with \code{ggplot2} objects and summary statistics of all the
+    scenarios computed.
 }
 \description{
-Age model function for Bacon
+Bacon age model
 }
