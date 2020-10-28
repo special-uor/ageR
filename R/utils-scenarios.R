@@ -14,9 +14,15 @@
 #' ageR:::sce_seq(50)
 #' ageR:::sce_seq(50, lower = 30, upper = 80)
 #'
+#' \dontrun{
+#' ageR:::sce_seq(50, lower = 30, upper = 40)
+#' }
+#'
 #' @keywords internal
 #' @noRd
 sce_seq <- function(ref, step = 5, lower = NULL, upper = NULL) {
+  if (!is.null(upper) && (upper < ref))
+    stop("\nThe upper bound cannot be smaller than ", ref, ".")
   if (is.null(lower))
     lower <- floor(ref / 2)
   if (is.null(upper))
