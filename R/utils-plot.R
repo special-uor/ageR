@@ -31,9 +31,7 @@ plot_log_post <- function(data, varp = NULL) {
 #' Plot Age-Depth
 #'
 #' @param df Data frame with age-depth and 95\% CI interval.
-#' @param core Data frame with the core data.
-#' @param entity Entity name.
-#' @param hiatuses Data frame with hiatuses depths.
+#' @inheritParams runBacon
 #'
 #' @return \code{ggplot2} object.
 #'
@@ -76,8 +74,6 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #' @importFrom stats density
 #' @importFrom stats dgamma
 #'
-#' @param acc.mean Accumulation rate mean.
-#' @param acc.shape Accumulation rate shape.
 #' @param xlim X-axis limits.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
@@ -88,6 +84,9 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #' @param lwd Curve thickness.
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
+#'
+#' @inheritParams runBacon
+#'
 #' @return \code{ggplot2} object.
 #'
 #' @keywords internal
@@ -138,7 +137,6 @@ plot_acc_prior <- function(acc.mean = 20,
 #' @importFrom stats dgamma
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
-#' @param hiatuses Data frame with hiatus depths.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
 #'     layer for another plot or standalone.
 #' @inheritParams runBacon
@@ -206,9 +204,6 @@ plot_acc_post <- function(K,
 #'
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
-#' @param acc.mean Accumulation rate mean.
-#' @param acc.shape Accumulation rate shape.
-#' @param hiatuses Data frame with hiatus depths.
 #' @param plot Boolean flag to indicate whether a plot should be generated or
 #'     just return a data frame with posterior and prior values.
 #' @param xlab \code{x}-axis label.
@@ -216,6 +211,7 @@ plot_acc_post <- function(K,
 #' @param title Plot title.
 #' @param ... Optional parameters for
 #'     \code{\link[ggplot2:stat_function]{ggplot2::stat_function}}.
+#' @inheritParams runBacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
 #'     prior values.
