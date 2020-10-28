@@ -227,13 +227,14 @@ plot_acc <- function(K,
                      output,
                      acc.mean = 20,
                      acc.shape = 1.5,
+                     thick = 5,
                      hiatuses = NULL,
                      plot = TRUE,
                      xlab = "Acc. rate [yr/cm]",
                      ylab = NULL,
                      title = NULL,
                      ...) {
-  out <- plot_acc_post(K, output, acc.mean, acc.shape, hiatuses, FALSE)
+  out <- plot_acc_post(K, output, acc.mean, acc.shape, thick, hiatuses, FALSE)
   p <- out$plot +
     plot_acc_prior(acc.mean, acc.shape, standalone = FALSE, ...) +
     ggplot2::labs(x = xlab,
