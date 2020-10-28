@@ -1,4 +1,4 @@
-#' Age model function for Bacon
+#' Bacon age model
 #'
 #' @importFrom foreach %dopar%
 #'
@@ -146,25 +146,24 @@ Bacon <- function(wdir,
   out <- foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
-    out <- runBacon(wdir = wdir,
-                    entity = entity,
-                    postbomb = postbomb,
-                    cc = cc,
-                    alt_depths = alt_depths,
-                    quiet = quiet,
-                    core = core,
-                    depths_eval = depths_eval,
-                    hiatuses = hiatuses,
-                    sample_ids = sample_ids,
-                    unknown_age = unknown_age,
-                    coredir = coredir,
-                    acc.mean = scenarios[i, 1],
-                    ssize = 2000,
-                    th0 = c(),
-                    thick = scenarios[i, 2],
-                    close.connections = FALSE,
-                    ...)
-    out
+    run_bacon(wdir = wdir,
+              entity = entity,
+              postbomb = postbomb,
+              cc = cc,
+              alt_depths = alt_depths,
+              quiet = quiet,
+              core = core,
+              depths_eval = depths_eval,
+              hiatuses = hiatuses,
+              sample_ids = sample_ids,
+              unknown_age = unknown_age,
+              coredir = coredir,
+              acc.mean = scenarios[i, 1],
+              ssize = 2000,
+              th0 = c(),
+              thick = scenarios[i, 2],
+              close.connections = FALSE,
+              ...)
   }
   parallel::stopCluster(cl) # Stop cluster
 
@@ -270,7 +269,7 @@ Bacon <- function(wdir,
 
 #' Bacon quality control
 #'
-#' @inheritParams runBacon
+#' @inheritParams run_bacon
 #'
 #' @keywords internal
 bacon_qc <- function(wdir,
@@ -371,24 +370,24 @@ bacon_qc <- function(wdir,
 #' \url{https://github.com/paleovar/SISAL.AM}
 #'
 #' @keywords internal
-runBacon <- function(wdir,
-                     entity,
-                     postbomb = 0,
-                     cc = 0,
-                     alt_depths = NULL,
-                     quiet = FALSE,
-                     core = NULL,
-                     depths_eval = NULL,
-                     hiatuses = NULL,
-                     sample_ids = NULL,
-                     unknown_age = NULL,
-                     coredir = NULL,
-                     acc.mean = 20,
-                     acc.shape = 1.5,
-                     ssize = 2000,
-                     th0 = c(),
-                     thick = 5,
-                     ...) {
+run_bacon <- function(wdir,
+                      entity,
+                      postbomb = 0,
+                      cc = 0,
+                      alt_depths = NULL,
+                      quiet = FALSE,
+                      core = NULL,
+                      depths_eval = NULL,
+                      hiatuses = NULL,
+                      sample_ids = NULL,
+                      unknown_age = NULL,
+                      coredir = NULL,
+                      acc.mean = 20,
+                      acc.shape = 1.5,
+                      ssize = 2000,
+                      th0 = c(),
+                      thick = 5,
+                      ...) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
 
