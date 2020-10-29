@@ -3,7 +3,7 @@ tictoc::tic("Retrive data from DB")
 `%>%` <- dplyr::`%>%`
 dir.create(wdir, showWarnings = FALSE, recursive = FALSE)
 
-conn <- dabr::open_conn_mysql("RPD-latest", "root")
+conn <- dabr::open_conn_mysql("RPD-latest")
 query <- paste0(
 "SELECT entity_name,
        entity.ID_ENTITY as entity_id,
@@ -17,7 +17,7 @@ query <- paste0(
 FROM date_info INNER JOIN entity
     ON date_info.ID_ENTITY = entity.ID_ENTITY
 WHERE latitude >= 45")
-rpd <- dabr::select_query_mysql(conn, query)
+rpd <- dabr::select(conn, query)
 rpd <- rpd %>%
   dplyr::filter(!is.na(age)) %>%
   dplyr::filter(!is.na(error)) %>%
