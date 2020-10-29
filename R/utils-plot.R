@@ -78,7 +78,7 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
 #'
 #' @param xlim X-axis limits.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
-#'     layer for another plot or standalone.
+#'     layer for another plot or stand-alone.
 #' @param xlab \code{x}-axis label.
 #' @param ylab \code{y}-axis label.
 #' @param title Plot title.
@@ -140,7 +140,7 @@ plot_acc_prior <- function(acc.mean = 20,
 #' @param K Number of sections in the core.
 #' @param output Last MCMC output.
 #' @param standalone Boolean flag to indicate whether or not the plot is a
-#'     layer for another plot or standalone.
+#'     layer for another plot or stand-alone.
 #' @inheritParams run_bacon
 #'
 #' @return List with \code{ggplot2} object and data frame with posterior and
