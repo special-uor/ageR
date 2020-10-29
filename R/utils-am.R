@@ -167,10 +167,12 @@ get_bacon_median_quantile <- function(depth_eval,
                 bacon_age,
                 bacon_age_uncert_pos = bacon_quantile[2, ] - bacon_age,
                 bacon_age_uncert_neg = bacon_age - bacon_quantile[1, ])
-  h <- data.frame(depth_eval = hiatus_tb[, 2],
-                  bacon_age = replicate(dim(hiatus_tb)[1], NA),
-                  bacon_age_uncert_pos = replicate(dim(hiatus_tb)[1], NA),
-                  bacon_age_uncert_neg = replicate(dim(hiatus_tb)[1], NA))
+  h <- NULL
+  if (!is.null(hiatus_tb))
+    h <- data.frame(depth_eval = hiatus_tb[, 2],
+                    bacon_age = replicate(dim(hiatus_tb)[1], NA),
+                    bacon_age_uncert_pos = replicate(dim(hiatus_tb)[1], NA),
+                    bacon_age_uncert_neg = replicate(dim(hiatus_tb)[1], NA))
   data <- rbind(data, h)
   data <- data[order(data[,1]),]
 
