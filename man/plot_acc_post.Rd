@@ -36,7 +36,7 @@ specified by \code{thick} (default \code{thick = 5}).}
 \item{hiatuses}{Data frame containing information of hiatuses.}
 
 \item{standalone}{Boolean flag to indicate whether or not the plot is a
-layer for another plot or standalone.}
+layer for another plot or stand-alone.}
 }
 \value{
 List with \code{ggplot2} object and data frame with posterior and
