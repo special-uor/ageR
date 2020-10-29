@@ -92,10 +92,10 @@ Bacon <- function(wdir,
   }
 
   # Create range of thickness for alternative scenarios
-  if (is.null(thick_lower))
-    thick_lower <- min(k)
-  if (is.null(thick_upper))
-    thick_upper <- max(k)
+  # if (is.null(thick_lower))
+  #   thick_lower <- min(k)
+  # if (is.null(thick_upper))
+  #   thick_upper <- max(k)
   thickness <- sce_seq(thickness,
                        step = thick_step,
                        lower = thick_lower,
@@ -108,7 +108,7 @@ Bacon <- function(wdir,
   if (dry_run) {
     message("The following scenarios will be executed: ")
     print(
-      knitr::kable(scenarios, col.names = c("Accumalation rate", "Thickness"))
+      knitr::kable(scenarios, col.names = c("Accumulation rate", "Thickness"))
     )
     message("A total of ", nrow(scenarios), " scenarios.")
     return(invisible())
