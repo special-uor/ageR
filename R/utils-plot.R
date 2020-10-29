@@ -11,6 +11,8 @@
 plot_log_post <- function(data, varp = NULL) {
   # Local binding
   x <- y <- NULL
+  # Filter NAs
+  data <- data[!is.na(data)]
   if (!is.null(varp))
     data <- data[data > mean(data) * (1 - varp) &
                  data < mean(data) * (1 + varp)]
