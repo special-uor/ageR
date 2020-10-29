@@ -17,6 +17,7 @@ LazyData: true
 RoxygenNote: 7.1.1
 Language: en-GB
 Imports:
+    coda,
     data.tree,
     DiagrammeR,
     doSNOW,
@@ -26,6 +27,7 @@ Imports:
     gridExtra,
     parallel,
     plyr,
+    progress,
     rbacon,
     RMariaDB,
     scales

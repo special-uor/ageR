@@ -92,10 +92,10 @@ Bacon <- function(wdir,
   }
 
   # Create range of thickness for alternative scenarios
-  if (is.null(thick_lower))
-    thick_lower <- min(k)
-  if (is.null(thick_upper))
-    thick_upper <- max(k)
+  # if (is.null(thick_lower))
+  #   thick_lower <- min(k)
+  # if (is.null(thick_upper))
+  #   thick_upper <- max(k)
   thickness <- sce_seq(thickness,
                        step = thick_step,
                        lower = thick_lower,
@@ -108,7 +108,7 @@ Bacon <- function(wdir,
   if (dry_run) {
     message("The following scenarios will be executed: ")
     print(
-      knitr::kable(scenarios, col.names = c("Accumalation rate", "Thickness"))
+      knitr::kable(scenarios, col.names = c("Accumulation rate", "Thickness"))
     )
     message("A total of ", nrow(scenarios), " scenarios.")
     return(invisible())
@@ -168,16 +168,16 @@ Bacon <- function(wdir,
   parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
-  allplots <- paste0(entity, "_AR",
-                     ifelse(length(accMean) > 1,
-                            paste0(range(accMean), collapse = "-"),
-                            accMean), "_T",
-                     ifelse(length(thickness) > 1,
-                            paste0(range(thickness), collapse = "-"),
-                            thickness))
+  prefix <- paste0(entity, "_AR",
+                   ifelse(length(accMean) > 1,
+                          paste0(range(accMean), collapse = "-"),
+                          accMean), "_T",
+                   ifelse(length(thickness) > 1,
+                          paste0(range(thickness), collapse = "-"),
+                          thickness))
 
   # Create PDF with all the plots (age-depth)
-  ggplot2::ggsave(filename = paste0(allplots, ".pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, ".pdf"),
                   plot = plot_grid(out,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -192,17 +192,22 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
   # save(out,
-  #      file = file.path(wdir, paste0(allplots, ".RData")))
+  #      file = file.path(wdir, paste0(prefix, ".RData")))
        #paste0(entity, "-plots.RData"))
 
   idx <- seq_len(nrow(scenarios))
   accs <- list()
   abcs <- list()
   logs <- list()
-  df <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  mcmcs <- list()
+  pb <- progress::progress_bar$new(
+    format = "Bacon QC: (:current/:total) [:bar] :percent",
+    total = length(idx), clear = FALSE, width = 60)
   for (i in idx) {
+    pb$tick()
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    msg(coredir)
+    # msg(coredir)
     tmp <- bacon_qc(wdir = wdir,
                     entity = entity,
                     coredir = coredir,
@@ -212,12 +217,13 @@ Bacon <- function(wdir,
     accs[[i]] <- tmp$acc
     abcs[[i]] <- tmp$abc
     logs[[i]] <- tmp$log
-    df[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+    df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+    mcmcs[[i]] <- tmp$mcmc
   }
 
   # Create PDF with all the plots
   ## Accumulation Rate
-  ggplot2::ggsave(filename = paste0(allplots, "-acc.pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, "-acc.pdf"),
                   plot = plot_grid(accs,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -230,7 +236,7 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
   ## Accumulation Rate Posterior and Prior difference
-  ggplot2::ggsave(filename = paste0(allplots, "-acc-diff.pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, "-acc-diff.pdf"),
                   plot = plot_grid(abcs,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -244,7 +250,7 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
   ## Log posterior
-  ggplot2::ggsave(filename = paste0(allplots, "-log.pdf"),
+  ggplot2::ggsave(filename = paste0(prefix, "-log.pdf"),
                   plot = plot_grid(logs,
                                    scenarios,
                                    cond_x = "Acc. Rate",
@@ -260,11 +266,15 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
 
+  # Save general stats
+  write.csv(df_stats, paste0(prefix, "-stats.csv"), row.names = FALSE)
+
   return(list(ag = out,
               acc = accs,
               abc = abcs,
               log = logs,
-              stats = df))
+              stats = df_stats,
+              mcmc = mcmcs))
 }
 
 #' Run Bacon
@@ -356,7 +366,7 @@ run_bacon <- function(wdir,
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
-  if (nrow(hiatuses) == 0) {
+  if (is.null(hiatuses) || nrow(hiatuses) == 0) {
     tryCatch({
       pdf(file.path(path, paste0(entity, ".pdf")),
           width = 8,
@@ -456,6 +466,10 @@ run_bacon <- function(wdir,
   }
 
   msg("Saving results", quiet)
+  if (is.null(depths_eval))
+    depths_eval <- matrix(read.table(file.path(path,
+                                               paste0(entity, "_depths.txt")),
+                                     col.names = ""))[[1]]
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
@@ -474,12 +488,14 @@ run_bacon <- function(wdir,
   bacon_mcmc <- rbind(depths_eval, bacon_mcmc)
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_ids, bacon_mcmc)
-
-  h <- cbind(hiatuses,
-             matrix(NA,
-                    nrow = dim(hiatuses)[1],
-                    ncol = dim(bacon_mcmc)[2] - 2))
-  names(h) <- names(bacon_mcmc)
+  h <- NULL
+  if (!is.null(hiatuses)) {
+    h <- cbind(hiatuses,
+               matrix(NA,
+                      nrow = dim(hiatuses)[1],
+                      ncol = dim(bacon_mcmc)[2] - 2))
+    names(h) <- names(bacon_mcmc)
+  }
 
   bacon_mcmc <- rbind(bacon_mcmc, h)
   bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[, 2]), ]
@@ -496,18 +512,21 @@ run_bacon <- function(wdir,
             file.path(path, "bacon_chronology.csv"),
             row.names = FALSE)
 
+  if (is.null(core))
+    core <- read.csv(file.path(path, paste0(entity, ".csv")))
   core$col <- "#E69F00"
   if (!is.null(unknown_age) && nrow(unknown_age) > 0) {
     unknown_age$col <- "#56B4E9"
     core <- rbind(core, unknown_age)
   }
   out <- rbacon::Bacon.hist(core$depth)
+  print(out)
   core$age <- out[, 3]
   # print({
   #   rbacon::accrate.age.ghost()
   #   rbacon::agedepth(verbose = TRUE)
   # })
-  df <- data.frame(x = bacon_age[, 1] * 10,
+  df <- data.frame(x = bacon_age[, 1],
                    y = bacon_age[, 2],
                    q5 = bacon_age[, 2] + bacon_age[, 3],
                    q95 = bacon_age[, 2] - bacon_age[, 4])
@@ -525,6 +544,7 @@ run_bacon <- function(wdir,
                           entity,
                           "plots",
                           paste0(entity, "_ALT-", coredir, ".pdf")))
+  # print(alt_plot)
   # set <- get('info')
   # return(set)
   # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
@@ -568,11 +588,10 @@ run_bacon <- function(wdir,
   return(alt_plot)
 }
 
-
 #' Bacon quality control
 #'
 #' @inheritParams run_bacon
-#'
+#' @return List with plots and numerical quality values.
 #' @keywords internal
 bacon_qc <- function(wdir,
                      entity,
@@ -594,7 +613,20 @@ bacon_qc <- function(wdir,
                      stringsAsFactors = FALSE)
   }
   max_depth <- max(core[, 4])
-  K <- ceiling(max_depth/thick)
+  K <- find_K(floor(max_depth/thick) + 1, path, entity)
+  if (!file.exists(file.path(path, paste0(entity, "_", K, ".out")))) {
+    print(wdir)
+    print(entity)
+    print(coredir)
+    print(file.path(path, paste0(entity, "_", K, ".out")))
+    return(list(
+      acc = NULL,
+      abc = NULL,
+      log = NULL,
+      diff = NA,
+      var = NA
+    ))
+  }
   mcmc <- read.table(file.path(path, paste0(entity, "_", K, ".out")))
   out_acc <- plot_acc(K,
                       mcmc[, -ncol(mcmc)],
@@ -608,7 +640,35 @@ bacon_qc <- function(wdir,
               abc = out_abc$plot,
               log = out_log$plot,
               diff = out_abc$abc,
-              var = out_log$var))
+              var = out_log$var,
+              mcmc = mcmc))
+}
+
+#' Gelman-Rubin test
+#'
+#' Perform a Gelman and Rubin reduction Factor test.
+#'
+#' @param data List with MCMC runs output.
+#' @param confidence Confidence level.
+#'
+#' @return Gelman and Rubin reduction factor.
+#' @keywords internal
+#'
+gelman_test <- function(data, confidence = 0.975) {
+  if (class(data) != "list")
+    stop("Input must be a list of MCMC runs", call. = FALSE)
+  # Find length of shortest run
+  r <- min(unlist(lapply(data, nrow)))
+  c <- min(unlist(lapply(data, ncol)))
+  # Trim runs to have same length
+  for (i in seq_len(length(data))) {
+    data[[i]] <- data[[i]][1:r, 1:c]
+  }
+  out <- coda::gelman.diag(coda::mcmc.list(lapply(data, coda::as.mcmc)),
+                           autoburnin = FALSE,
+                           transform = TRUE,
+                           confidence = confidence)
+  return(out$mpsrf)
 }
 
 #' Age model function for linear regression.

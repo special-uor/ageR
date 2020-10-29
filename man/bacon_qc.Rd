@@ -40,6 +40,9 @@ specified by \code{thick} (default \code{thick = 5}).}
 
 \item{hiatuses}{Data frame containing information of hiatuses.}
 }
+\value{
+List with plots and numerical quality values.
+}
 \description{
 Bacon quality control
 }

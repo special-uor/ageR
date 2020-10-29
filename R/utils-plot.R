@@ -11,6 +11,8 @@
 plot_log_post <- function(data, varp = NULL) {
   # Local binding
   x <- y <- NULL
+  # Filter NAs
+  data <- data[!is.na(data)]
   if (!is.null(varp))
     data <- data[data > mean(data) * (1 - varp) &
                  data < mean(data) * (1 + varp)]
@@ -43,14 +45,14 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
     ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
     ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
     ggplot2::geom_line(ggplot2::aes(x, q95), col = "red", lty = 2) +
-    ggplot2::geom_point(ggplot2::aes(depth * 10, age),
+    ggplot2::geom_point(ggplot2::aes(depth, age),
                         data = core,
                         fill = core$col,
                         size = 2,
                         shape = 24) +
     # ggplot2::scale_colour_manual(values = core$col) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(core))) +
-    ggplot2::labs(x = "Depth from top [mm]",
+    ggplot2::labs(x = "Depth [cm]",
                   y = "cal Age [yrs BP]",
                   title = entity) +
     # ggplot2::coord_cartesian(xlim = c(0, max(depths_eval * 10))) +

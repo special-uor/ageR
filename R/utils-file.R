@@ -253,3 +253,30 @@ sym_link <- function(from, to, overwrite = TRUE) {
     file.remove(to)
   . <- file.symlink(from = from, to = to)
 }
+
+#' Find adjusted K
+#'
+#' Find adjusted number of sections in the core.
+#'
+#' @param K Number of sections in the core.
+#' @inheritParams run_bacon
+#'
+#' @return Adjusted \code{K}.
+#' @keywords internal
+find_K <- function(K, wdir, entity) {
+  Ks <- K + c(-2:2)
+  paths <- paste0(file.path(wdir, entity), "_", Ks, ".out")
+  idx <- unlist(lapply(paths, file.exists))
+  if (sum(idx) == 0) {
+    stop("\nNo Bacon output files were found inside: \n", wdir)
+  } else if (sum(idx) > 1) {
+    times_idx <- order(unlist(lapply(paths[idx], file.mtime)),
+                       decreasing = TRUE)
+    warning("\nBacon output files for multiple executions were found, ",
+            "using the newest: \n",
+            basename(paths[idx][times_idx][1]))
+
+    return(Ks[idx][times_idx][1])
+  }
+  return(Ks[idx])
+}
