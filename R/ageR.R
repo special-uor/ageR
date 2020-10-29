@@ -644,6 +644,33 @@ bacon_qc <- function(wdir,
               mcmc = mcmc))
 }
 
+#' Gelman-Rubin test
+#'
+#' Perform a Gelman and Rubin reduction Factor test.
+#'
+#' @param data List with MCMC runs output.
+#' @param confidence Confidence level.
+#'
+#' @return Gelman and Rubin reduction factor.
+#' @keywords internal
+#'
+gelman_test <- function(data, confidence = 0.975) {
+  if (class(data) != "list")
+    stop("Input must be a list of MCMC runs", call. = FALSE)
+  # Find length of shortest run
+  r <- min(unlist(lapply(data, nrow)))
+  c <- min(unlist(lapply(data, ncol)))
+  # Trim runs to have same length
+  for (i in seq_len(length(data))) {
+    data[[i]] <- data[[i]][1:r, 1:c]
+  }
+  out <- coda::gelman.diag(coda::mcmc.list(lapply(data, coda::as.mcmc)),
+                           autoburnin = FALSE,
+                           transform = TRUE,
+                           confidence = confidence)
+  return(out$mpsrf)
+}
+
 #' Age model function for linear regression.
 #'
 #' @param wdir path where input files are stored.
