@@ -32,7 +32,7 @@ distribution with two parameters. Its shape is set by acc.shape
 \item{xlim}{X-axis limits.}
 
 \item{standalone}{Boolean flag to indicate whether or not the plot is a
-layer for another plot or standalone.}
+layer for another plot or stand-alone.}
 
 \item{xlab}{\code{x}-axis label.}
 
