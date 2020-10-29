@@ -199,10 +199,15 @@ Bacon <- function(wdir,
   accs <- list()
   abcs <- list()
   logs <- list()
-  df <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  mcmcs <- list()
+  pb <- progress::progress_bar$new(
+    format = "Bacon QC: (:current/:total) [:bar] :percent",
+    total = length(idx), clear = FALSE, width = 60)
   for (i in idx) {
+    pb$tick()
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    msg(coredir)
+    # msg(coredir)
     tmp <- bacon_qc(wdir = wdir,
                     entity = entity,
                     coredir = coredir,
@@ -212,7 +217,8 @@ Bacon <- function(wdir,
     accs[[i]] <- tmp$acc
     abcs[[i]] <- tmp$abc
     logs[[i]] <- tmp$log
-    df[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+    df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+    mcmcs[[i]] <- tmp$mcmc
   }
 
   # Create PDF with all the plots
@@ -261,13 +267,14 @@ Bacon <- function(wdir,
                   height = 5 * length(thickness))
 
   # Save general stats
-  write.csv(df, paste(prefix, "-stats.csv"), row.names = FALSE)
+  write.csv(df_stats, paste0(prefix, "-stats.csv"), row.names = FALSE)
 
   return(list(ag = out,
               acc = accs,
               abc = abcs,
               log = logs,
-              stats = df))
+              stats = df_stats,
+              mcmc = mcmcs))
 }
 
 #' Run Bacon
@@ -359,7 +366,7 @@ run_bacon <- function(wdir,
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
-  if (nrow(hiatuses) == 0) {
+  if (is.null(hiatuses) || nrow(hiatuses) == 0) {
     tryCatch({
       pdf(file.path(path, paste0(entity, ".pdf")),
           width = 8,
@@ -459,6 +466,10 @@ run_bacon <- function(wdir,
   }
 
   msg("Saving results", quiet)
+  if (is.null(depths_eval))
+    depths_eval <- matrix(read.table(file.path(path,
+                                               paste0(entity, "_depths.txt")),
+                                     col.names = ""))[[1]]
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
@@ -477,12 +488,14 @@ run_bacon <- function(wdir,
   bacon_mcmc <- rbind(depths_eval, bacon_mcmc)
   bacon_mcmc <- t(bacon_mcmc)
   bacon_mcmc <- cbind(sample_ids, bacon_mcmc)
-
-  h <- cbind(hiatuses,
-             matrix(NA,
-                    nrow = dim(hiatuses)[1],
-                    ncol = dim(bacon_mcmc)[2] - 2))
-  names(h) <- names(bacon_mcmc)
+  h <- NULL
+  if (!is.null(hiatuses)) {
+    h <- cbind(hiatuses,
+               matrix(NA,
+                      nrow = dim(hiatuses)[1],
+                      ncol = dim(bacon_mcmc)[2] - 2))
+    names(h) <- names(bacon_mcmc)
+  }
 
   bacon_mcmc <- rbind(bacon_mcmc, h)
   bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[, 2]), ]
@@ -499,18 +512,21 @@ run_bacon <- function(wdir,
             file.path(path, "bacon_chronology.csv"),
             row.names = FALSE)
 
+  if (is.null(core))
+    core <- read.csv(file.path(path, paste0(entity, ".csv")))
   core$col <- "#E69F00"
   if (!is.null(unknown_age) && nrow(unknown_age) > 0) {
     unknown_age$col <- "#56B4E9"
     core <- rbind(core, unknown_age)
   }
   out <- rbacon::Bacon.hist(core$depth)
+  print(out)
   core$age <- out[, 3]
   # print({
   #   rbacon::accrate.age.ghost()
   #   rbacon::agedepth(verbose = TRUE)
   # })
-  df <- data.frame(x = bacon_age[, 1] * 10,
+  df <- data.frame(x = bacon_age[, 1],
                    y = bacon_age[, 2],
                    q5 = bacon_age[, 2] + bacon_age[, 3],
                    q95 = bacon_age[, 2] - bacon_age[, 4])
@@ -528,6 +544,7 @@ run_bacon <- function(wdir,
                           entity,
                           "plots",
                           paste0(entity, "_ALT-", coredir, ".pdf")))
+  # print(alt_plot)
   # set <- get('info')
   # return(set)
   # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
@@ -571,11 +588,10 @@ run_bacon <- function(wdir,
   return(alt_plot)
 }
 
-
 #' Bacon quality control
 #'
 #' @inheritParams run_bacon
-#'
+#' @return List with plots and numerical quality values.
 #' @keywords internal
 bacon_qc <- function(wdir,
                      entity,
@@ -624,7 +640,8 @@ bacon_qc <- function(wdir,
               abc = out_abc$plot,
               log = out_log$plot,
               diff = out_abc$abc,
-              var = out_log$var))
+              var = out_log$var,
+              mcmc = mcmc))
 }
 
 #' Age model function for linear regression.
