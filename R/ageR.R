@@ -199,13 +199,14 @@ Bacon <- function(wdir,
   accs <- list()
   abcs <- list()
   logs <- list()
-  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, bias_rel = NA)
   mcmcs <- list()
   pb <- progress::progress_bar$new(
     format = "Bacon QC: (:current/:total) [:bar] :percent",
     total = length(idx), clear = FALSE, width = 60)
   for (i in idx) {
-    pb$tick()
+    if (!quiet)
+      pb$tick()
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     # msg(coredir)
     tmp <- bacon_qc(wdir = wdir,
@@ -217,7 +218,7 @@ Bacon <- function(wdir,
     accs[[i]] <- tmp$acc
     abcs[[i]] <- tmp$abc
     logs[[i]] <- tmp$log
-    df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+    df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
   }
 
@@ -267,7 +268,9 @@ Bacon <- function(wdir,
                   height = 5 * length(thickness))
 
   # Save general stats
-  write.csv(df_stats, paste0(prefix, "-stats.csv"), row.names = FALSE)
+  write.csv(df_stats,
+            file.path(wdir, paste0(prefix, "-stats.csv")),
+            row.names = FALSE)
 
   return(list(ag = out,
               acc = accs,
@@ -483,8 +486,11 @@ run_bacon <- function(wdir,
     core <- rbind(core, unknown_age)
   }
   out <- rbacon::Bacon.hist(core$depth)
-  print(out)
+  # dput(out)
   core$age <- out[, 3]
+  core$age_min <- out[, 1]
+  core$age_max <- out[, 2]
+  core$col[core$age <= 0] <- "#008060"
   # print({
   #   rbacon::accrate.age.ghost()
   #   rbacon::agedepth(verbose = TRUE)
@@ -560,12 +566,13 @@ bacon_qc <- function(wdir,
                       thick,
                       hiatuses)
   out_abc <- plot_abc(out_acc$data)
-  out_log <- plot_log_post(mcmc[, ncol(mcmc)], 0.1)
+  out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
               log = out_log$plot,
               diff = out_abc$abc,
-              var = out_log$var,
+              bias = out_log$bias,
+              bias_rel = out_log$bias_rel,
               mcmc = mcmc))
 }
 
