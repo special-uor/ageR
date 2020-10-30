@@ -367,7 +367,7 @@ run_bacon <- function(wdir,
 
   msg("Running Bacon", quiet)
   hiatus.depths <- NA
-  if (is.null(hiatuses) || nrow(hiatuses) == 0)
+  if (!is.null(hiatuses) && nrow(hiatuses) > 0)
     hiatus.depths <- hiatuses[, 2]
   tryCatch({
     pdf(file.path(path, paste0(entity, ".pdf")),
