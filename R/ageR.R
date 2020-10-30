@@ -341,7 +341,7 @@ Bacon <- function(wdir,
 run_bacon <- function(wdir,
                       entity,
                       postbomb = 0,
-                      cc = 0,
+                      cc = 1,
                       alt_depths = NULL,
                       quiet = FALSE,
                       core = NULL,
@@ -366,70 +366,41 @@ run_bacon <- function(wdir,
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
-  if (is.null(hiatuses) || nrow(hiatuses) == 0) {
-    tryCatch({
-      pdf(file.path(path, paste0(entity, ".pdf")),
-          width = 8,
-          height = 6)
-      rbacon::Bacon(core = entity,
-                    thick = thick,
-                    coredir = file.path(wdir, entity, coredir),
-                    depths.file = TRUE,
-                    acc.mean = acc.mean,
-                    acc.shape = acc.shape,
-                    postbomb = postbomb,
-                    cc = cc,
-                    suggest = FALSE,
-                    ask = FALSE,
-                    ssize = ssize,
-                    th0 = th0,
-                    plot.pdf = FALSE,
-                    ...)
-      dev.off()
-      sym_link(from = file.path(path, paste0(entity, ".pdf")),
-               to = file.path(wdir,
-                              entity,
-                              "plots",
-                              paste0(entity, "-", coredir, ".pdf")))
-    },
-    error = function(e) {
-      write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
-                  file = file.path(path, "bacon_error.txt"))
-      stop(conditionMessage(e))
-    })
-  } else {
-    tryCatch({
-      pdf(file.path(path, paste0(entity, ".pdf")),
-          width = 8,
-          height = 6)
-      rbacon::Bacon(core = entity,
-                    thick = thick,
-                    coredir = file.path(wdir, entity, coredir),
-                    depths.file = TRUE,
-                    acc.mean = acc.mean,
-                    acc.shape = acc.shape,
-                    postbomb = postbomb,
-                    hiatus.depths = hiatuses[, 2],
-                    cc = cc,
-                    suggest = FALSE,
-                    ask = FALSE,
-                    ssize = ssize,
-                    th0 = th0,
-                    plot.pdf = FALSE,
-                    ...)
-      dev.off()
-      sym_link(from = file.path(path, paste0(entity, ".pdf")),
-               to = file.path(wdir,
-                              entity,
-                              "plots",
-                              paste0(entity, "-", coredir, ".pdf")))
-    },
-    error = function(e) {
-      write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
-                  file = file.path(path, "bacon_error.txt"))
-      stop(conditionMessage(e))
-    })
-  }
+  hiatus.depths <- NA
+  if (is.null(hiatuses) || nrow(hiatuses) == 0)
+    hiatus.depths <- hiatuses[, 2]
+  tryCatch({
+    pdf(file.path(path, paste0(entity, ".pdf")),
+        width = 8,
+        height = 6)
+    rbacon::Bacon(core = entity,
+                  thick = thick,
+                  coredir = file.path(wdir, entity, coredir),
+                  depths.file = TRUE,
+                  acc.mean = acc.mean,
+                  acc.shape = acc.shape,
+                  postbomb = postbomb,
+                  hiatus.depths = hiatus.depths,
+                  cc = cc,
+                  suggest = FALSE,
+                  ask = FALSE,
+                  ssize = ssize,
+                  th0 = th0,
+                  plot.pdf = FALSE,
+                  ...)
+    dev.off()
+    sym_link(from = file.path(path, paste0(entity, ".pdf")),
+             to = file.path(wdir,
+                            entity,
+                            "plots",
+                            paste0(entity, "-", coredir, ".pdf")))
+  },
+  error = function(e) {
+    write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
+                file = file.path(path, "bacon_error.txt"))
+    stop(conditionMessage(e))
+  })
+
 
   # List alternative depth files
   alt_depth_files <- list.files(path, "*_depths.alt.txt")
