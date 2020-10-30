@@ -281,18 +281,10 @@ Bacon <- function(wdir,
 #'
 #' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 #'
-#' @importFrom grDevices dev.off
-#' @importFrom grDevices pdf
-#' @importFrom graphics abline
-#' @importFrom graphics arrows
-#' @importFrom graphics lines
-#' @importFrom graphics matplot
-#' @importFrom graphics points
+#' @importFrom grDevices dev.off pdf
+#' @importFrom graphics abline arrows lines matplot points
 #' @importFrom stats lm
-#' @importFrom utils read.csv
-#' @importFrom utils read.table
-#' @importFrom utils write.csv
-#' @importFrom utils write.table
+#' @importFrom utils read.csv read.table write.csv write.table
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -518,44 +510,6 @@ run_bacon <- function(wdir,
   # print(alt_plot)
   # set <- get('info')
   # return(set)
-  # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
-  # matplot(y = bacon_age[, 2],
-  #         x = bacon_age[, 1] * 10,
-  #         col = "black",
-  #         lty = 1,
-  #         type = "l",
-  #         lwd = 1,
-  #         xlim = c(0, max(depths_eval * 10)),
-  #         ylab = "cal Age [yrs BP]",
-  #         xlab = "Depth from top [mm]")
-  # lines(y = bacon_age[, 3] + bacon_age[, 2],
-  #       x = bacon_age[, 1] * 10,
-  #       lty = 2,
-  #       col = "red")
-  # lines(y = bacon_age[, 2] - bacon_age[, 4],
-  #       x = bacon_age[, 1] * 10,
-  #       lty = 2,
-  #       col = "red")
-  # points(y = core[, 2],
-  #   x = core[, 4] * 10,
-  #   lty = 2,
-  #   col = core$col,
-  #   pch = 4)
-  # arrows(y0 = core[, 2] - core[, 3],
-  #        x0 = core[, 4] * 10,
-  #        y1 = core[, 2] + core[, 3],
-  #        x1 = core[, 4] * 10,
-  #        length = 0.05,
-  #        angle = 90,
-  #        code = 3,
-  #        col = core$col
-  # )
-  # if (!plyr::empty(data.frame(hiatuses))) {
-  #   abline(h = hiatuses[, 2] * 10,
-  #          col = "grey",
-  #          lty = 2)
-  # }
-  # dev.off()
   return(alt_plot)
 }
 
