@@ -12,7 +12,7 @@ plot_log_post(data, varp = NULL)
 \item{varp}{Variance percentage threshold.}
 }
 \value{
-List with \code{ggplot2} object and variance.
+List with \code{ggplot2} object and bias
 }
 \description{
 Plot log of posterior

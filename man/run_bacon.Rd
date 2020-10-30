@@ -8,7 +8,7 @@ run_bacon(
   wdir,
   entity,
   postbomb = 0,
-  cc = 0,
+  cc = 1,
   alt_depths = NULL,
   quiet = FALSE,
   core = NULL,
