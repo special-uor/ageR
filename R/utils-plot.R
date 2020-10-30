@@ -5,7 +5,7 @@
 #' @param data Posterior data.
 #' @param varp Variance percentage threshold.
 #'
-#' @return List with \code{ggplot2} object and variance.
+#' @return List with \code{ggplot2} object and bias
 #'
 #' @keywords internal
 plot_log_post <- function(data, varp = NULL) {
@@ -18,16 +18,20 @@ plot_log_post <- function(data, varp = NULL) {
                  data < mean(data) * (1 + varp)]
   df <- data.frame(x = seq_len(length(data)) - 1,
                    y = -data)
+  bias <- SimDesign::bias(data, mean(data), type = "relative")
+  bias_rel <- SimDesign::bias(data, mean(data), "relative")
   p <- ggplot2::ggplot(data = df, ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_line(alpha = 0.7) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
     ggplot2::labs(x = "Log of Objective",
                   y = "Iteration",
-                  title = paste0("Variance: ",
-                                 round(var(data), digits = 4))) +
+                  title = paste0("Bias: ",
+                                 ifelse(bias > 1,
+                                        round(bias, digits = 4),
+                                        bias))) +
     ggplot2::geom_hline(yintercept = -mean(data), col = "red", lty = 2) +
     ggplot2::theme_bw()
-  return(list(plot = p, var = var(data)))
+  return(list(plot = p, bias = bias, bias_rel = bias_rel))
 }
 
 #' Plot Age-Depth
@@ -42,13 +46,19 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
   # Local binding
   x <- y <- q5 <- q95 <- depth <- age <- NULL
   p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
-    ggplot2::geom_line(ggplot2::aes(x, y), col = "black") +
-    ggplot2::geom_line(ggplot2::aes(x, q5), col = "red", lty = 2) +
-    ggplot2::geom_line(ggplot2::aes(x, q95), col = "red", lty = 2) +
-    ggplot2::geom_point(ggplot2::aes(depth, age),
+    ggplot2::geom_line(ggplot2::aes(x, y), col = "red") +
+    ggplot2::geom_line(ggplot2::aes(x, q5), col = "black", lty = 2) +
+    ggplot2::geom_line(ggplot2::aes(x, q95), col = "black", lty = 2) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = q5, ymax = q95),
+                         fill = grey(0.5),
+                         alpha = 0.35) +
+    ggplot2::geom_pointrange(ggplot2::aes(x = depth,
+                                          y = age,
+                                          ymin = age_min,
+                                          ymax = age_max),
                         data = core,
                         fill = core$col,
-                        size = 2,
+                        # size = 2,
                         shape = 24) +
     # ggplot2::scale_colour_manual(values = core$col) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(core))) +
@@ -64,7 +74,7 @@ plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
   if (!is.null(hiatuses))
     for (i in seq_len(nrow(hiatuses))) {
       p <- p +
-        ggplot2::geom_vline(xintercept = hiatuses[i, 2] * 10,
+        ggplot2::geom_vline(xintercept = hiatuses[i, 2],
                             col = "grey",
                             lty = 2)
     }

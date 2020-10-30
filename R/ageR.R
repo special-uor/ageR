@@ -199,13 +199,14 @@ Bacon <- function(wdir,
   accs <- list()
   abcs <- list()
   logs <- list()
-  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, var = NA)
+  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, bias_rel = NA)
   mcmcs <- list()
   pb <- progress::progress_bar$new(
     format = "Bacon QC: (:current/:total) [:bar] :percent",
     total = length(idx), clear = FALSE, width = 60)
   for (i in idx) {
-    pb$tick()
+    if (!quiet)
+      pb$tick()
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     # msg(coredir)
     tmp <- bacon_qc(wdir = wdir,
@@ -217,7 +218,7 @@ Bacon <- function(wdir,
     accs[[i]] <- tmp$acc
     abcs[[i]] <- tmp$abc
     logs[[i]] <- tmp$log
-    df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$var)
+    df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
   }
 
@@ -267,7 +268,9 @@ Bacon <- function(wdir,
                   height = 5 * length(thickness))
 
   # Save general stats
-  write.csv(df_stats, paste0(prefix, "-stats.csv"), row.names = FALSE)
+  write.csv(df_stats,
+            file.path(wdir, paste0(prefix, "-stats.csv")),
+            row.names = FALSE)
 
   return(list(ag = out,
               acc = accs,
@@ -281,18 +284,10 @@ Bacon <- function(wdir,
 #'
 #' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 #'
-#' @importFrom grDevices dev.off
-#' @importFrom grDevices pdf
-#' @importFrom graphics abline
-#' @importFrom graphics arrows
-#' @importFrom graphics lines
-#' @importFrom graphics matplot
-#' @importFrom graphics points
+#' @importFrom grDevices dev.off pdf
+#' @importFrom graphics abline arrows lines matplot points
 #' @importFrom stats lm
-#' @importFrom utils read.csv
-#' @importFrom utils read.table
-#' @importFrom utils write.csv
-#' @importFrom utils write.table
+#' @importFrom utils read.csv read.table write.csv write.table
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -341,7 +336,7 @@ Bacon <- function(wdir,
 run_bacon <- function(wdir,
                       entity,
                       postbomb = 0,
-                      cc = 0,
+                      cc = 1,
                       alt_depths = NULL,
                       quiet = FALSE,
                       core = NULL,
@@ -366,70 +361,41 @@ run_bacon <- function(wdir,
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
   msg("Running Bacon", quiet)
-  if (is.null(hiatuses) || nrow(hiatuses) == 0) {
-    tryCatch({
-      pdf(file.path(path, paste0(entity, ".pdf")),
-          width = 8,
-          height = 6)
-      rbacon::Bacon(core = entity,
-                    thick = thick,
-                    coredir = file.path(wdir, entity, coredir),
-                    depths.file = TRUE,
-                    acc.mean = acc.mean,
-                    acc.shape = acc.shape,
-                    postbomb = postbomb,
-                    cc = cc,
-                    suggest = FALSE,
-                    ask = FALSE,
-                    ssize = ssize,
-                    th0 = th0,
-                    plot.pdf = FALSE,
-                    ...)
-      dev.off()
-      sym_link(from = file.path(path, paste0(entity, ".pdf")),
-               to = file.path(wdir,
-                              entity,
-                              "plots",
-                              paste0(entity, "-", coredir, ".pdf")))
-    },
-    error = function(e) {
-      write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
-                  file = file.path(path, "bacon_error.txt"))
-      stop(conditionMessage(e))
-    })
-  } else {
-    tryCatch({
-      pdf(file.path(path, paste0(entity, ".pdf")),
-          width = 8,
-          height = 6)
-      rbacon::Bacon(core = entity,
-                    thick = thick,
-                    coredir = file.path(wdir, entity, coredir),
-                    depths.file = TRUE,
-                    acc.mean = acc.mean,
-                    acc.shape = acc.shape,
-                    postbomb = postbomb,
-                    hiatus.depths = hiatuses[, 2],
-                    cc = cc,
-                    suggest = FALSE,
-                    ask = FALSE,
-                    ssize = ssize,
-                    th0 = th0,
-                    plot.pdf = FALSE,
-                    ...)
-      dev.off()
-      sym_link(from = file.path(path, paste0(entity, ".pdf")),
-               to = file.path(wdir,
-                              entity,
-                              "plots",
-                              paste0(entity, "-", coredir, ".pdf")))
-    },
-    error = function(e) {
-      write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
-                  file = file.path(path, "bacon_error.txt"))
-      stop(conditionMessage(e))
-    })
-  }
+  hiatus.depths <- NA
+  if (!is.null(hiatuses) && nrow(hiatuses) > 0)
+    hiatus.depths <- hiatuses[, 2]
+  tryCatch({
+    pdf(file.path(path, paste0(entity, ".pdf")),
+        width = 8,
+        height = 6)
+    rbacon::Bacon(core = entity,
+                  thick = thick,
+                  coredir = file.path(wdir, entity, coredir),
+                  depths.file = TRUE,
+                  acc.mean = acc.mean,
+                  acc.shape = acc.shape,
+                  postbomb = postbomb,
+                  hiatus.depths = hiatus.depths,
+                  cc = cc,
+                  suggest = FALSE,
+                  ask = FALSE,
+                  ssize = ssize,
+                  th0 = th0,
+                  plot.pdf = FALSE,
+                  ...)
+    dev.off()
+    sym_link(from = file.path(path, paste0(entity, ".pdf")),
+             to = file.path(wdir,
+                            entity,
+                            "plots",
+                            paste0(entity, "-", coredir, ".pdf")))
+  },
+  error = function(e) {
+    write.table(x = paste("ERROR in Bacon:", conditionMessage(e)),
+                file = file.path(path, "bacon_error.txt"))
+    stop(conditionMessage(e))
+  })
+
 
   # List alternative depth files
   alt_depth_files <- list.files(path, "*_depths.alt.txt")
@@ -520,8 +486,11 @@ run_bacon <- function(wdir,
     core <- rbind(core, unknown_age)
   }
   out <- rbacon::Bacon.hist(core$depth)
-  print(out)
+  # dput(out)
   core$age <- out[, 3]
+  core$age_min <- out[, 1]
+  core$age_max <- out[, 2]
+  core$col[core$age <= 0] <- "#008060"
   # print({
   #   rbacon::accrate.age.ghost()
   #   rbacon::agedepth(verbose = TRUE)
@@ -547,44 +516,6 @@ run_bacon <- function(wdir,
   # print(alt_plot)
   # set <- get('info')
   # return(set)
-  # pdf(file.path(path, "final_age_model.pdf"), 6, 4)
-  # matplot(y = bacon_age[, 2],
-  #         x = bacon_age[, 1] * 10,
-  #         col = "black",
-  #         lty = 1,
-  #         type = "l",
-  #         lwd = 1,
-  #         xlim = c(0, max(depths_eval * 10)),
-  #         ylab = "cal Age [yrs BP]",
-  #         xlab = "Depth from top [mm]")
-  # lines(y = bacon_age[, 3] + bacon_age[, 2],
-  #       x = bacon_age[, 1] * 10,
-  #       lty = 2,
-  #       col = "red")
-  # lines(y = bacon_age[, 2] - bacon_age[, 4],
-  #       x = bacon_age[, 1] * 10,
-  #       lty = 2,
-  #       col = "red")
-  # points(y = core[, 2],
-  #   x = core[, 4] * 10,
-  #   lty = 2,
-  #   col = core$col,
-  #   pch = 4)
-  # arrows(y0 = core[, 2] - core[, 3],
-  #        x0 = core[, 4] * 10,
-  #        y1 = core[, 2] + core[, 3],
-  #        x1 = core[, 4] * 10,
-  #        length = 0.05,
-  #        angle = 90,
-  #        code = 3,
-  #        col = core$col
-  # )
-  # if (!plyr::empty(data.frame(hiatuses))) {
-  #   abline(h = hiatuses[, 2] * 10,
-  #          col = "grey",
-  #          lty = 2)
-  # }
-  # dev.off()
   return(alt_plot)
 }
 
@@ -635,12 +566,13 @@ bacon_qc <- function(wdir,
                       thick,
                       hiatuses)
   out_abc <- plot_abc(out_acc$data)
-  out_log <- plot_log_post(mcmc[, ncol(mcmc)], 0.1)
+  out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
               log = out_log$plot,
               diff = out_abc$abc,
-              var = out_log$var,
+              bias = out_log$bias,
+              bias_rel = out_log$bias_rel,
               mcmc = mcmc))
 }
 
