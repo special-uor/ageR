@@ -195,7 +195,8 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
 
   # Assess quality checks for the Bacon models
   idx <- seq_len(nrow(scenarios))
@@ -250,7 +251,8 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
   ## Accumulation Rate Posterior and Prior difference
   ggplot2::ggsave(filename = paste0(prefix, "-acc-diff.pdf"),
                   plot = plot_grid(abcs,
@@ -264,7 +266,8 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
   ## Log posterior
   ggplot2::ggsave(filename = paste0(prefix, "-log.pdf"),
                   plot = plot_grid(logs,
@@ -280,7 +283,8 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
 
   return(list(ag = out,
               acc = accs,
