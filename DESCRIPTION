@@ -36,7 +36,8 @@ Imports:
     rbacon,
     scales,
     SimDesign,
-    stringi
+    stringi,
+    tictoc
 Remotes:
     special-uor/dabr
 Suggests:
