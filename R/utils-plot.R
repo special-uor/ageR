@@ -36,6 +36,8 @@ plot_log_post <- function(data, varp = NULL) {
 
 #' Plot Age-Depth
 #'
+#' @importFrom grDevices grey
+#'
 #' @param df Data frame with age-depth and 95\% CI interval.
 #' @inheritParams run_bacon
 #'
@@ -44,7 +46,7 @@ plot_log_post <- function(data, varp = NULL) {
 #' @keywords internal
 plot_age_depth <- function(df, core, entity = NULL, hiatuses = NULL) {
   # Local binding
-  x <- y <- q5 <- q95 <- depth <- age <- NULL
+  x <- y <- q5 <- q95 <- depth <- age <- age_min <- age_max <- NULL
   p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
     ggplot2::geom_line(ggplot2::aes(x, y), col = "red") +
     ggplot2::geom_line(ggplot2::aes(x, q5), col = "black", lty = 2) +

@@ -34,9 +34,10 @@ Imports:
     plyr,
     progress,
     rbacon,
-    RMariaDB,
     scales,
-    SimDesign
+    SimDesign,
+    stringi,
+    tictoc
 Remotes:
     special-uor/dabr
 Suggests:

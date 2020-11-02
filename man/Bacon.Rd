@@ -10,6 +10,7 @@ Bacon(
   cpus = 1,
   postbomb = 0,
   cc = 0,
+  seed = NA,
   alt_depths = NULL,
   quiet = FALSE,
   acc_step = 5,
@@ -30,9 +31,17 @@ Bacon(
 \item{cpus}{Number of CPUs to be used on the computation of the age models.}
 
 \item{postbomb}{Use a postbomb curve for negative (i.e. postbomb) 14C ages.
-0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
+\code{0 = none}, \code{1 = NH1}, \code{2 = NH2}, \code{3 = NH3},
+\code{4 = SH1-2}, \code{5 = SH3}.}
 
-\item{cc}{Calibration curve.}
+\item{cc}{Calibration curve for C-14 dates:
+\code{cc = 1} for \code{IntCal20} (northern hemisphere terrestrial),
+\code{cc = 2} for \code{Marine20} (marine),
+\code{cc = 3} for \code{SHCal20} (southern hemisphere terrestrial).
+For dates that are already on the \code{cal BP} scale use \code{cc = 0}.}
+
+\item{seed}{Set see to reproduce results. This seed is used for \code{C++}
+executions, if it is not assigned then the seed is set by the system.}
 
 \item{alt_depths}{List of arrays with new depths.}
 

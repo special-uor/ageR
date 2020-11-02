@@ -6,8 +6,15 @@
 #' @param entity Name of the entity.
 #' @param cpus Number of CPUs to be used on the computation of the age models.
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages.
-#'     0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3
-#' @param cc Calibration curve.
+#'     \code{0 = none}, \code{1 = NH1}, \code{2 = NH2}, \code{3 = NH3},
+#'     \code{4 = SH1-2}, \code{5 = SH3}.
+#' @param cc Calibration curve for C-14 dates:
+#'     \code{cc = 1} for \code{IntCal20} (northern hemisphere terrestrial),
+#'     \code{cc = 2} for \code{Marine20} (marine),
+#'     \code{cc = 3} for \code{SHCal20} (southern hemisphere terrestrial).
+#'     For dates that are already on the \code{cal BP} scale use \code{cc = 0}.
+#' @param seed Set see to reproduce results. This seed is used for \code{C++}
+#'     executions, if it is not assigned then the seed is set by the system.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
 #' @param acc_step Accumulation rate step. Used to create alternative
@@ -35,6 +42,7 @@ Bacon <- function(wdir,
                   cpus = 1,
                   postbomb = 0,
                   cc = 0,
+                  seed = NA,
                   alt_depths = NULL,
                   quiet = FALSE,
                   acc_step = 5,
@@ -45,6 +53,7 @@ Bacon <- function(wdir,
                   thick_upper = NULL,
                   dry_run = FALSE,
                   ...) {
+  tictoc::tic(entity)
   msg("Checking input files", quiet)
   check_files(wdir, entity)
   msg("Loading input files", quiet)
@@ -117,7 +126,6 @@ Bacon <- function(wdir,
   setwd(file.path(wdir, entity))
   for (i in seq_len(nrow(scenarios))) {
     sce_name <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    # print(file.path(wdir, entity, sce_name))
     dir.create(file.path(wdir, entity, sce_name, entity),
                showWarnings = FALSE,
                recursive = TRUE)
@@ -125,11 +133,8 @@ Bacon <- function(wdir,
     path1 <- file.path(sce_name, entity)
     filenames <- paste0(entity, c(".csv", "_sample_ids.csv", "_depths.txt"))
     . <- lapply(filenames, function(x) {
-      to <- file.path(path1, x)
-      if (file.exists(to))
-        file.remove(to)
-      . <- file.symlink(from = file.path(path0, x),
-                        to = to)
+      sym_link(from = file.path(path0, x),
+               to = file.path(path1, x))
     })
   }
   setwd(wd0)
@@ -139,8 +144,15 @@ Bacon <- function(wdir,
   avail_cpus <- parallel::detectCores() - 1
   cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
 
+  if (!quiet)
+    msg("Running Bacon")
+
   # Start parallel backend
-  cl <- parallel::makeCluster(cpus, outfile = paste0("log-", entity, ".txt"))
+  cl <- parallel::makeCluster(cpus,
+                              outfile = file.path(wdir,
+                                                  paste0("log-",
+                                                         entity,
+                                                         ".txt")))
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
   out <- foreach::foreach (i = idx) %dopar% {
@@ -153,6 +165,7 @@ Bacon <- function(wdir,
               alt_depths = alt_depths,
               quiet = quiet,
               core = core,
+              seed = seed,
               depths_eval = depths_eval,
               hiatuses = hiatuses,
               sample_ids = sample_ids,
@@ -190,25 +203,26 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
-  # save(out,
-  #      file = file.path(wdir, paste0(prefix, ".RData")))
-       #paste0(entity, "-plots.RData"))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
 
+  # Assess quality checks for the Bacon models
   idx <- seq_len(nrow(scenarios))
-  accs <- list()
-  abcs <- list()
-  logs <- list()
-  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, bias_rel = NA)
-  mcmcs <- list()
+  accs <- vector("list", length = nrow(scenarios))
+  abcs <- vector("list", length = nrow(scenarios))
+  logs <- vector("list", length = nrow(scenarios))
+  df_stats <- data.frame(matrix(nrow = nrow(scenarios), ncol = 4))
+  colnames(df_stats) <- c("acc", "thick", "abc", "bias_rel")
+  mcmcs <- vector("list", length = nrow(scenarios))
   pb <- progress::progress_bar$new(
-    format = "Bacon QC: (:current/:total) [:bar] :percent",
-    total = length(idx), clear = FALSE, width = 60)
+    format = "(:current/:total) [:bar] :percent",
+    total = length(idx), clear = FALSE, width = 80)
+  if (!quiet)
+    msg("Bacon QC", nl = FALSE)
   for (i in idx) {
     if (!quiet)
       pb$tick()
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    # msg(coredir)
     tmp <- bacon_qc(wdir = wdir,
                     entity = entity,
                     coredir = coredir,
@@ -221,9 +235,25 @@ Bacon <- function(wdir,
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
   }
+  if (!quiet)
+    cat("\n")
+
+  # Save general stats
+  idx <- with(df_stats, order(abc, bias_rel))
+  write.csv(df_stats[idx, ],
+            file.path(wdir, paste0(prefix, "-stats.csv")),
+            row.names = FALSE)
+
+  if (!quiet)
+    msg(paste0("Best scenario: Acc. = ",
+               df_stats[idx, 1][1],
+               " - Thick: ",
+               df_stats[idx, 2][1]))
 
   # Create PDF with all the plots
   ## Accumulation Rate
+  if (!quiet)
+    msg("Plot Accumulation Rate")
   ggplot2::ggsave(filename = paste0(prefix, "-acc.pdf"),
                   plot = plot_grid(accs,
                                    scenarios,
@@ -235,8 +265,11 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
   ## Accumulation Rate Posterior and Prior difference
+  if (!quiet)
+    msg("Plot Accumulation Rate: Posterior vs Prior")
   ggplot2::ggsave(filename = paste0(prefix, "-acc-diff.pdf"),
                   plot = plot_grid(abcs,
                                    scenarios,
@@ -249,8 +282,11 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
   ## Log posterior
+  if (!quiet)
+    msg("Plot Log Posterior (MCMC)")
   ggplot2::ggsave(filename = paste0(prefix, "-log.pdf"),
                   plot = plot_grid(logs,
                                    scenarios,
@@ -265,13 +301,12 @@ Bacon <- function(wdir,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
-                  height = 5 * length(thickness))
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
 
-  # Save general stats
-  write.csv(df_stats,
-            file.path(wdir, paste0(prefix, "-stats.csv")),
-            row.names = FALSE)
-
+  if (!quiet)
+    msg("Bye!")
+  tictoc::toc(quiet = quiet)
   return(list(ag = out,
               acc = accs,
               abc = abcs,
@@ -289,13 +324,7 @@ Bacon <- function(wdir,
 #' @importFrom stats lm
 #' @importFrom utils read.csv read.table write.csv write.table
 #'
-#' @param wdir Path where input files are stored.
-#' @param entity Name of the entity.
-#' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages.
-#'     0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3
-#' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
-#' @param quiet Boolean to hide status messages.
 #' @param core Data frame with the core's data.
 #' @param depths_eval Numeric array with the sampling depths.
 #' @param hiatuses Data frame containing information of hiatuses.
@@ -319,6 +348,7 @@ Bacon <- function(wdir,
 #' @param thick Bacon will divide the core into sections of equal thickness
 #'     specified by \code{thick} (default \code{thick = 5}).
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+#' @inheritParams Bacon
 #'
 #' @return Saves MC ensemble, bacon_chronology and AM plot.
 #'
@@ -337,6 +367,7 @@ run_bacon <- function(wdir,
                       entity,
                       postbomb = 0,
                       cc = 1,
+                      seed = NA,
                       alt_depths = NULL,
                       quiet = FALSE,
                       core = NULL,
@@ -360,7 +391,7 @@ run_bacon <- function(wdir,
   # Create directory for plots
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
-  msg("Running Bacon", quiet)
+  # msg("Running Bacon", quiet)
   hiatus.depths <- NA
   if (!is.null(hiatuses) && nrow(hiatuses) > 0)
     hiatus.depths <- hiatuses[, 2]
@@ -371,6 +402,7 @@ run_bacon <- function(wdir,
     rbacon::Bacon(core = entity,
                   thick = thick,
                   coredir = file.path(wdir, entity, coredir),
+                  seed = seed,
                   depths.file = TRUE,
                   acc.mean = acc.mean,
                   acc.shape = acc.shape,
@@ -564,8 +596,9 @@ bacon_qc <- function(wdir,
                       acc.mean,
                       acc.shape,
                       thick,
-                      hiatuses)
-  out_abc <- plot_abc(out_acc$data)
+                      hiatuses,
+                      plot = FALSE)
+  out_abc <- plot_abc(out_acc$data, plot = FALSE)
   out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,

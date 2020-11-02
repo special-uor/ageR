@@ -22,7 +22,9 @@
 cln_str <- function(str, rm_wht = FALSE, keep = c("_-")) {
   if (is.na(str) || is.null(str))
     return(str)
-  new_str <- iconv(str, to = 'ASCII//TRANSLIT') # Remove accented characters
+  # new_str <- iconv(str, to = 'ASCII//TRANSLIT')
+  # Remove accented characters
+  new_str <- stringi::stri_trans_general(str, "Latin-ASCII")
   # Remove punctuation, but keep the characters in the keep parameter
   new_str <- gsub(paste0("(?![", keep, "])[[:punct:]]"),
                   "",
@@ -39,6 +41,8 @@ cln_str <- function(str, rm_wht = FALSE, keep = c("_-")) {
 #' @param str String to display.
 #' @param quiet Boolean flag to hide messages.
 #' @param limit Maximum number of characters, output width.
+#' @param nl Boolean to indicate whether  or not to insert a new line after
+#'     the message
 #'
 #' @examples
 #' ageR:::msg("A")
@@ -47,10 +51,11 @@ cln_str <- function(str, rm_wht = FALSE, keep = c("_-")) {
 #' ageR:::msg("ABCD")
 #' ageR:::msg("ABCD", limit = 30)
 #' ageR:::msg("ABCD", quiet = TRUE)
+#' ageR:::msg("ABCD", nl = FALSE)
 #'
 #' @noRd
 #' @keywords internal
-msg <- function(str, quiet = FALSE, limit = 80) {
+msg <- function(str, quiet = FALSE, limit = 80, nl = TRUE) {
   if (!quiet) {
     len <- nchar(str)
     if (len > limit) {
@@ -62,7 +67,8 @@ msg <- function(str, quiet = FALSE, limit = 80) {
               paste0(rep(" ", pad_r - 1), collapse = ""), " ",
               str, " ",
               paste0(rep(" ", pad_l - 1), collapse = ""), "|\n",
-              paste0(rep("-", limit), collapse = ""), "\n")
+              paste0(rep("-", limit), collapse = ""),
+              ifelse(nl, "\n", ""))
     }
   }
 }
