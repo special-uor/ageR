@@ -124,11 +124,8 @@ Bacon <- function(wdir,
     path1 <- file.path(sce_name, entity)
     filenames <- paste0(entity, c(".csv", "_sample_ids.csv", "_depths.txt"))
     . <- lapply(filenames, function(x) {
-      to <- file.path(path1, x)
-      if (file.exists(to))
-        file.remove(to)
-      . <- file.symlink(from = file.path(path0, x),
-                        to = to)
+      sym_link(from = file.path(path0, x),
+               to = file.path(path1, x))
     })
   }
   setwd(wd0)
