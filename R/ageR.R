@@ -50,6 +50,7 @@ Bacon <- function(wdir,
                   thick_upper = NULL,
                   dry_run = FALSE,
                   ...) {
+  tictoc::tic(entity)
   msg("Checking input files", quiet)
   check_files(wdir, entity)
   msg("Loading input files", quiet)
@@ -140,6 +141,9 @@ Bacon <- function(wdir,
   avail_cpus <- parallel::detectCores() - 1
   cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
 
+  if (!quiet)
+    msg("Running Bacon")
+
   # Start parallel backend
   cl <- parallel::makeCluster(cpus,
                               outfile = file.path(wdir,
@@ -210,7 +214,7 @@ Bacon <- function(wdir,
     format = "(:current/:total) [:bar] :percent",
     total = length(idx), clear = FALSE, width = 80)
   if (!quiet)
-    msg("Bacon QC")
+    msg("Bacon QC", nl = FALSE)
   for (i in idx) {
     if (!quiet)
       pb$tick()
@@ -227,6 +231,8 @@ Bacon <- function(wdir,
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
   }
+  if (!quiet)
+    cat("\n")
 
   # Save general stats
   idx <- with(df_stats, order(abc, bias_rel))
@@ -296,6 +302,7 @@ Bacon <- function(wdir,
 
   if (!quiet)
     msg("Bye!")
+  tictoc::toc(quiet = quiet)
   return(list(ag = out,
               acc = accs,
               abc = abcs,
@@ -583,8 +590,9 @@ bacon_qc <- function(wdir,
                       acc.mean,
                       acc.shape,
                       thick,
-                      hiatuses)
-  out_abc <- plot_abc(out_acc$data)
+                      hiatuses,
+                      plot = FALSE)
+  out_abc <- plot_abc(out_acc$data, plot = FALSE)
   out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
