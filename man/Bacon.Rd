@@ -10,6 +10,7 @@ Bacon(
   cpus = 1,
   postbomb = 0,
   cc = 0,
+  seed = NA,
   alt_depths = NULL,
   quiet = FALSE,
   acc_step = 5,
@@ -38,6 +39,9 @@ Bacon(
 \code{cc = 2} for \code{Marine20} (marine),
 \code{cc = 3} for \code{SHCal20} (southern hemisphere terrestrial).
 For dates that are already on the \code{cal BP} scale use \code{cc = 0}.}
+
+\item{seed}{Set see to reproduce results. This seed is used for \code{C++}
+executions, if it is not assigned then the seed is set by the system.}
 
 \item{alt_depths}{List of arrays with new depths.}
 
