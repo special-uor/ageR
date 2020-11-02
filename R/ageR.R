@@ -207,8 +207,10 @@ Bacon <- function(wdir,
   colnames(df_stats) <- c("acc", "thick", "abc", "bias_rel")
   mcmcs <- vector("list", length = nrow(scenarios))
   pb <- progress::progress_bar$new(
-    format = "Bacon QC: (:current/:total) [:bar] :percent",
-    total = length(idx), clear = FALSE, width = 60)
+    format = "(:current/:total) [:bar] :percent",
+    total = length(idx), clear = FALSE, width = 80)
+  if (!quiet)
+    msg("Bacon QC")
   for (i in idx) {
     if (!quiet)
       pb$tick()
@@ -234,12 +236,14 @@ Bacon <- function(wdir,
 
   if (!quiet)
     msg(paste0("Best scenario: Acc. = ",
-               df_stats[idx, acc][1],
+               df_stats[idx, 1][1],
                " - Thick: ",
-               df_stats[idx, thick][1]))
+               df_stats[idx, 2][1]))
 
   # Create PDF with all the plots
   ## Accumulation Rate
+  if (!quiet)
+    msg("Plot Accumulation Rate")
   ggplot2::ggsave(filename = paste0(prefix, "-acc.pdf"),
                   plot = plot_grid(accs,
                                    scenarios,
@@ -254,6 +258,8 @@ Bacon <- function(wdir,
                   height = 5 * length(thickness),
                   limitsize = FALSE)
   ## Accumulation Rate Posterior and Prior difference
+  if (!quiet)
+    msg("Plot Accumulation Rate: Posterior vs Prior")
   ggplot2::ggsave(filename = paste0(prefix, "-acc-diff.pdf"),
                   plot = plot_grid(abcs,
                                    scenarios,
@@ -269,6 +275,8 @@ Bacon <- function(wdir,
                   height = 5 * length(thickness),
                   limitsize = FALSE)
   ## Log posterior
+  if (!quiet)
+    msg("Plot Log Posterior (MCMC)")
   ggplot2::ggsave(filename = paste0(prefix, "-log.pdf"),
                   plot = plot_grid(logs,
                                    scenarios,
@@ -286,6 +294,8 @@ Bacon <- function(wdir,
                   height = 5 * length(thickness),
                   limitsize = FALSE)
 
+  if (!quiet)
+    msg("Bye!")
   return(list(ag = out,
               acc = accs,
               abc = abcs,
