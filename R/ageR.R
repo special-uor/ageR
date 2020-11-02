@@ -13,6 +13,8 @@
 #'     \code{cc = 2} for \code{Marine20} (marine),
 #'     \code{cc = 3} for \code{SHCal20} (southern hemisphere terrestrial).
 #'     For dates that are already on the \code{cal BP} scale use \code{cc = 0}.
+#' @param seed Set see to reproduce results. This seed is used for \code{C++}
+#'     executions, if it is not assigned then the seed is set by the system.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
 #' @param acc_step Accumulation rate step. Used to create alternative
@@ -40,6 +42,7 @@ Bacon <- function(wdir,
                   cpus = 1,
                   postbomb = 0,
                   cc = 0,
+                  seed = NA,
                   alt_depths = NULL,
                   quiet = FALSE,
                   acc_step = 5,
@@ -162,6 +165,7 @@ Bacon <- function(wdir,
               alt_depths = alt_depths,
               quiet = quiet,
               core = core,
+              seed = seed,
               depths_eval = depths_eval,
               hiatuses = hiatuses,
               sample_ids = sample_ids,
@@ -363,6 +367,7 @@ run_bacon <- function(wdir,
                       entity,
                       postbomb = 0,
                       cc = 1,
+                      seed = NA,
                       alt_depths = NULL,
                       quiet = FALSE,
                       core = NULL,
@@ -386,7 +391,7 @@ run_bacon <- function(wdir,
   # Create directory for plots
   dir.create(file.path(wdir, entity, "plots"), FALSE, TRUE)
 
-  msg("Running Bacon", quiet)
+  # msg("Running Bacon", quiet)
   hiatus.depths <- NA
   if (!is.null(hiatuses) && nrow(hiatuses) > 0)
     hiatus.depths <- hiatuses[, 2]
@@ -397,6 +402,7 @@ run_bacon <- function(wdir,
     rbacon::Bacon(core = entity,
                   thick = thick,
                   coredir = file.path(wdir, entity, coredir),
+                  seed = seed,
                   depths.file = TRUE,
                   acc.mean = acc.mean,
                   acc.shape = acc.shape,
