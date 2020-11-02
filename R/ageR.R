@@ -197,6 +197,7 @@ Bacon <- function(wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
 
+  # Assess quality checks for the Bacon models
   idx <- seq_len(nrow(scenarios))
   accs <- vector("list", length = nrow(scenarios))
   abcs <- vector("list", length = nrow(scenarios))
@@ -225,9 +226,16 @@ Bacon <- function(wdir,
   }
 
   # Save general stats
-  write.csv(df_stats,
+  idx <- with(df_stats, order(abc, bias_rel))
+  write.csv(df_stats[idx, ],
             file.path(wdir, paste0(prefix, "-stats.csv")),
             row.names = FALSE)
+
+  if (!quiet)
+    msg(paste0("Best scenario: Acc. = ",
+               df_stats[idx, acc][1],
+               " - Thick: ",
+               df_stats[idx, thick][1]))
 
   # Create PDF with all the plots
   ## Accumulation Rate
