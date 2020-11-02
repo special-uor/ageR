@@ -6,8 +6,13 @@
 #' @param entity Name of the entity.
 #' @param cpus Number of CPUs to be used on the computation of the age models.
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages.
-#'     0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3
-#' @param cc Calibration curve.
+#'     \code{0 = none}, \code{1 = NH1}, \code{2 = NH2}, \code{3 = NH3},
+#'     \code{4 = SH1-2}, \code{5 = SH3}.
+#' @param cc Calibration curve for C-14 dates:
+#'     \code{cc = 1} for \code{IntCal20} (northern hemisphere terrestrial),
+#'     \code{cc = 2} for \code{Marine20} (marine),
+#'     \code{cc = 3} for \code{SHCal20} (southern hemisphere terrestrial).
+#'     For dates that are already on the \code{cal BP} scale use \code{cc = 0}.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
 #' @param acc_step Accumulation rate step. Used to create alternative
@@ -286,13 +291,7 @@ Bacon <- function(wdir,
 #' @importFrom stats lm
 #' @importFrom utils read.csv read.table write.csv write.table
 #'
-#' @param wdir Path where input files are stored.
-#' @param entity Name of the entity.
-#' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages.
-#'     0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3
-#' @param cc Calibration curve.
 #' @param alt_depths List of arrays with new depths.
-#' @param quiet Boolean to hide status messages.
 #' @param core Data frame with the core's data.
 #' @param depths_eval Numeric array with the sampling depths.
 #' @param hiatuses Data frame containing information of hiatuses.
@@ -316,6 +315,7 @@ Bacon <- function(wdir,
 #' @param thick Bacon will divide the core into sections of equal thickness
 #'     specified by \code{thick} (default \code{thick = 5}).
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+#' @inheritParams Bacon
 #'
 #' @return Saves MC ensemble, bacon_chronology and AM plot.
 #'
