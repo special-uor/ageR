@@ -22,7 +22,9 @@
 cln_str <- function(str, rm_wht = FALSE, keep = c("_-")) {
   if (is.na(str) || is.null(str))
     return(str)
-  new_str <- iconv(str, to = 'ASCII//TRANSLIT') # Remove accented characters
+  # new_str <- iconv(str, to = 'ASCII//TRANSLIT')
+  # Remove accented characters
+  new_str <- stringi::stri_trans_general(str, "Latin-ASCII")
   # Remove punctuation, but keep the characters in the keep parameter
   new_str <- gsub(paste0("(?![", keep, "])[[:punct:]]"),
                   "",
