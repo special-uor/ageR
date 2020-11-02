@@ -117,7 +117,6 @@ Bacon <- function(wdir,
   setwd(file.path(wdir, entity))
   for (i in seq_len(nrow(scenarios))) {
     sce_name <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    # print(file.path(wdir, entity, sce_name))
     dir.create(file.path(wdir, entity, sce_name, entity),
                showWarnings = FALSE,
                recursive = TRUE)
@@ -140,7 +139,11 @@ Bacon <- function(wdir,
   cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
 
   # Start parallel backend
-  cl <- parallel::makeCluster(cpus, outfile = paste0("log-", entity, ".txt"))
+  cl <- parallel::makeCluster(cpus,
+                              outfile = file.path(wdir,
+                                                  paste0("log-",
+                                                         entity,
+                                                         ".txt")))
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
   out <- foreach::foreach (i = idx) %dopar% {
@@ -191,16 +194,14 @@ Bacon <- function(wdir,
                   path = wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
-  # save(out,
-  #      file = file.path(wdir, paste0(prefix, ".RData")))
-       #paste0(entity, "-plots.RData"))
 
   idx <- seq_len(nrow(scenarios))
-  accs <- list()
-  abcs <- list()
-  logs <- list()
-  df_stats <- data.frame(acc = NA, thick = NA, abc = NA, bias_rel = NA)
-  mcmcs <- list()
+  accs <- vector("list", length = nrow(scenarios))
+  abcs <- vector("list", length = nrow(scenarios))
+  logs <- vector("list", length = nrow(scenarios))
+  df_stats <- data.frame(matrix(nrow = nrow(scenarios), ncol = 4))
+  colnames(df_stats) <- c("acc", "thick", "abc", "bias_rel")
+  mcmcs <- vector("list", length = nrow(scenarios))
   pb <- progress::progress_bar$new(
     format = "Bacon QC: (:current/:total) [:bar] :percent",
     total = length(idx), clear = FALSE, width = 60)
@@ -208,7 +209,6 @@ Bacon <- function(wdir,
     if (!quiet)
       pb$tick()
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
-    # msg(coredir)
     tmp <- bacon_qc(wdir = wdir,
                     entity = entity,
                     coredir = coredir,
@@ -221,6 +221,11 @@ Bacon <- function(wdir,
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
   }
+
+  # Save general stats
+  write.csv(df_stats,
+            file.path(wdir, paste0(prefix, "-stats.csv")),
+            row.names = FALSE)
 
   # Create PDF with all the plots
   ## Accumulation Rate
@@ -266,11 +271,6 @@ Bacon <- function(wdir,
                   path = wdir,
                   width = 7 * length(accMean),
                   height = 5 * length(thickness))
-
-  # Save general stats
-  write.csv(df_stats,
-            file.path(wdir, paste0(prefix, "-stats.csv")),
-            row.names = FALSE)
 
   return(list(ag = out,
               acc = accs,
