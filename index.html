@@ -234,24 +234,264 @@
                                hiatus <span class="op">=</span> <span class="va">hiatus</span><span class="op">)</span>, 
                    wdir <span class="op">=</span> <span class="st">"./"</span>, 
                    entity <span class="op">=</span> <span class="st">"X"</span>,
-                   am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span></pre></div>
+                   am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span>
+<span class="co">#&gt; [1] "sample_depths" "core"          "hiatus"</span></pre></div>
 </li>
 </ol>
 </div>
 <div id="run-bacon" class="section level4">
 <h4 class="hasAnchor">
-<a href="#run-bacon" class="anchor"></a>Run bacon</h4>
+<a href="#run-bacon" class="anchor"></a>Run Bacon</h4>
 <div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, 
             entity <span class="op">=</span> <span class="st">"X"</span>, 
             <span class="co"># Optional parameters</span>
             cpus <span class="op">=</span> <span class="fl">1</span>,
             postbomb <span class="op">=</span> <span class="fl">0</span>,
-            cc <span class="op">=</span> <span class="fl">1</span>,
+            cc <span class="op">=</span> <span class="fl">0</span>,
+            seed <span class="op">=</span> <span class="cn">NA</span>,
             alt_depths <span class="op">=</span> <span class="cn">NULL</span>,
             quiet <span class="op">=</span> <span class="cn">FALSE</span>,
             acc_step <span class="op">=</span> <span class="fl">5</span>,
+            acc_lower <span class="op">=</span> <span class="cn">NULL</span>,
+            acc_upper <span class="op">=</span> <span class="cn">NULL</span>,
+            thick_step <span class="op">=</span> <span class="fl">5</span>,
+            thick_lower <span class="op">=</span> <span class="cn">NULL</span>,
+            thick_upper <span class="op">=</span> <span class="cn">NULL</span>,
+            dry_run <span class="op">=</span> <span class="cn">FALSE</span>,
             <span class="va">...</span><span class="op">)</span></pre></div>
+<div id="dry-run" class="section level5">
+<h5 class="hasAnchor">
+<a href="#dry-run" class="anchor"></a>Dry-run</h5>
+<p>Dry-runs are useful to check how many scenarios will be generated with the current configuration:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; The following scenarios will be executed:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; | Accumulation rate| Thickness|</span>
+<span class="co">#&gt; |-----------------:|---------:|</span>
+<span class="co">#&gt; |                 5|        10|</span>
+<span class="co">#&gt; |                10|        10|</span>
+<span class="co">#&gt; |                20|        10|</span>
+<span class="co">#&gt; |                 5|        15|</span>
+<span class="co">#&gt; |                10|        15|</span>
+<span class="co">#&gt; |                20|        15|</span>
+<span class="co">#&gt; |                 5|        20|</span>
+<span class="co">#&gt; |                10|        20|</span>
+<span class="co">#&gt; |                20|        20|</span>
+<span class="co">#&gt; |                 5|        30|</span>
+<span class="co">#&gt; |                10|        30|</span>
+<span class="co">#&gt; |                20|        30|</span>
+<span class="co">#&gt; |                 5|        40|</span>
+<span class="co">#&gt; |                10|        40|</span>
+<span class="co">#&gt; |                20|        40|</span>
+<span class="co">#&gt; A total of 15 scenarios.</span></pre></div>
+</div>
+<div id="change-upper-and-lower-bounds" class="section level5">
+<h5 class="hasAnchor">
+<a href="#change-upper-and-lower-bounds" class="anchor"></a>Change upper and lower bounds</h5>
+<p>Based on a dry-run, we might want to constraint our execution to a smaller set of scenarios. This can be done for both accumulation rate and core segment thickness.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, acc_lower <span class="op">=</span> <span class="fl">10</span>, acc_upper <span class="op">=</span> <span class="fl">20</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; The following scenarios will be executed:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; | Accumulation rate| Thickness|</span>
+<span class="co">#&gt; |-----------------:|---------:|</span>
+<span class="co">#&gt; |                10|        10|</span>
+<span class="co">#&gt; |                20|        10|</span>
+<span class="co">#&gt; |                10|        15|</span>
+<span class="co">#&gt; |                20|        15|</span>
+<span class="co">#&gt; |                10|        20|</span>
+<span class="co">#&gt; |                20|        20|</span>
+<span class="co">#&gt; |                10|        30|</span>
+<span class="co">#&gt; |                20|        30|</span>
+<span class="co">#&gt; |                10|        40|</span>
+<span class="co">#&gt; |                20|        40|</span>
+<span class="co">#&gt; A total of 10 scenarios.</span></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, thick_lower <span class="op">=</span> <span class="fl">10</span>, thick_upper <span class="op">=</span> <span class="fl">30</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; The following scenarios will be executed:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; | Accumulation rate| Thickness|</span>
+<span class="co">#&gt; |-----------------:|---------:|</span>
+<span class="co">#&gt; |                 5|        10|</span>
+<span class="co">#&gt; |                10|        10|</span>
+<span class="co">#&gt; |                20|        10|</span>
+<span class="co">#&gt; |                 5|        15|</span>
+<span class="co">#&gt; |                10|        15|</span>
+<span class="co">#&gt; |                20|        15|</span>
+<span class="co">#&gt; |                 5|        20|</span>
+<span class="co">#&gt; |                10|        20|</span>
+<span class="co">#&gt; |                20|        20|</span>
+<span class="co">#&gt; |                 5|        30|</span>
+<span class="co">#&gt; |                10|        30|</span>
+<span class="co">#&gt; |                20|        30|</span>
+<span class="co">#&gt; A total of 12 scenarios.</span></pre></div>
+</div>
+<div id="run-example" class="section level5">
+<h5 class="hasAnchor">
+<a href="#run-example" class="anchor"></a>Run example</h5>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                             Checking input files                             |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                             Loading input files                              |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                            Setting up environment                            |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Running Bacon                                 |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                   Bacon QC                                   |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |             Best scenario: Acc. Rate = 10yr/cm - Thickness: 10cm             |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                            Plot Accumulation Rate                            |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                  Plot Accumulation Rate: Posterior vs Prior                  |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                          Plot Log Posterior (MCMC)                           |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                     Bye!                                     |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; X: 139.526 sec elapsed</span></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">Acc. Rate</th>
+<th align="right">Thickness</th>
+<th align="right">Area Between Curves</th>
+<th align="left">Relative Bias</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">2</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">0.9226303</td>
+<td align="left">7.32e-17</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">1.1925252</td>
+<td align="left">5.50e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="right">10</td>
+<td align="right">15</td>
+<td align="right">1.2657517</td>
+<td align="left">-5.74e-17</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="right">10</td>
+<td align="right">20</td>
+<td align="right">1.3099333</td>
+<td align="left">3.28e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">11</td>
+<td align="right">10</td>
+<td align="right">30</td>
+<td align="right">1.4955667</td>
+<td align="left">7.11e-17</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="right">20</td>
+<td align="right">10</td>
+<td align="right">1.8431809</td>
+<td align="left">-2.70e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">9</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">1.8612235</td>
+<td align="left">5.19e-17</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="right">5</td>
+<td align="right">15</td>
+<td align="right">1.8620340</td>
+<td align="left">6.44e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">6</td>
+<td align="right">20</td>
+<td align="right">15</td>
+<td align="right">1.8944341</td>
+<td align="left">6.43e-17</td>
+</tr>
+<tr class="even">
+<td align="left">14</td>
+<td align="right">10</td>
+<td align="right">40</td>
+<td align="right">2.1879246</td>
+<td align="left">-7.86e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="right">5</td>
+<td align="right">20</td>
+<td align="right">2.3382032</td>
+<td align="left">2.92e-17</td>
+</tr>
+<tr class="even">
+<td align="left">12</td>
+<td align="right">20</td>
+<td align="right">30</td>
+<td align="right">3.1319497</td>
+<td align="left">-5.30e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="right">20</td>
+<td align="right">40</td>
+<td align="right">3.7019349</td>
+<td align="left">-9.42e-17</td>
+</tr>
+<tr class="even">
+<td align="left">10</td>
+<td align="right">5</td>
+<td align="right">30</td>
+<td align="right">4.8989651</td>
+<td align="left">5.40e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">13</td>
+<td align="right">5</td>
+<td align="right">40</td>
+<td align="right">6.3470265</td>
+<td align="left">5.88e-17</td>
+</tr>
+</tbody>
+</table>
+<div id="log-of-posterior-mcmc" class="section level6">
+<h6>Log of posterior (MCMC)</h6>
+<p><img src="reference/figures/README-bacon-run-log-posterior-1.png" width="100%"></p>
+</div>
+<div id="accumulation-rate-posterior-vs-prior" class="section level6">
+<h6>Accumulation Rate: Posterior vs Prior</h6>
+<p><img src="reference/figures/README-bacon-run-acc-rate-1.png" width="100%"></p>
+</div>
+</div>
 </div>
 </div>
 </div>
