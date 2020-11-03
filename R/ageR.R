@@ -314,7 +314,8 @@ Bacon <- function(wdir,
               abc = abcs,
               log = logs,
               stats = df_stats[idx, ],
-              mcmc = mcmcs))
+              mcmc = mcmcs,
+              best_idx = idx[1]))
 }
 
 #' Run Bacon
