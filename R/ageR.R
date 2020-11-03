@@ -54,6 +54,7 @@ Bacon <- function(wdir,
                   dry_run = FALSE,
                   ...) {
   tictoc::tic(entity)
+  wdir <- absolute_path(wdir)
   msg("Checking input files", quiet)
   check_files(wdir, entity)
   msg("Loading input files", quiet)
@@ -239,16 +240,17 @@ Bacon <- function(wdir,
     cat("\n")
 
   # Save general stats
-  idx <- with(df_stats, order(abc, bias_rel))
+  idx <- with(df_stats, order(abc + abs(bias_rel)))
   write.csv(df_stats[idx, ],
             file.path(wdir, paste0(prefix, "-stats.csv")),
             row.names = FALSE)
 
   if (!quiet)
-    msg(paste0("Best scenario: Acc. = ",
+    msg(paste0("Best scenario: Acc. Rate = ",
                df_stats[idx, 1][1],
-               " - Thick: ",
-               df_stats[idx, 2][1]))
+               "yr/cm - Thickness: ",
+               df_stats[idx, 2][1],
+               "cm"))
 
   # Create PDF with all the plots
   ## Accumulation Rate
@@ -311,7 +313,7 @@ Bacon <- function(wdir,
               acc = accs,
               abc = abcs,
               log = logs,
-              stats = df_stats,
+              stats = df_stats[idx, ],
               mcmc = mcmcs))
 }
 

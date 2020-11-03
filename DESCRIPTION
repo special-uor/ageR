@@ -34,6 +34,7 @@ Imports:
     plyr,
     progress,
     rbacon,
+    R.utils,
     scales,
     SimDesign,
     stringi,

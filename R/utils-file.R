@@ -264,7 +264,7 @@ sym_link <- function(from, to, overwrite = TRUE) {
 #' @return Adjusted \code{K}.
 #' @keywords internal
 find_K <- function(K, wdir, entity) {
-  Ks <- K + c(-2:2)
+  Ks <- K + c(-10:10)
   paths <- paste0(file.path(wdir, entity), "_", Ks, ".out")
   idx <- unlist(lapply(paths, file.exists))
   if (sum(idx) == 0) {
@@ -279,4 +279,17 @@ find_K <- function(K, wdir, entity) {
     return(Ks[idx][times_idx][1])
   }
   return(Ks[idx])
+}
+
+#' Get absolute path
+#'
+#' @param path String with path to file or directory.
+#'
+#' @return String with the absolute path.
+#'
+#' @keywords internal
+absolute_path <- function(path) {
+  if (!R.utils::isAbsolutePath(path))
+    path <- R.utils::getAbsolutePath(path)
+  return(path)
 }

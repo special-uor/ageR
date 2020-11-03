@@ -9,7 +9,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  dpi = 300, 
+  fig.width = 7
 )
 ```
 
@@ -90,7 +92,7 @@ containing the previous data frames, which must be called `sample_depths`,
 `core`, and `hiatus` (if included). 
 Next, a working directory (`wdir`), the entity's name, and optionally the age 
 model's name (by default is Bacon).
-    ```{r bacon-create-input-step4, eval = FALSE}
+    ```{r bacon-create-input-step4, eval = TRUE}
     ageR::create_input(data = list(sample_depths = sample_depths, 
                                    core = core,
                                    # Optional
@@ -100,16 +102,68 @@ model's name (by default is Bacon).
                        am = "bacon")
     ```
 
-#### Run bacon
-```{r bacon-run, eval = FALSE}
+#### Run Bacon
+```{r bacon-run-fx-call, eval = FALSE}
 ageR::Bacon(wdir = "./", 
             entity = "X", 
             # Optional parameters
             cpus = 1,
             postbomb = 0,
-            cc = 1,
+            cc = 0,
+            seed = NA,
             alt_depths = NULL,
             quiet = FALSE,
             acc_step = 5,
+            acc_lower = NULL,
+            acc_upper = NULL,
+            thick_step = 5,
+            thick_lower = NULL,
+            thick_upper = NULL,
+            dry_run = FALSE,
             ...)
+```
+
+##### Dry-run
+Dry-runs are useful to check how many scenarios will be generated with the current configuration:
+```{r bacon-run-dr}
+ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
+```
+
+##### Change upper and lower bounds
+Based on a dry-run, we might want to constraint our execution to a smaller set of scenarios. This can be done for both accumulation rate and core segment thickness.
+```{r bacon-run-acc-bounds}
+ageR::Bacon(wdir = "./", entity = "X", acc_lower = 10, acc_upper = 20, dry_run = TRUE, quiet = TRUE)
+```
+
+```{r bacon-run-thick-bounds}
+ageR::Bacon(wdir = "./", entity = "X", thick_lower = 10, thick_upper = 30, dry_run = TRUE, quiet = TRUE)
+```
+
+##### Run example
+```{r bacon-run, cache = TRUE}
+out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8)
+```
+
+```{r bacon-run-stats, echo = FALSE}
+out$stats$bias_rel <- format(out$stats$bias_rel, digits = 3)
+knitr::kable(out$stats, col.names = c("Acc. Rate", 
+                                      "Thickness",
+                                      "Area Between Curves",
+                                      "Relative Bias"))
+best_scenario <- out$stats[1, 1:2]
+idx <- as.numeric(rownames(best_scenario))
+```
+###### Log of posterior (MCMC)
+```{r bacon-run-log-posterior, echo = FALSE}
+print(out$log[[idx]])
+```
+
+###### Accumulation Rate: Posterior vs Prior
+```{r bacon-run-acc-rate, echo = FALSE}
+print(out$acc[[idx]])
+```
+
+```{r clean-outputs, echo = FALSE, eval = TRUE}
+. <- lapply(list.files(".", "X_"), file.remove)
+unlink("X", TRUE, TRUE)
 ```
