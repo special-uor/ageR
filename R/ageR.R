@@ -663,9 +663,9 @@ mix_curves <- function(proportion = 0.5,
   if (!dir.exists(dirname)) # Create output directory
     dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
   # Extract the IntCal20 calibration curves from rbacon
-  cc1_df <- rbacon::copyCalibrationCurve(1)
-  cc2_df <- rbacon::copyCalibrationCurve(2)
-  cc3_df <- rbacon::copyCalibrationCurve(3)
+  cc1_df <- rbacon:::copyCalibrationCurve(1)
+  cc2_df <- rbacon:::copyCalibrationCurve(2)
+  cc3_df <- rbacon:::copyCalibrationCurve(3)
 
   # Calibration curve names
   ccnames <- c("3Col_intcal20.14C",
@@ -684,7 +684,7 @@ mix_curves <- function(proportion = 0.5,
   write.table(cc3_df, ccpaths[3], row.names = FALSE, col.names = FALSE)
 
   # Create a mixed calibration curve
-  rbacon::mix.curves(proportion = proportion,
+  rbacon:::mix.curves(proportion = proportion,
                      cc1 = ccnames[cc1],
                      cc2 = ccnames[cc2],
                      name = name,
