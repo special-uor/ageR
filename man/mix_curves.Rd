@@ -32,5 +32,9 @@ Create a mixed calibration curved
 }
 \examples{
 # Curve for neotropics
-ageR::mix_curves(0.5, 1, 2, name = "neotropics.14C")
+ageR::mix_curves(0.5, 1, 3, name = "neotropics.14C")
+# Curve for coastline (Northern hemisphere)
+ageR::mix_curves(0.7, 1, 2, name = "nh_coastal.14C")
+# Curve for coastline (Southern hemisphere)
+ageR::mix_curves(0.7, 3, 2, name = "sh_coastal.14C")
 }

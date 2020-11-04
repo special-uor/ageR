@@ -3,6 +3,7 @@
 export(Bacon)
 export(create_input)
 export(file_structure)
+export(mix_curves)
 export(runLinReg)
 importFrom(dplyr,`%>%`)
 importFrom(foreach,"%dopar%")
