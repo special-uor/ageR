@@ -32,7 +32,8 @@
 #' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
-#' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+# @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+#' @inheritDotParams rbacon::Bacon
 #'
 #' @return List with \code{ggplot2} objects and summary statistics of all the
 #'     scenarios computed.
@@ -314,7 +315,8 @@ Bacon <- function(wdir,
               abc = abcs,
               log = logs,
               stats = df_stats[idx, ],
-              mcmc = mcmcs))
+              mcmc = mcmcs,
+              best_idx = idx[1]))
 }
 
 #' Run Bacon
@@ -636,6 +638,63 @@ gelman_test <- function(data, confidence = 0.975) {
                            transform = TRUE,
                            confidence = confidence)
   return(out$mpsrf)
+}
+
+#' Create a mixed calibration curved
+#'
+#' @inheritParams rbacon::mix.curves
+#' @inheritParams Bacon
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Curve for neotropics
+#' ageR::mix_curves(0.5, 1, 3, name = "neotropics.14C")
+#' # Curve for coastline (Northern hemisphere)
+#' ageR::mix_curves(0.7, 1, 2, name = "nh_coastal.14C")
+#' # Curve for coastline (Southern hemisphere)
+#' ageR::mix_curves(0.7, 3, 2, name = "sh_coastal.14C")
+#' }
+mix_curves <- function(proportion = 0.5,
+                       cc1 = 1,
+                       cc2 = 2,
+                       name = "mixed.14C",
+                       dirname = file.path(getwd(), "ccurves"),
+                       quiet = FALSE) {
+  if (!dir.exists(dirname)) # Create output directory
+    dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
+  # Extract the IntCal20 calibration curves from rbacon
+  cc1_df <- rbacon::copyCalibrationCurve(1)
+  cc2_df <- rbacon::copyCalibrationCurve(2)
+  cc3_df <- rbacon::copyCalibrationCurve(3)
+
+  # Calibration curve names
+  ccnames <- c("3Col_intcal20.14C",
+               "3Col_marine20.14C",
+               "3Col_shcal20.14C")
+  # Calibration curve paths
+  ccpaths <- file.path(dirname, ccnames)
+
+  # Delete old calibration curves
+  idx <- unlist(lapply(ccpaths, file.exists))
+  . <- lapply(ccpaths[idx], file.remove)
+
+  # Save the calibration curves
+  write.table(cc1_df, ccpaths[1], row.names = FALSE, col.names = FALSE)
+  write.table(cc2_df, ccpaths[2], row.names = FALSE, col.names = FALSE)
+  write.table(cc3_df, ccpaths[3], row.names = FALSE, col.names = FALSE)
+
+  # Create a mixed calibration curve
+  rbacon::mix.curves(proportion = proportion,
+                     cc1 = ccnames[cc1],
+                     cc2 = ccnames[cc2],
+                     name = name,
+                     dirname = dirname)
+  if (!quiet)
+    msg(paste0("Mixed curved: ",
+               proportion * 100, "/", (1 - proportion) * 100,
+               " created."))
 }
 
 #' Age model function for linear regression.

@@ -139,6 +139,28 @@ ageR::Bacon(wdir = "./", entity = "X", acc_lower = 10, acc_upper = 20, dry_run =
 ageR::Bacon(wdir = "./", entity = "X", thick_lower = 10, thick_upper = 30, dry_run = TRUE, quiet = TRUE)
 ```
 
+##### Use mixed calibration curves
+This is particular useful for "neo-tropical" sites. It involves three steps:
+
+1. Assign `cc = 4` to the `core` data:
+    ```{r bacon-run-mix-curves-step1}
+    core <- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
+                       age = c(50, 200, 1150, 2060, 4050),
+                       error = c(10, 15, 5, 1, 70),
+                       depth = c(5, 100, 230, 300, 450),
+                       cc = 4)
+    knitr::kable(core)
+    ```
+2. Create a mixed calibration curve with `ageR::mix_curves`. The following example uses a 50/50 mix between `IntCal20` (`cc1 = 1`) and `SHCal20` (`cc2 = 3`).
+    ```{r bacon-run-mix-curves-step2}
+    ccdir <- "./ccurves"
+    ageR::mix_curves(proportion = 0.5, cc1 = 1, cc = 3, name = "neotropics.14C", dirname = ccdir)
+    ```
+3. Add two new parameters to the `ageR::Bacon` call:
+    ```{r bacon-run-mix-curves-step3, eval = FALSE}
+    out <- ageR::Bacon(wdir = "./", entity = "X", cc4 = "neotropics.14C", ccdir = ccdir)
+    ```
+
 ##### Run example
 ```{r bacon-run, cache = TRUE}
 out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8)
