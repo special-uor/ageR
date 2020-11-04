@@ -32,7 +32,8 @@
 #' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
-#' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+# @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
+#' @inheritDotParams rbacon::Bacon
 #'
 #' @return List with \code{ggplot2} objects and summary statistics of all the
 #'     scenarios computed.
