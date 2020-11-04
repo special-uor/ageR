@@ -331,10 +331,87 @@
 <span class="co">#&gt; |                20|        30|</span>
 <span class="co">#&gt; A total of 12 scenarios.</span></pre></div>
 </div>
+<div id="use-mixed-calibration-curves" class="section level5">
+<h5 class="hasAnchor">
+<a href="#use-mixed-calibration-curves" class="anchor"></a>Use mixed calibration curves</h5>
+<p>This is particular useful for “neo-tropical” sites. It involves three steps:</p>
+<ol>
+<li>
+<p>Assign <code>cc = 4</code> to the <code>core</code> data:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
+                   age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,
+                   error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,
+                   depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,
+                   cc <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">labID</th>
+<th align="right">age</th>
+<th align="right">error</th>
+<th align="right">depth</th>
+<th align="right">cc</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">X001</td>
+<td align="right">50</td>
+<td align="right">10</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">X002</td>
+<td align="right">200</td>
+<td align="right">15</td>
+<td align="right">100</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">X003</td>
+<td align="right">1150</td>
+<td align="right">5</td>
+<td align="right">230</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">X004</td>
+<td align="right">2060</td>
+<td align="right">1</td>
+<td align="right">300</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">X005</td>
+<td align="right">4050</td>
+<td align="right">70</td>
+<td align="right">450</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Create a mixed calibration curve with <code><a href="reference/mix_curves.html">ageR::mix_curves</a></code>. The following example uses a 50/50 mix between <code>IntCal20</code> (<code>cc1 = 1</code>) and <code>SHCal20</code> (<code>cc2 = 3</code>).</p>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="va">ccdir</span> <span class="op">&lt;-</span> <span class="st">"./ccurves"</span>
+<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/mix_curves.html">mix_curves</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="fl">0.5</span>, cc1 <span class="op">=</span> <span class="fl">1</span>, cc <span class="op">=</span> <span class="fl">3</span>, name <span class="op">=</span> <span class="st">"neotropics.14C"</span>, dirname <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                         Mixed curved: 50/50 created.                         |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span></pre></div>
+</li>
+<li>
+<p>Add two new parameters to the <code><a href="reference/Bacon.html">ageR::Bacon</a></code> call:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cc4 <span class="op">=</span> <span class="st">"neotropics.14C"</span>, ccdir <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></pre></div>
+</li>
+</ol>
+</div>
 <div id="run-example" class="section level5">
 <h5 class="hasAnchor">
 <a href="#run-example" class="anchor"></a>Run example</h5>
-<div class="sourceCode" id="cb11"><pre class="downlit">
+<div class="sourceCode" id="cb14"><pre class="downlit">
 <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                             Checking input files                             |</span>
