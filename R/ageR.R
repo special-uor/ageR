@@ -33,7 +33,9 @@
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
 # @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
-#' @inheritDotParams rbacon::Bacon
+#' @inheritDotParams rbacon::Bacon -core -thick -coredir -seed -depths.file
+#' -acc.mean -acc.shape -postbomb -hiatus.depths -cc -suggest -ask -ssize -th0
+#' -plot.pdf
 #'
 #' @return List with \code{ggplot2} objects and summary statistics of all the
 #'     scenarios computed.
