@@ -75,6 +75,7 @@ running them.}
     \item{\code{prob}}{Confidence interval to report. This should lie between 0 and 1, default 0.95 (95 \%).}
     \item{\code{d.min}}{Minimum depth of age-depth model (use this to extrapolate to depths higher than the top dated depth).}
     \item{\code{d.max}}{Maximum depth of age-depth model (use this to extrapolate to depths below the bottom dated depth).}
+    \item{\code{add.bottom}}{Add a model section at the bottom of the core, in order to ensure the bottommost date is taken into account. Default \code{add.bottom=TRUE}. This is a new option and can cause age-models to differ from previous version. Please re-run the model if in doubt.}
     \item{\code{d.by}}{Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.}
     \item{\code{depths}}{By default, Bacon will calculate the ages for the depths \code{d.min} to \code{d.max} in steps of \code{d.by}.
 Alternative depths can be provided as, e.g., \code{depths=seq(0, 100, length=500)} or as a file, e.g., \code{depths=read.table("CoreDepths.txt"}. See also \code{depths.file}.}
@@ -98,7 +99,7 @@ allow for a large range of posterior memory values.}
     \item{\code{cc3}}{For southern hemisphere 14C dates (SHCal20).}
     \item{\code{cc4}}{Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{ccdir}.}
     \item{\code{ccdir}}{Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""} since they are loaded into R's memory.
-For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/rbacon/extdata/Curves/"))}).
+For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/IntCal/extdata"))}).
 Alternatively produce a new folder, and add your curve as well as the default calibration curves there (cc1, cc2 and cc3; e.g., \code{write.table(copyCalibrationCurve(1), "./3Col_intcal20.14C", sep="\t")}.)}
     \item{\code{delta.R}}{Mean of core-wide age offsets (e.g., regional marine offsets).}
     \item{\code{delta.STD}}{Error of core-wide age offsets (e.g., regional marine offsets).}
@@ -111,6 +112,9 @@ The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by 
 If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 For symmetry reasons, t.a must always be equal to t.b-1.}
     \item{\code{normal}}{By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.}
+    \item{\code{accept.suggestions}}{Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.
+Also, if the length of the core would cause too few or too many sections with the default settings, Bacon will suggest an alternative section thickness \code{thick}.
+Accept these suggested alternative settings by typing "y" (or "yes please" if you prefer to be polite), or leave as is by typing "n" (or anything else, really). To get rid of these suggestions, use \code{suggest=FALSE}.}
     \item{\code{reswarn}}{Bacon will warn you if the number of sections lies outside the safe range (default between 10 and 200 sections;
 \code{reswarn=c(10,200)}). Too few sections could lead to an `elbowy' model while with too many sections the modelling process can get lost,
  resulting in age-models far away from the dated depths.}
@@ -122,6 +126,7 @@ try running your core again with \code{remember=FALSE}, or, start cleanly by typ
     \item{\code{dec}}{Character for decimal points. Default to \code{dec="."}.}
     \item{\code{runname}}{Text to add to the corename for specific runs, e.g., \code{runname="MyCore_Test1"}.}
     \item{\code{slump}}{Upper and lower depths of any sections of assumed abrupt accumulation, that require excising before age-modelling (and adding after age-modelling). Requires pairs of depths, e.g., \code{slump=c(10,15,60,67)} for slumps at 67-60 and 15-10 cm core depth.}
+    \item{\code{remove}}{Whether or not to remove depths within slumps. Defaults to \code{remove=FALSE}.}
     \item{\code{BCAD}}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
     \item{\code{burnin}}{Amount of initial, likely sub-optimal MCMC iterations that will be removed.}
     \item{\code{MinAge}}{Minimum age limit for Bacon runs, default at current year in cal BP. To set plot limits, use \code{yr.min} instead.}
