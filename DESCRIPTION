@@ -39,10 +39,9 @@ Imports:
     SimDesign,
     stringi,
     tictoc
-Remotes:
-    special-uor/dabr
 Suggests:
     badger,
+    dabr,
     hexSticker,
     knitr,
     testthat
