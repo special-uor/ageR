@@ -33,7 +33,9 @@
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
 # @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
-#' @inheritDotParams rbacon::Bacon
+#' @inheritDotParams rbacon::Bacon -core -thick -coredir -seed -depths.file
+#' -acc.mean -acc.shape -postbomb -hiatus.depths -cc -suggest -ask -ssize -th0
+#' -plot.pdf
 #'
 #' @return List with \code{ggplot2} objects and summary statistics of all the
 #'     scenarios computed.
@@ -642,20 +644,19 @@ gelman_test <- function(data, confidence = 0.975) {
 
 #' Create a mixed calibration curved
 #'
-#' @inheritParams rbacon::mix.curves
+#' @inheritParams IntCal::mix.curves
 #' @inheritParams Bacon
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Curve for neotropics
 #' ageR::mix_curves(0.5, 1, 3, name = "neotropics.14C")
 #' # Curve for coastline (Northern hemisphere)
 #' ageR::mix_curves(0.7, 1, 2, name = "nh_coastal.14C")
 #' # Curve for coastline (Southern hemisphere)
 #' ageR::mix_curves(0.7, 3, 2, name = "sh_coastal.14C")
-#' }
+#'
 mix_curves <- function(proportion = 0.5,
                        cc1 = 1,
                        cc2 = 2,
@@ -664,10 +665,10 @@ mix_curves <- function(proportion = 0.5,
                        quiet = FALSE) {
   if (!dir.exists(dirname)) # Create output directory
     dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
-  # Extract the IntCal20 calibration curves from rbacon
-  cc1_df <- rbacon::copyCalibrationCurve(1)
-  cc2_df <- rbacon::copyCalibrationCurve(2)
-  cc3_df <- rbacon::copyCalibrationCurve(3)
+  # Extract the IntCal20 calibration curves from IntCal
+  cc1_df <- IntCal::copyCalibrationCurve(1)
+  cc2_df <- IntCal::copyCalibrationCurve(2)
+  cc3_df <- IntCal::copyCalibrationCurve(3)
 
   # Calibration curve names
   ccnames <- c("3Col_intcal20.14C",
@@ -686,7 +687,7 @@ mix_curves <- function(proportion = 0.5,
   write.table(cc3_df, ccpaths[3], row.names = FALSE, col.names = FALSE)
 
   # Create a mixed calibration curve
-  rbacon::mix.curves(proportion = proportion,
+  IntCal::mix.curves(proportion = proportion,
                      cc1 = ccnames[cc1],
                      cc2 = ccnames[cc2],
                      name = name,
