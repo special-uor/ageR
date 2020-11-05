@@ -1,3 +1,6 @@
+#' @keywords internal
+"_PACKAGE"
+
 #' Bacon age model
 #'
 #' @importFrom foreach %dopar%
