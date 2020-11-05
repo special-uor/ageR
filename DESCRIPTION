@@ -30,6 +30,7 @@ Imports:
     foreach,
     ggplot2,
     gridExtra,
+    IntCal,
     parallel,
     plyr,
     progress,
