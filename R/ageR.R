@@ -29,6 +29,9 @@
 #'     scenarios.
 #' @param acc_upper Accumulation rate upper bound. Used to create alternative
 #'     scenarios.
+#' @param thick Numeric vector with the core segments' thickness to use for the
+#'     scenarios. If passed, then \code{thick_step}, \code{thick_lower}, and
+#'     \code{thick_upper} will be ignored.
 #' @param thick_step Core segments thickness step. Used to create alternative
 #'     scenarios.
 #' @param thick_lower Core segments thickness lower bound. Used to create
@@ -58,6 +61,7 @@ Bacon <- function(wdir,
                   acc_step = 5,
                   acc_lower = NULL,
                   acc_upper = NULL,
+                  thick = NULL,
                   thick_step = 5,
                   thick_lower = NULL,
                   thick_upper = NULL,
@@ -102,30 +106,34 @@ Bacon <- function(wdir,
     accMean <- acc
   }
 
-  # Calculate optimal thickness for each segment of the core
-  k <- seq(floor(min(depths_eval, na.rm = TRUE)),
-           ceiling(max(depths_eval, na.rm = TRUE)),
-           by = 5)
-  if (k[1] < 10) {
-    thickness <- pretty(5 * (k/10), 10)
-    thickness <- min(thickness[thickness > 0])
-  } else if (k[1] > 20) {
-    thickness <- max(pretty(5 * (k/20)))
+  if (is.null(thick)) {
+    # Calculate optimal thickness for each segment of the core
+    k <- seq(floor(min(depths_eval, na.rm = TRUE)),
+             ceiling(max(depths_eval, na.rm = TRUE)),
+             by = 5)
+    if (k[1] < 10) {
+      thickness <- pretty(5 * (k/10), 10)
+      thickness <- min(thickness[thickness > 0])
+    } else if (k[1] > 20) {
+      thickness <- max(pretty(5 * (k/20)))
+    } else {
+      thickness <- 5 # Default thickness
+    }
+
+    # Create range of thickness for alternative scenarios
+    # if (is.null(thick_lower))
+    #   thick_lower <- min(k)
+    # if (is.null(thick_upper))
+    #   thick_upper <- max(k)
+    thickness <- sce_seq(thickness,
+                         step = thick_step,
+                         lower = thick_lower,
+                         upper = thick_upper)
   } else {
-    thickness <- 5 # Default thickness
+    thickness <- thick
   }
 
-  # Create range of thickness for alternative scenarios
-  # if (is.null(thick_lower))
-  #   thick_lower <- min(k)
-  # if (is.null(thick_upper))
-  #   thick_upper <- max(k)
-  thickness <- sce_seq(thickness,
-                       step = thick_step,
-                       lower = thick_lower,
-                       upper = thick_upper)
-
-  # Create subfolders for each scenario
+  # Create sub-directories for each scenario
   scenarios <- data.frame(acc.mean = accMean,
                           thick = rep(thickness, each = length(accMean)))
 
