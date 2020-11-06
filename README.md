@@ -17,7 +17,7 @@ status](https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg)](ht
 <!-- badges: end -->
 
 The goal of ageR is to provide functions that facilitate the creation of
-age models using different data sources, including data bases, comma and
+age models using different data sources, including databases, comma and
 tab separated files.
 
 ## Installation
