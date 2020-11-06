@@ -13,9 +13,11 @@ Bacon(
   seed = NA,
   alt_depths = NULL,
   quiet = FALSE,
+  acc = NULL,
   acc_step = 5,
   acc_lower = NULL,
   acc_upper = NULL,
+  thick = NULL,
   thick_step = 5,
   thick_lower = NULL,
   thick_upper = NULL,
@@ -47,6 +49,10 @@ executions, if it is not assigned then the seed is set by the system.}
 
 \item{quiet}{Boolean to hide status messages.}
 
+\item{acc}{Numeric vector with the accumulation rates to use for the
+scenarios. If passed, then \code{acc_step}, \code{acc_lower}, and
+\code{acc_upper} will be ignored.}
+
 \item{acc_step}{Accumulation rate step. Used to create alternative
 scenarios.}
 
@@ -55,6 +61,10 @@ scenarios.}
 
 \item{acc_upper}{Accumulation rate upper bound. Used to create alternative
 scenarios.}
+
+\item{thick}{Numeric vector with the core segments' thickness to use for the
+scenarios. If passed, then \code{thick_step}, \code{thick_lower}, and
+\code{thick_upper} will be ignored.}
 
 \item{thick_step}{Core segments thickness step. Used to create alternative
 scenarios.}
