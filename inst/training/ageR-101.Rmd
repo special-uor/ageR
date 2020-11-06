@@ -46,6 +46,10 @@ To verify you are running the latest version, run the following command:
 ```
 
 ---
+class: inverse, center, middle
+# Demo
+
+---
 ## Example (Toy data)
 ### File structure
 ```{r bacon-file-structure}
@@ -114,9 +118,10 @@ ageR::Bacon(wdir = "./",
             dry_run = FALSE,
             ...)
 ```
+
+More details: https://special-uor.github.io/ageR/reference/Bacon
 ---
-### Run Bacon (2)
-#### Dry-run
+### Run Bacon: Dry-run
 ```{r bacon-run-dr}
 ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
 ```
@@ -146,7 +151,7 @@ ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
 <!-- ``` -->
 
 ---
-## Wishlist (aka Github issues)
+## Wishlist (aka GitHub issues)
 
 Create new "Issues" to request new features, report an error, etc.
 
@@ -157,7 +162,7 @@ class: center, middle
 
 # Thanks!
 
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+Slides created using the R package [**xaringan**](https://github.com/yihui/xaringan).
 
 ```{r cleanups, include = FALSE}
 unlink("X", recursive = TRUE, force = TRUE)
