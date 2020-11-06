@@ -7,6 +7,8 @@ output:
   xaringan::moon_reader:
     lib_dir: libs
     css: xaringan-themer.css
+    # includes:
+    #   after_body: insert-logo.html
     nature:
       highlightStyle: github
       highlightLines: true
@@ -44,6 +46,10 @@ To verify you are running the latest version, run the following command:
 ```{r check-install, eval = FALSE}
 ?ageR
 ```
+
+---
+class: inverse, center, middle
+# Demo
 
 ---
 ## Example (Toy data)
@@ -92,7 +98,67 @@ ageR::create_input(data = list(sample_depths = sample_depths,
                    entity = "X",
                    am = "bacon")
 ```
+---
+### Databases: RPD
+```{r}
+conn <- dabr::open_conn_mysql("RPD-latest")
+query <- paste0(
+"SELECT entity_name,
+       entity.ID_ENTITY as entity_id,
+	     lab_number AS labID,
+       age_C14 AS age,
+       error,
+       avg_depth*100 AS depth,
+       date_type,
+       thickness
+FROM date_info INNER JOIN entity
+    ON date_info.ID_ENTITY = entity.ID_ENTITY
+WHERE latitude >= 45")
 
+rpd <- dabr::select(conn, query, quiet = TRUE)
+nrow(rpd)
+```
+
+---
+### Databases: RPD (2)
+```{r}
+`%>%` <- dplyr::`%>%`
+rpd <- rpd %>%
+  dplyr::filter(!is.na(age)) %>%
+  dplyr::filter(!is.na(error)) %>%
+  dplyr::filter(!is.na(depth)) %>%
+  dplyr::mutate(error =  ifelse(error <= 0, 1, error)) %>%
+  dplyr::arrange(depth) %>%
+  dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0))
+
+entities <- sort(unique(rpd$entity_name))
+head(entities)
+```
+
+---
+### Databases: RPD (3)
+```{r}
+test_entity <- "Burnt Knob core 1"
+test_entity_id <- unique(rpd$entity_id[rpd$entity_name == test_entity])
+
+# Extract sampling depths
+query <- paste0("SELECT ID_SAMPLE AS id, sample_depth*100 AS depth
+                 FROM sample
+                 WHERE ID_ENTITY = ", test_entity_id)
+sample_tb <- dabr::select(conn, query, quiet = TRUE)
+sample_tb <- sample_tb %>%
+  dplyr::filter(depth != -9999)
+
+# Extract core data
+my_core <- rpd[rpd$entity_name == test_entity, 
+               c("labID", "age", "error", "depth", "cc")]
+
+# Create input
+ageR::create_input(data = list(core = my_core, 
+                               sample_depths = sample_tb), 
+                   wdir = "./", 
+                   entity = test_entity)
+```
 ---
 ### Run Bacon
 ```{r bacon-run-fx-call, eval = FALSE}
@@ -114,39 +180,32 @@ ageR::Bacon(wdir = "./",
             dry_run = FALSE,
             ...)
 ```
----
-### Run Bacon (2)
-#### Dry-run
-```{r bacon-run-dr}
-ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
-```
-<!-- ## Example -->
-<!-- ```{r, eval = TRUE} -->
-<!-- `%>%` <- dplyr::`%>%` -->
-<!-- conn <- dabr::open_conn_mysql("RPD-latest") -->
-<!-- query <- paste0("SELECT entity_name,  -->
-<!--                         entity.ID_ENTITY AS entity_id,  -->
-<!--                         lab_number AS labID,  -->
-<!--                         age_C14 AS age,  -->
-<!--                         error,  -->
-<!--                         avg_depth*100 AS depth,  -->
-<!--                         date_type,  -->
-<!--                         thickness -->
-<!--                   FROM date_info INNER JOIN entity -->
-<!--                   ON date_info.ID_ENTITY = entity.ID_ENTITY -->
-<!--                   WHERE latitude >= 45") -->
-<!-- rpd <- dabr::select(conn, query, quiet = TRUE) -->
-<!-- rpd <- rpd %>% -->
-<!--   dplyr::filter(!is.na(age)) %>% -->
-<!--   dplyr::filter(!is.na(error)) %>% -->
-<!--   dplyr::filter(!is.na(depth)) %>% -->
-<!--   dplyr::mutate(error =  ifelse(error <= 0, 1, error)) %>% -->
-<!--   dplyr::arrange(depth) %>% -->
-<!--   dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0)) -->
-<!-- ``` -->
 
+More details: https://special-uor.github.io/ageR/reference/Bacon
 ---
-## Wishlist (aka Github issues)
+### Run Bacon: Dry-run
+```{r bacon-run-dr}
+out <- ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
+```
+---
+### Run Bacon: Mixed calibration curves
+```{r bacon-mixed-cc}
+ccdir <- "./ccurves"
+ageR::mix_curves(proportion = 0.5, 
+                 cc1 = 1, 
+                 cc = 3, 
+                 name = "neotropics.14C", 
+                 dirname = ccdir)
+```
+
+```{r, eval = FALSE}
+out <- ageR::Bacon(wdir = "./", 
+                   entity = "X", 
+                   cc4 = "neotropics.14C", 
+                   ccdir = ccdir)
+```
+---
+## Wishlist (aka GitHub issues)
 
 Create new "Issues" to request new features, report an error, etc.
 
@@ -157,7 +216,7 @@ class: center, middle
 
 # Thanks!
 
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+Slides created using the R package [**xaringan**](https://github.com/yihui/xaringan).
 
 ```{r cleanups, include = FALSE}
 unlink("X", recursive = TRUE, force = TRUE)

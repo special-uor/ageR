@@ -46,6 +46,10 @@ To verify you are running the latest version, run the following command:
 ```
 
 ---
+class: inverse, center, middle
+# Demo
+
+---
 ## Example (Toy data)
 ### File structure
 
@@ -141,7 +145,84 @@ ageR::create_input(data = list(sample_depths = sample_depths,
 ```
 ## [1] "sample_depths" "core"          "hiatus"
 ```
+---
+### Databases: RPD
 
+```r
+conn &lt;- dabr::open_conn_mysql("RPD-latest")
+query &lt;- paste0(
+"SELECT entity_name,
+       entity.ID_ENTITY as entity_id,
+	     lab_number AS labID,
+       age_C14 AS age,
+       error,
+       avg_depth*100 AS depth,
+       date_type,
+       thickness
+FROM date_info INNER JOIN entity
+    ON date_info.ID_ENTITY = entity.ID_ENTITY
+WHERE latitude &gt;= 45")
+
+rpd &lt;- dabr::select(conn, query, quiet = TRUE)
+nrow(rpd)
+```
+
+```
+## [1] 5226
+```
+
+---
+### Databases: RPD (2)
+
+```r
+`%&gt;%` &lt;- dplyr::`%&gt;%`
+rpd &lt;- rpd %&gt;%
+  dplyr::filter(!is.na(age)) %&gt;%
+  dplyr::filter(!is.na(error)) %&gt;%
+  dplyr::filter(!is.na(depth)) %&gt;%
+  dplyr::mutate(error =  ifelse(error &lt;= 0, 1, error)) %&gt;%
+  dplyr::arrange(depth) %&gt;%
+  dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0))
+
+entities &lt;- sort(unique(rpd$entity_name))
+head(entities)
+```
+
+```
+## [1] "7-M core 1"               "Abbeyknockmoy Bog core 1"
+## [3] "Abeille-5"                "Aero-1"                  
+## [5] "Aero-5"                   "Air-1"
+```
+
+---
+### Databases: RPD (3)
+
+```r
+test_entity &lt;- "Burnt Knob core 1"
+test_entity_id &lt;- unique(rpd$entity_id[rpd$entity_name == test_entity])
+
+# Extract sampling depths
+query &lt;- paste0("SELECT ID_SAMPLE AS id, sample_depth*100 AS depth
+                 FROM sample
+                 WHERE ID_ENTITY = ", test_entity_id)
+sample_tb &lt;- dabr::select(conn, query, quiet = TRUE)
+sample_tb &lt;- sample_tb %&gt;%
+  dplyr::filter(depth != -9999)
+
+# Extract core data
+my_core &lt;- rpd[rpd$entity_name == test_entity, 
+               c("labID", "age", "error", "depth", "cc")]
+
+# Create input
+ageR::create_input(data = list(core = my_core, 
+                               sample_depths = sample_tb), 
+                   wdir = "./", 
+                   entity = test_entity)
+```
+
+```
+## [1] "core"          "sample_depths"
+```
 ---
 ### Run Bacon
 
@@ -164,12 +245,13 @@ ageR::Bacon(wdir = "./",
             dry_run = FALSE,
             ...)
 ```
+
+More details: https://special-uor.github.io/ageR/reference/Bacon
 ---
-### Run Bacon (2)
-#### Dry-run
+### Run Bacon: Dry-run
 
 ```r
-ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
+out &lt;- ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
 ```
 
 ```
@@ -201,33 +283,33 @@ ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
 ```
 ## A total of 15 scenarios.
 ```
-&lt;!-- ## Example --&gt;
-&lt;!-- ```{r, eval = TRUE} --&gt;
-&lt;!-- `%&gt;%` &lt;- dplyr::`%&gt;%` --&gt;
-&lt;!-- conn &lt;- dabr::open_conn_mysql("RPD-latest") --&gt;
-&lt;!-- query &lt;- paste0("SELECT entity_name,  --&gt;
-&lt;!--                         entity.ID_ENTITY AS entity_id,  --&gt;
-&lt;!--                         lab_number AS labID,  --&gt;
-&lt;!--                         age_C14 AS age,  --&gt;
-&lt;!--                         error,  --&gt;
-&lt;!--                         avg_depth*100 AS depth,  --&gt;
-&lt;!--                         date_type,  --&gt;
-&lt;!--                         thickness --&gt;
-&lt;!--                   FROM date_info INNER JOIN entity --&gt;
-&lt;!--                   ON date_info.ID_ENTITY = entity.ID_ENTITY --&gt;
-&lt;!--                   WHERE latitude &gt;= 45") --&gt;
-&lt;!-- rpd &lt;- dabr::select(conn, query, quiet = TRUE) --&gt;
-&lt;!-- rpd &lt;- rpd %&gt;% --&gt;
-&lt;!--   dplyr::filter(!is.na(age)) %&gt;% --&gt;
-&lt;!--   dplyr::filter(!is.na(error)) %&gt;% --&gt;
-&lt;!--   dplyr::filter(!is.na(depth)) %&gt;% --&gt;
-&lt;!--   dplyr::mutate(error =  ifelse(error &lt;= 0, 1, error)) %&gt;% --&gt;
-&lt;!--   dplyr::arrange(depth) %&gt;% --&gt;
-&lt;!--   dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0)) --&gt;
-&lt;!-- ``` --&gt;
-
 ---
-## Wishlist (aka Github issues)
+### Run Bacon: Mixed calibration curves
+
+```r
+ccdir &lt;- "./ccurves"
+ageR::mix_curves(proportion = 0.5, 
+                 cc1 = 1, 
+                 cc = 3, 
+                 name = "neotropics.14C", 
+                 dirname = ccdir)
+```
+
+```
+## --------------------------------------------------------------------------------
+## |                         Mixed curved: 50/50 created.                         |
+## --------------------------------------------------------------------------------
+```
+
+
+```r
+out &lt;- ageR::Bacon(wdir = "./", 
+                   entity = "X", 
+                   cc4 = "neotropics.14C", 
+                   ccdir = ccdir)
+```
+---
+## Wishlist (aka GitHub issues)
 
 Create new "Issues" to request new features, report an error, etc.
 
@@ -238,7 +320,7 @@ class: center, middle
 
 # Thanks!
 
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+Slides created using the R package [**xaringan**](https://github.com/yihui/xaringan).
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
