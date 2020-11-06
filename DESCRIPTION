@@ -15,7 +15,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-2906-9290")),
     person("SPECIAL Research Group @ University of Reading", role = c("cph")))
 Description: Provides functions to facilitate the creation of age models using 
-    different data sources, including data bases, comma and tab separated files.
+    different data sources, including databases, comma and tab separated files.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -47,6 +47,5 @@ Imports:
 Suggests:
     badger,
     dabr,
-    hexSticker,
     knitr,
     testthat

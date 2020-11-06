@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>ageR: Supervised Age Modelling</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Roberto Villegas-Diaz" />
+    <meta name="date" content="2020-11-06" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# ageR: Supervised Age Modelling
+### Roberto Villegas-Diaz
+### 2020-11-06
+
+---
+
+
+
+
+
+## What data do you need?
+- __Core:__ `labID`, `age`, `error`, `depth`, and `cc`
+- __Sampling:__ `ID` and `depth`
+- __(Optional) Hiatuses:__ `ID` and `depth`
+
+## How do you get the data?
+- A comma-separated values (CSV) file
+- A query to a database
+
+---
+## Installation
+Current version can be installed from the GitHub repository:
+
+```r
+install.packages("remotes")
+remotes::install_github("special-uor/ageR")
+```
+
+To verify you are running the latest version, run the following command:
+
+```r
+?ageR
+```
+
+---
+## Example (Toy data)
+### File structure
+
+```r
+ageR::file_structure(entity = "X", am = "bacon")
+```
+
+```
+##                      levelName
+## 1 X                           
+## 2  ¦--Bacon_runs              
+## 3  ¦   °--X                   
+## 4  ¦       ¦--X_depths.txt    
+## 5  ¦       ¦--X_sample_ids.csv
+## 6  ¦       °--X.csv           
+## 7  ¦--hiatus.csv              
+## 8  °--not_used_dates.csv
+```
+
+---
+### Input data
+#### Core data
+
+```r
+core &lt;- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
+                   age = c(50, 200, 1150, 2060, 4050),
+                   error = c(10, 15, 5, 1, 70),
+                   depth = c(5, 100, 230, 300, 450),
+                   cc = 1)
+knitr::kable(core)
+```
+
+
+
+|labID |  age| error| depth| cc|
+|:-----|----:|-----:|-----:|--:|
+|X001  |   50|    10|     5|  1|
+|X002  |  200|    15|   100|  1|
+|X003  | 1150|     5|   230|  1|
+|X004  | 2060|     1|   300|  1|
+|X005  | 4050|    70|   450|  1|
+
+---
+### Input data (2)
+#### Sampling depths
+
+```r
+sample_depths &lt;- data.frame(id = 1:100,
+                            depth = seq(0, 500, length.out = 100))
+knitr::kable(head(sample_depths))
+```
+
+
+
+| id|     depth|
+|--:|---------:|
+|  1|  0.000000|
+|  2|  5.050505|
+|  3| 10.101010|
+|  4| 15.151515|
+|  5| 20.202020|
+|  6| 25.252525|
+
+---
+### Input data (3)
+#### (Optional) Hiatuses
+
+```r
+hiatus &lt;- data.frame(id = c(1, 2),
+                     depth = c(50, 150))
+knitr::kable(hiatus)
+```
+
+
+
+| id| depth|
+|--:|-----:|
+|  1|    50|
+|  2|   150|
+---
+### Input data (4)
+
+```r
+ageR::create_input(data = list(sample_depths = sample_depths, 
+                               core = core,
+                               # Optional
+                               hiatus = hiatus), 
+                   wdir = "./", 
+                   entity = "X",
+                   am = "bacon")
+```
+
+```
+## [1] "sample_depths" "core"          "hiatus"
+```
+
+---
+### Run Bacon
+
+```r
+ageR::Bacon(wdir = "./", 
+            entity = "X", 
+            # Optional parameters
+            cpus = 1,
+            postbomb = 0,
+            cc = 0,
+            seed = NA,
+            alt_depths = NULL,
+            quiet = FALSE,
+            acc_step = 5,
+            acc_lower = NULL,
+            acc_upper = NULL,
+            thick_step = 5,
+            thick_lower = NULL,
+            thick_upper = NULL,
+            dry_run = FALSE,
+            ...)
+```
+---
+### Run Bacon (2)
+#### Dry-run
+
+```r
+ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
+```
+
+```
+## The following scenarios will be executed:
+```
+
+```
+## 
+## 
+## | Accumulation rate| Thickness|
+## |-----------------:|---------:|
+## |                 5|        10|
+## |                10|        10|
+## |                20|        10|
+## |                 5|        15|
+## |                10|        15|
+## |                20|        15|
+## |                 5|        20|
+## |                10|        20|
+## |                20|        20|
+## |                 5|        30|
+## |                10|        30|
+## |                20|        30|
+## |                 5|        40|
+## |                10|        40|
+## |                20|        40|
+```
+
+```
+## A total of 15 scenarios.
+```
+&lt;!-- ## Example --&gt;
+&lt;!-- ```{r, eval = TRUE} --&gt;
+&lt;!-- `%&gt;%` &lt;- dplyr::`%&gt;%` --&gt;
+&lt;!-- conn &lt;- dabr::open_conn_mysql("RPD-latest") --&gt;
+&lt;!-- query &lt;- paste0("SELECT entity_name,  --&gt;
+&lt;!--                         entity.ID_ENTITY AS entity_id,  --&gt;
+&lt;!--                         lab_number AS labID,  --&gt;
+&lt;!--                         age_C14 AS age,  --&gt;
+&lt;!--                         error,  --&gt;
+&lt;!--                         avg_depth*100 AS depth,  --&gt;
+&lt;!--                         date_type,  --&gt;
+&lt;!--                         thickness --&gt;
+&lt;!--                   FROM date_info INNER JOIN entity --&gt;
+&lt;!--                   ON date_info.ID_ENTITY = entity.ID_ENTITY --&gt;
+&lt;!--                   WHERE latitude &gt;= 45") --&gt;
+&lt;!-- rpd &lt;- dabr::select(conn, query, quiet = TRUE) --&gt;
+&lt;!-- rpd &lt;- rpd %&gt;% --&gt;
+&lt;!--   dplyr::filter(!is.na(age)) %&gt;% --&gt;
+&lt;!--   dplyr::filter(!is.na(error)) %&gt;% --&gt;
+&lt;!--   dplyr::filter(!is.na(depth)) %&gt;% --&gt;
+&lt;!--   dplyr::mutate(error =  ifelse(error &lt;= 0, 1, error)) %&gt;% --&gt;
+&lt;!--   dplyr::arrange(depth) %&gt;% --&gt;
+&lt;!--   dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0)) --&gt;
+&lt;!-- ``` --&gt;
+
+---
+## Wishlist (aka Github issues)
+
+Create new "Issues" to request new features, report an error, etc.
+
+https://github.com/special-uor/ageR/issues
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
