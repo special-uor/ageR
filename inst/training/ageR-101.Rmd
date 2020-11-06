@@ -1,0 +1,147 @@
+---
+title: "ageR: Supervised Age Modelling"
+author: 
+  - "Roberto Villegas-Diaz"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+xaringanthemer::style_mono_accent(
+  base_color = "#2f4174",
+  inverse_header_color = "#FFFFFF"
+)
+```
+## What data do you need?
+- __Core:__ `labID`, `age`, `error`, `depth`, and `cc`
+- __Sampling:__ `ID` and `depth`
+- __(Optional) Hiatuses:__ `ID` and `depth`
+
+## How do you get the data?
+- A comma-separated values (CSV) file
+- A query to a database
+
+---
+## Example (Toy data)
+### File structure
+```{r bacon-file-structure}
+ageR::file_structure(entity = "X", am = "bacon")
+```
+
+---
+### Input data
+#### Core data
+```{r bacon-create-input-step2}
+core <- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
+                   age = c(50, 200, 1150, 2060, 4050),
+                   error = c(10, 15, 5, 1, 70),
+                   depth = c(5, 100, 230, 300, 450),
+                   cc = 1)
+knitr::kable(core)
+```
+
+---
+### Input data (2)
+#### Sampling depths
+```{r bacon-create-input-step1}
+sample_depths <- data.frame(id = 1:100,
+                            depth = seq(0, 500, length.out = 100))
+knitr::kable(head(sample_depths))
+```
+
+---
+### Input data (3)
+#### (Optional) Hiatuses
+```{r bacon-create-input-step3}
+hiatus <- data.frame(id = c(1, 2),
+                     depth = c(50, 150))
+knitr::kable(hiatus)
+```
+---
+### Input data (4)
+```{r bacon-create-input-step4, eval = TRUE}
+ageR::create_input(data = list(sample_depths = sample_depths, 
+                               core = core,
+                               # Optional
+                               hiatus = hiatus), 
+                   wdir = "./", 
+                   entity = "X",
+                   am = "bacon")
+```
+
+---
+### Run Bacon
+```{r bacon-run-fx-call, eval = FALSE}
+ageR::Bacon(wdir = "./", 
+            entity = "X", 
+            # Optional parameters
+            cpus = 1,
+            postbomb = 0,
+            cc = 0,
+            seed = NA,
+            alt_depths = NULL,
+            quiet = FALSE,
+            acc_step = 5,
+            acc_lower = NULL,
+            acc_upper = NULL,
+            thick_step = 5,
+            thick_lower = NULL,
+            thick_upper = NULL,
+            dry_run = FALSE,
+            ...)
+```
+---
+### Run Bacon (2)
+#### Dry-run
+```{r bacon-run-dr}
+ageR::Bacon(wdir = "./", entity = "X", dry_run = TRUE, quiet = TRUE)
+```
+<!-- ## Example -->
+<!-- ```{r, eval = TRUE} -->
+<!-- `%>%` <- dplyr::`%>%` -->
+<!-- conn <- dabr::open_conn_mysql("RPD-latest") -->
+<!-- query <- paste0("SELECT entity_name,  -->
+<!--                         entity.ID_ENTITY AS entity_id,  -->
+<!--                         lab_number AS labID,  -->
+<!--                         age_C14 AS age,  -->
+<!--                         error,  -->
+<!--                         avg_depth*100 AS depth,  -->
+<!--                         date_type,  -->
+<!--                         thickness -->
+<!--                   FROM date_info INNER JOIN entity -->
+<!--                   ON date_info.ID_ENTITY = entity.ID_ENTITY -->
+<!--                   WHERE latitude >= 45") -->
+<!-- rpd <- dabr::select(conn, query, quiet = TRUE) -->
+<!-- rpd <- rpd %>% -->
+<!--   dplyr::filter(!is.na(age)) %>% -->
+<!--   dplyr::filter(!is.na(error)) %>% -->
+<!--   dplyr::filter(!is.na(depth)) %>% -->
+<!--   dplyr::mutate(error =  ifelse(error <= 0, 1, error)) %>% -->
+<!--   dplyr::arrange(depth) %>% -->
+<!--   dplyr::mutate(cc = ifelse(grepl("*carbon", date_type), 1, 0)) -->
+<!-- ``` -->
+
+---
+## Wishlist (aka Github issues)
+
+Create new "Issues" to request new features, report an error, etc.
+
+https://github.com/special-uor/ageR/issues
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
