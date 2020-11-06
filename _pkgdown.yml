@@ -1,0 +1,23 @@
+reference:
+- title: "Age models"
+  desc: >
+    Functions to create the age models
+- contents:
+  - Bacon
+  - mix_curves
+  - runLinReg
+
+- title: "Sourcing input data"
+  desc:: >
+    Functions to source data and write into the expected format
+- contents:
+  - create_input
+  - file_structure
+
+# - title: "Plotting functions"
+#   desc: >
+#     Internal functions to generate plots of the age models
+# - contents:
+#   - plot_abc
+#   - plot_acc
+#   - plot_acc_post
