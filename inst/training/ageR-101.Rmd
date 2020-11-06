@@ -220,4 +220,6 @@ Slides created using the R package [**xaringan**](https://github.com/yihui/xarin
 
 ```{r cleanups, include = FALSE}
 unlink("X", recursive = TRUE, force = TRUE)
+unlink("ccurves", recursive = TRUE, force = TRUE)
+unlink("Burnt Knob core 1", recursive = TRUE, force = TRUE)
 ```
