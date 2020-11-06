@@ -7,7 +7,7 @@ reference:
   - mix_curves
   - runLinReg
 
-- title: "Sourcing input data"
+- title: "Source input data"
   desc:: >
     Functions to source data and write into the expected format
 - contents:
