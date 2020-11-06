@@ -20,6 +20,9 @@
 #'     executions, if it is not assigned then the seed is set by the system.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
+#' @param acc Numeric vector with the accumulation rates to use for the
+#'     scenarios. If passed, then \code{acc_step}, \code{acc_lower}, and
+#'     \code{acc_upper} will be ignored.
 #' @param acc_step Accumulation rate step. Used to create alternative
 #'     scenarios.
 #' @param acc_lower Accumulation rate lower bound. Used to create alternative
@@ -51,6 +54,7 @@ Bacon <- function(wdir,
                   seed = NA,
                   alt_depths = NULL,
                   quiet = FALSE,
+                  acc = NULL,
                   acc_step = 5,
                   acc_lower = NULL,
                   acc_upper = NULL,
@@ -85,14 +89,18 @@ Bacon <- function(wdir,
                        colClasses = c("numeric", "numeric"))
 
   msg("Setting up environment", quiet)
-  accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
-  ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
-  ballpacc <- abs(accMean - ballpacc)
-  ballpacc <- ballpacc[ballpacc > 0]
-  accMean <- sce_seq(accMean[order(ballpacc)[1]],
-                     step = acc_step,
-                     lower = acc_lower,
-                     upper = acc_upper)
+  if (is.null(acc)) {
+    accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
+    ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
+    ballpacc <- abs(accMean - ballpacc)
+    ballpacc <- ballpacc[ballpacc > 0]
+    accMean <- sce_seq(accMean[order(ballpacc)[1]],
+                       step = acc_step,
+                       lower = acc_lower,
+                       upper = acc_upper)
+  } else {
+    accMean <- acc
+  }
 
   # Calculate optimal thickness for each segment of the core
   k <- seq(floor(min(depths_eval, na.rm = TRUE)),
