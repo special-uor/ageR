@@ -33,6 +33,19 @@ xaringanthemer::style_mono_accent(
 - A query to a database
 
 ---
+## Installation
+Current version can be installed from the GitHub repository:
+```{r install-dev, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("special-uor/ageR")
+```
+
+To verify you are running the latest version, run the following command:
+```{r check-install, eval = FALSE}
+?ageR
+```
+
+---
 ## Example (Toy data)
 ### File structure
 ```{r bacon-file-structure}
@@ -145,3 +158,7 @@ class: center, middle
 # Thanks!
 
 Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+```{r cleanups, include = FALSE}
+unlink("X", recursive = TRUE, force = TRUE)
+```
