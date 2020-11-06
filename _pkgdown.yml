@@ -21,3 +21,16 @@ reference:
 #   - plot_abc
 #   - plot_acc
 #   - plot_acc_post
+# home:
+#   title: An R package for supervised age modelling
+#   description: Provide functions that facilitate the creation of age models using different data sources.
+#
+# template:
+#   opengraph:
+#     image:
+#       src: images/logo.png
+#       alt: "Hexagonal logo for ageR"
+#     twitter:
+#       creator: "@roberthillo"
+#       # site: "@special-uor"
+#       card: summary_large_image
