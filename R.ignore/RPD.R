@@ -11,7 +11,6 @@ query <- paste0(
        age_C14 AS age,
        error,
        avg_depth*100 AS depth,
-       latitude,
        date_type,
        thickness
 FROM date_info INNER JOIN entity
@@ -84,54 +83,54 @@ for (entity in entities) {
   hiatus_tb <- data.frame(sample_id = NA, depth_sample = NA)[-1, ]
   write.csv(hiatus_tb, "hiatus.csv", row.names = FALSE)
 
-  # Data for the Bchron model
-  dir.create(file.path(wdir, nent, 'Bchron'),
-             showWarnings = FALSE,
-             recursive = TRUE)
-  setwd(file.path(wdir, nent, 'Bchron'))
-  # c("labID", "age", "error", "depth", "thickness", "calib_used")
-  # mutate(calib_curve_new = case_when(
-  #   calib_used == 'NULL' ~ 'normal',
-  #   calib_used == 'unknown' ~ 'unknown',
-  #   calib_used == "not calibrated" ~ 'ask again',
-  #   calib_used == "INTCAL13 NH" ~ 'intcal13'))
-  write.csv(rpd[idx, c("labID", "age", "error", "depth", "thickness")],
-            paste0(nent, ".csv"), row.names = FALSE)
-  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
-                    to = paste0("."))
+  # # Data for the Bchron model
+  # dir.create(file.path(wdir, nent, 'Bchron'),
+  #            showWarnings = FALSE,
+  #            recursive = TRUE)
+  # setwd(file.path(wdir, nent, 'Bchron'))
+  # # c("labID", "age", "error", "depth", "thickness", "calib_used")
+  # # mutate(calib_curve_new = case_when(
+  # #   calib_used == 'NULL' ~ 'normal',
+  # #   calib_used == 'unknown' ~ 'unknown',
+  # #   calib_used == "not calibrated" ~ 'ask again',
+  # #   calib_used == "INTCAL13 NH" ~ 'intcal13'))
+  # write.csv(rpd[idx, c("labID", "age", "error", "depth", "thickness")],
+  #           paste0(nent, ".csv"), row.names = FALSE)
+  # . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+  #                   to = paste0("."))
 
 
-  # Data for the Linear Interpolation model
-  dir.create(file.path(wdir, nent, 'linInterp'),
-             showWarnings = FALSE,
-             recursive = TRUE)
-  setwd(file.path(wdir, nent, 'linInterp'))
-  write.csv(rpd[idx, c("labID", "age", "error", "depth", "date_type")],
-            paste0(nent, ".csv"), row.names = FALSE)
-  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
-                    to = paste0("."))
-
-  # Data for the Linear Regression model
-  dir.create(file.path(wdir, nent, 'linReg'),
-             showWarnings = FALSE,
-             recursive = TRUE)
-  setwd(file.path(wdir, nent, 'linReg'))
-  write.csv(rpd[idx, c("labID", "age", "error", "depth", "date_type")],
-            paste0(nent, ".csv"), row.names = FALSE)
-  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
-                    to = paste0("."))
-  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
-                    to = paste0("./", nent, "_ids.csv"))
-
-  # Data for the StalAge model
-  dir.create(file.path(wdir, nent, 'StalAge'),
-             showWarnings = FALSE,
-             recursive = TRUE)
-  setwd(file.path(wdir, nent, 'StalAge'))
-  write.csv(rpd[idx, c("labID", "age", "error", "depth")],
-            paste0(nent, ".csv"), row.names = FALSE)
-  . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
-                    to = paste0("."))
+  # # Data for the Linear Interpolation model
+  # dir.create(file.path(wdir, nent, 'linInterp'),
+  #            showWarnings = FALSE,
+  #            recursive = TRUE)
+  # setwd(file.path(wdir, nent, 'linInterp'))
+  # write.csv(rpd[idx, c("labID", "age", "error", "depth", "date_type")],
+  #           paste0(nent, ".csv"), row.names = FALSE)
+  # . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+  #                   to = paste0("."))
+  #
+  # # Data for the Linear Regression model
+  # dir.create(file.path(wdir, nent, 'linReg'),
+  #            showWarnings = FALSE,
+  #            recursive = TRUE)
+  # setwd(file.path(wdir, nent, 'linReg'))
+  # write.csv(rpd[idx, c("labID", "age", "error", "depth", "date_type")],
+  #           paste0(nent, ".csv"), row.names = FALSE)
+  # . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+  #                   to = paste0("."))
+  # . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+  #                   to = paste0("./", nent, "_ids.csv"))
+  #
+  # # Data for the StalAge model
+  # dir.create(file.path(wdir, nent, 'StalAge'),
+  #            showWarnings = FALSE,
+  #            recursive = TRUE)
+  # setwd(file.path(wdir, nent, 'StalAge'))
+  # write.csv(rpd[idx, c("labID", "age", "error", "depth")],
+  #           paste0(nent, ".csv"), row.names = FALSE)
+  # . <- file.symlink(from = paste0("../core/", nent, "_depths.csv"),
+  #                   to = paste0("."))
 }
 setwd(file.path(wdir))
 entities <- data.frame(id = entities_id,
