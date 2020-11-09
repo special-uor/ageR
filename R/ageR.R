@@ -20,12 +20,18 @@
 #'     executions, if it is not assigned then the seed is set by the system.
 #' @param alt_depths List of arrays with new depths.
 #' @param quiet Boolean to hide status messages.
+#' @param acc Numeric vector with the accumulation rates to use for the
+#'     scenarios. If passed, then \code{acc_step}, \code{acc_lower}, and
+#'     \code{acc_upper} will be ignored.
 #' @param acc_step Accumulation rate step. Used to create alternative
 #'     scenarios.
 #' @param acc_lower Accumulation rate lower bound. Used to create alternative
 #'     scenarios.
 #' @param acc_upper Accumulation rate upper bound. Used to create alternative
 #'     scenarios.
+#' @param thick Numeric vector with the core segments' thickness to use for the
+#'     scenarios. If passed, then \code{thick_step}, \code{thick_lower}, and
+#'     \code{thick_upper} will be ignored.
 #' @param thick_step Core segments thickness step. Used to create alternative
 #'     scenarios.
 #' @param thick_lower Core segments thickness lower bound. Used to create
@@ -51,9 +57,11 @@ Bacon <- function(wdir,
                   seed = NA,
                   alt_depths = NULL,
                   quiet = FALSE,
+                  acc = NULL,
                   acc_step = 5,
                   acc_lower = NULL,
                   acc_upper = NULL,
+                  thick = NULL,
                   thick_step = 5,
                   thick_lower = NULL,
                   thick_upper = NULL,
@@ -85,39 +93,47 @@ Bacon <- function(wdir,
                        colClasses = c("numeric", "numeric"))
 
   msg("Setting up environment", quiet)
-  accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
-  ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
-  ballpacc <- abs(accMean - ballpacc)
-  ballpacc <- ballpacc[ballpacc > 0]
-  accMean <- sce_seq(accMean[order(ballpacc)[1]],
-                     step = acc_step,
-                     lower = acc_lower,
-                     upper = acc_upper)
-
-  # Calculate optimal thickness for each segment of the core
-  k <- seq(floor(min(depths_eval, na.rm = TRUE)),
-           ceiling(max(depths_eval, na.rm = TRUE)),
-           by = 5)
-  if (k[1] < 10) {
-    thickness <- pretty(5 * (k/10), 10)
-    thickness <- min(thickness[thickness > 0])
-  } else if (k[1] > 20) {
-    thickness <- max(pretty(5 * (k/20)))
+  if (is.null(acc)) {
+    accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
+    ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
+    ballpacc <- abs(accMean - ballpacc)
+    ballpacc <- ballpacc[ballpacc > 0]
+    accMean <- sce_seq(accMean[order(ballpacc)[1]],
+                       step = acc_step,
+                       lower = acc_lower,
+                       upper = acc_upper)
   } else {
-    thickness <- 5 # Default thickness
+    accMean <- acc
   }
 
-  # Create range of thickness for alternative scenarios
-  # if (is.null(thick_lower))
-  #   thick_lower <- min(k)
-  # if (is.null(thick_upper))
-  #   thick_upper <- max(k)
-  thickness <- sce_seq(thickness,
-                       step = thick_step,
-                       lower = thick_lower,
-                       upper = thick_upper)
+  if (is.null(thick)) {
+    # Calculate optimal thickness for each segment of the core
+    k <- seq(floor(min(depths_eval, na.rm = TRUE)),
+             ceiling(max(depths_eval, na.rm = TRUE)),
+             by = 5)
+    if (k[1] < 10) {
+      thickness <- pretty(5 * (k/10), 10)
+      thickness <- min(thickness[thickness > 0])
+    } else if (k[1] > 20) {
+      thickness <- max(pretty(5 * (k/20)))
+    } else {
+      thickness <- 5 # Default thickness
+    }
 
-  # Create subfolders for each scenario
+    # Create range of thickness for alternative scenarios
+    # if (is.null(thick_lower))
+    #   thick_lower <- min(k)
+    # if (is.null(thick_upper))
+    #   thick_upper <- max(k)
+    thickness <- sce_seq(thickness,
+                         step = thick_step,
+                         lower = thick_lower,
+                         upper = thick_upper)
+  } else {
+    thickness <- thick
+  }
+
+  # Create sub-directories for each scenario
   scenarios <- data.frame(acc.mean = accMean,
                           thick = rep(thickness, each = length(accMean)))
 
@@ -478,13 +494,16 @@ run_bacon <- function(wdir,
                                                paste0(entity, "_depths.txt")),
                                      col.names = ""))[[1]]
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
+  bacon_age_mean <- apply(bacon_mcmc, 2, mean)
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
                                          hiatuses,
                                          bacon_mcmc,
                                          q1 = 0.05,
                                          q2 = 0.95)
-  colnames(bacon_age)[3:4] <- paste0("uncert_", c(5, 95))
+  colnames(bacon_age)[2:4] <- c("median", paste0("uncert_", c(5, 95)))
+  bacon_age <- cbind(bacon_age[, 1], mean = bacon_age_mean, bacon_age[, 2:4])
+
   # 75% CI
   bacon_age_75 <- get_bacon_median_quantile(depths_eval,
                                             hiatuses,

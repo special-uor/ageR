@@ -136,14 +136,11 @@ knitr::kable(hiatus)
 ageR::create_input(data = list(sample_depths = sample_depths, 
                                core = core,
                                # Optional
-                               hiatus = hiatus), 
+                               hiatus = NULL,
+                               not_used = NULL), 
                    wdir = "./", 
                    entity = "X",
                    am = "bacon")
-```
-
-```
-## [1] "sample_depths" "core"          "hiatus"
 ```
 ---
 ### Databases: RPD
@@ -218,10 +215,6 @@ ageR::create_input(data = list(core = my_core,
                                sample_depths = sample_tb), 
                    wdir = "./", 
                    entity = test_entity)
-```
-
-```
-## [1] "core"          "sample_depths"
 ```
 ---
 ### Run Bacon
