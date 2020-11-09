@@ -494,13 +494,16 @@ run_bacon <- function(wdir,
                                                paste0(entity, "_depths.txt")),
                                      col.names = ""))[[1]]
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
+  bacon_age_mean <- apply(bacon_mcmc, 2, mean)
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
                                          hiatuses,
                                          bacon_mcmc,
                                          q1 = 0.05,
                                          q2 = 0.95)
-  colnames(bacon_age)[3:4] <- paste0("uncert_", c(5, 95))
+  colnames(bacon_age)[2:4] <- c("median", paste0("uncert_", c(5, 95)))
+  bacon_age <- cbind(bacon_age[, 1], mean = bacon_age_mean, bacon_age[, 2:4])
+
   # 75% CI
   bacon_age_75 <- get_bacon_median_quantile(depths_eval,
                                             hiatuses,
