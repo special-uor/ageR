@@ -72,8 +72,6 @@ for (site in sites_of_interest) {
   # if (file.exists(depths_filepath)) {
   if (length(depths0) > 0) {
     message(paste0("Processing: ", site))
-    # depths <- matrix(read.taAble(depths_filepath,
-    #                             col.names = ""))[[1]]
     depths <- depths0
     # print(cbind(depths0, depths))
     depths <- data.frame(id = seq_len(length(depths)),
@@ -119,20 +117,12 @@ for (site in sites_of_interest) {
 
 # Run Bacon for each site of interest
 for (site in sites_of_interest) {
-  # ageR::runBacon(file.path(wdir, "runs"), ageR:::cln_str(site), cc = 1)
-  tictoc::tic(site)
-  test9 <- ageR::Bacon(file.path(wdir0, "runs"), ageR:::cln_str(site), cpus = 8, cc = 1, quiet = T, dry_run = F, acc_lower = 40, acc_upper = 60, thick_lower = 5, thick_upper = 25)
-  tictoc::tic("Arroyo de las Carcavas")
-  test12 <- ageR::Bacon(file.path(wdir0, "runs"),
-                        ageR:::cln_str("Arroyo de las Carcavas"),
-                        cpus = 12,
-                        cc = 1,
-                        quiet = T,
-                        dry_run = F)
-  tictoc::toc()
+  out <- ageR::Bacon(file.path(wdir, "runs"), ageR:::cln_str(site), cpus = 8, cc = 1, dry_run = F)
+  # test18 <- ageR::Bacon(wdir, # file.path(wdir0, "runs"),
+  #                       ageR:::cln_str("Arroyo de las Carcavas"),
+  #                       cpus = 4,
+  #                       cc = 1,
+  #                       quiet = F,
+  #                       dry_run = F,
+  #                       seed = 2020)
 }
-
-# mc_bacon <- read.csv(file.path(wdir, "runs/Las Vinuelas/Bacon_runs/Las Vinuelas/mc_bacon_ensemble.txt"), sep = "", header = FALSE)
-# out <- read.table(file.path(wdir, "runs/Las Vinuelas/Bacon_runs/Las Vinuelas/Las Vinuelas_28.out"))
-# post <- plot_acc_post(out$K, out$output)
-# sum(with(post, abs(expected - observed)))
