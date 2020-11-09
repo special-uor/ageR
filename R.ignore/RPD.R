@@ -1,9 +1,9 @@
-wdir <- here::here("runs/006")
-tictoc::tic("Retrive data from DB")
+wdir <- "/path/to/working/directory"
 `%>%` <- dplyr::`%>%`
 dir.create(wdir, showWarnings = FALSE, recursive = FALSE)
 
-conn <- dabr::open_conn_mysql("RPD-latest")
+conn <- dabr::open_conn_mysql("RPD-latest",
+                              password = rstudioapi::askForPassword(prompt = "Password"))
 query <- paste0(
 "SELECT entity_name,
        entity.ID_ENTITY as entity_id,
@@ -30,6 +30,7 @@ entities <- sort(unique(rpd$entity_name))
 entities_id <- c()
 entities_clean_names <- c()
 message(paste0(length(entities), " were found."))
+
 pb <- progress::progress_bar$new(
   format = "(:current/:total) [:bar] :percent",
   total = length(entities), clear = FALSE, width = 60)
@@ -141,15 +142,3 @@ write.csv(entities, "entities.csv", row.names = FALSE)
 # charcoal <- dabr::select_all(conn, table = "charcoal")
 dabr::close_conn(conn)
 tictoc::toc()
-
-# wdir <- here::here("runs/004")
-# setwd(wdir)
-entities <- read.csv("entities.csv")
-AM <- function(i) {
-  tictoc::tic(paste0(entities$original[i]))
-  setwd(wdir)
-  ageR::runBacon(wdir, entities$clean[i])
-  # ageR::runLinReg(wdir, entities$clean[i])
-  tictoc::toc()
-}
-AM(1)
