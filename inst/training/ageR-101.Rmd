@@ -2,7 +2,7 @@
 title: "ageR: Supervised Age Modelling"
 author: 
   - "Roberto Villegas-Diaz"
-date: '`r Sys.Date()`'
+date: '2020-11-06'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -93,7 +93,8 @@ knitr::kable(hiatus)
 ageR::create_input(data = list(sample_depths = sample_depths, 
                                core = core,
                                # Optional
-                               hiatus = hiatus), 
+                               hiatus = NULL,
+                               not_used = NULL), 
                    wdir = "./", 
                    entity = "X",
                    am = "bacon")
