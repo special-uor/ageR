@@ -126,9 +126,11 @@
   seed <span class='op'>=</span> <span class='cn'>NA</span>,
   alt_depths <span class='op'>=</span> <span class='cn'>NULL</span>,
   quiet <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  acc <span class='op'>=</span> <span class='cn'>NULL</span>,
   acc_step <span class='op'>=</span> <span class='fl'>5</span>,
   acc_lower <span class='op'>=</span> <span class='cn'>NULL</span>,
   acc_upper <span class='op'>=</span> <span class='cn'>NULL</span>,
+  thick <span class='op'>=</span> <span class='cn'>NULL</span>,
   thick_step <span class='op'>=</span> <span class='fl'>5</span>,
   thick_lower <span class='op'>=</span> <span class='cn'>NULL</span>,
   thick_upper <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -179,6 +181,12 @@ executions, if it is not assigned then the seed is set by the system.</p></td>
       <td><p>Boolean to hide status messages.</p></td>
     </tr>
     <tr>
+      <th>acc</th>
+      <td><p>Numeric vector with the accumulation rates to use for the
+scenarios. If passed, then <code>acc_step</code>, <code>acc_lower</code>, and
+<code>acc_upper</code> will be ignored.</p></td>
+    </tr>
+    <tr>
       <th>acc_step</th>
       <td><p>Accumulation rate step. Used to create alternative
 scenarios.</p></td>
@@ -192,6 +200,12 @@ scenarios.</p></td>
       <th>acc_upper</th>
       <td><p>Accumulation rate upper bound. Used to create alternative
 scenarios.</p></td>
+    </tr>
+    <tr>
+      <th>thick</th>
+      <td><p>Numeric vector with the core segments' thickness to use for the
+scenarios. If passed, then <code>thick_step</code>, <code>thick_lower</code>, and
+<code>thick_upper</code> will be ignored.</p></td>
     </tr>
     <tr>
       <th>thick_step</th>
