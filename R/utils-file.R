@@ -270,6 +270,25 @@ find_K <- function(K, wdir, entity) {
   Ks <- K + c(-10:10)
   paths <- paste0(file.path(wdir, entity), "_", Ks, ".out")
   idx <- unlist(lapply(paths, file.exists))
+
+  # Try to find K from existing files with .bacon extension
+  if (sum(idx) == 0) {
+    paths <- list.files(path = wdir, pattern = ".bacon$")
+    Ks <- unlist(lapply(paths,
+                        gsub,
+                        pattern = paste0("^", entity, "_"),
+                        replace = ""))
+    Ks <- unlist(lapply(Ks,
+                        gsub,
+                        pattern = paste0(".bacon$"),
+                        replace = ""))
+    tryCatch(Ks <- as.numeric(Ks),
+             error = function(e) {
+               stop("\nNo Bacon output files were found inside: \n", wdir)
+             })
+    paths <- file.path(wdir, paths)
+    idx <- unlist(lapply(paths, file.exists))
+  }
   if (sum(idx) == 0) {
     stop("\nNo Bacon output files were found inside: \n", wdir)
   } else if (sum(idx) > 1) {
