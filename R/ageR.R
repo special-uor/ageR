@@ -174,11 +174,11 @@ Bacon <- function(wdir,
     msg("Running Bacon")
 
   # Start parallel backend
+  log_file <- file.path(wdir, paste0("log-", entity,".txt"))
+  if (file.exists(log_file))
+    file.remove(log_file)
   cl <- parallel::makeCluster(cpus,
-                              outfile = file.path(wdir,
-                                                  paste0("log-",
-                                                         entity,
-                                                         ".txt")))
+                              outfile = log_file)
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
   out <- foreach::foreach (i = idx) %dopar% {
