@@ -184,6 +184,42 @@ Bacon <- function(wdir,
   out <- foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
+    if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
+      msg("Attempting to restart execution ...")
+      path <- file.path(wdir, entity, coredir, entity)
+
+      if (file.exists(file.path(path, "alt_age_depth_plot.csv")) &&
+          file.exists(file.path(path, "calib_ages_core.csv"))) {
+        core <- read.csv(file.path(path, "calib_ages_core.csv"))
+        df <- read.csv(file.path(path, "alt_age_depth_plot.csv"))
+        alt_plot <- plot_age_depth(df,
+                                   core = core,
+                                   entity = entity,
+                                   hiatuses = hiatuses)
+        return(alt_plot)
+      } else if (file.exists(file.path(path, "bacon_chronology.csv")) &&
+                 file.exists(file.path(path, "calib_ages_core.csv"))) {
+        core <- read.csv(file.path(path, "calib_ages_core.csv"))
+        bacon_chronology <- read.csv(file.path(path, "bacon_chronology.csv"))
+        df <- data.frame(x = bacon_chronology$depths,
+                         y = bacon_chronology$median,
+                         q5 = bacon_chronology$median +
+                           bacon_chronology$uncert_5,
+                         q95 = bacon_chronology$median -
+                           bacon_chronology$uncert_95)
+        alt_plot <- plot_age_depth(df,
+                                   core = core,
+                                   entity = entity,
+                                   hiatuses = hiatuses)
+        return(alt_plot)
+      } else {
+        warning("Could not restart the execution of the model. \n",
+                "Running Bacon...")
+      }
+    } else {
+      warning("Could not restart the execution of the model. \n",
+              "Running Bacon...")
+    }
     run_bacon(wdir = wdir,
               entity = entity,
               postbomb = postbomb,
