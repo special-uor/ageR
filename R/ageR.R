@@ -41,6 +41,8 @@
 #' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
+#' @param restart Boolean flag to indicate if the execution should be resume
+#'     from a previous one.
 # @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #' @inheritDotParams rbacon::Bacon -core -thick -coredir -seed -depths.file
 #' -acc.mean -acc.shape -postbomb -hiatus.depths -cc -suggest -ask -ssize -th0
@@ -66,6 +68,7 @@ Bacon <- function(wdir,
                   thick_lower = NULL,
                   thick_upper = NULL,
                   dry_run = FALSE,
+                  restart = FALSE,
                   ...) {
   tictoc::tic(entity)
   wdir <- absolute_path(wdir)
@@ -551,14 +554,22 @@ run_bacon <- function(wdir,
   core$age_min <- out[, 1]
   core$age_max <- out[, 2]
   core$col[core$age <= 0] <- "#008060"
+  write.csv(core,
+            file.path(path, "calib_ages_core.csv"),
+            row.names = FALSE)
   # print({
   #   rbacon::accrate.age.ghost()
   #   rbacon::agedepth(verbose = TRUE)
   # })
-  df <- data.frame(x = bacon_age[, 1],
-                   y = bacon_age[, 2],
-                   q5 = bacon_age[, 2] + bacon_age[, 3],
-                   q95 = bacon_age[, 2] - bacon_age[, 4])
+  chronology <- as.data.frame(chronology)
+  df <- data.frame(x = chronology$depths,
+                   y = chronology$median,
+                   q5 = chronology$median + chronology$uncert_5,
+                   q95 = chronology$median - chronology$uncert_95)
+  write.csv(df,
+            file.path(path, "alt_age_depth_plot.csv"),
+            row.names = FALSE)
+
   alt_plot <- plot_age_depth(df,
                              core = core,
                              entity = entity,
@@ -576,6 +587,7 @@ run_bacon <- function(wdir,
   # print(alt_plot)
   # set <- get('info')
   # return(set)
+  done(path, entity)
   return(alt_plot)
 }
 
