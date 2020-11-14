@@ -22,6 +22,7 @@ Bacon(
   thick_lower = NULL,
   thick_upper = NULL,
   dry_run = FALSE,
+  restart = FALSE,
   ...
 )
 }
@@ -78,6 +79,9 @@ alternative scenarios.}
 \item{dry_run}{Boolean flag to show (\code{dry_run = TRUE}) the scenarios
 that would be run with the current set of parameters, without actually
 running them.}
+
+\item{restart}{Boolean flag to indicate if the execution should be resume
+from a previous one.}
 
 \item{...}{
   Arguments passed on to \code{\link[rbacon:Bacon]{rbacon::Bacon}}
