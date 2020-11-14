@@ -142,9 +142,8 @@ Bacon <- function(wdir,
 
   if (dry_run) {
     message("The following scenarios will be executed: ")
-    print(
-      knitr::kable(scenarios, col.names = c("Accumulation rate", "Thickness"))
-    )
+    print(knitr::kable(scenarios,
+                       col.names = c("Accumulation rate", "Thickness")))
     message("A total of ", nrow(scenarios), " scenarios.")
     return(invisible())
   }
@@ -185,7 +184,7 @@ Bacon <- function(wdir,
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
-      msg("Attempting to restart execution ...")
+      msg("Attempting to restart execution...")
       path <- file.path(wdir, entity, coredir, entity)
 
       if (file.exists(file.path(path, "alt_age_depth_plot.csv")) &&
