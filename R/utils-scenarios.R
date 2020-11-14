@@ -32,3 +32,21 @@ sce_seq <- function(ref, step = 5, lower = NULL, upper = NULL) {
   return(unique(c(seq(lower, ref, by = step),
                   seq(ref, upper, by = 2 * step))))
 }
+
+#' @keywords internal
+done <- function(wdir, entity) {
+  tryCatch(
+  write(paste0("Bacon execution over. \nDone: ", Sys.time()),
+       file = paste0(file.path(wdir, entity), ".ageR"),
+       append = TRUE),
+  error = function(e) {
+    warning("Something went wrong:\n", e)
+  })
+}
+
+#' @keywords internal
+is.done <- function(wdir, entity) {
+  if (file.exists(paste0(file.path(wdir, entity), ".ageR")))
+    return(TRUE)
+  return(FALSE)
+}
