@@ -41,6 +41,8 @@
 #' @param dry_run Boolean flag to show (\code{dry_run = TRUE}) the scenarios
 #'     that would be run with the current set of parameters, without actually
 #'     running them.
+#' @param restart Boolean flag to indicate if the execution should be resume
+#'     from a previous one.
 # @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #' @inheritDotParams rbacon::Bacon -core -thick -coredir -seed -depths.file
 #' -acc.mean -acc.shape -postbomb -hiatus.depths -cc -suggest -ask -ssize -th0
@@ -66,6 +68,7 @@ Bacon <- function(wdir,
                   thick_lower = NULL,
                   thick_upper = NULL,
                   dry_run = FALSE,
+                  restart = FALSE,
                   ...) {
   tictoc::tic(entity)
   wdir <- absolute_path(wdir)
@@ -139,9 +142,8 @@ Bacon <- function(wdir,
 
   if (dry_run) {
     message("The following scenarios will be executed: ")
-    print(
-      knitr::kable(scenarios, col.names = c("Accumulation rate", "Thickness"))
-    )
+    print(knitr::kable(scenarios,
+                       col.names = c("Accumulation rate", "Thickness")))
     message("A total of ", nrow(scenarios), " scenarios.")
     return(invisible())
   }
@@ -171,16 +173,52 @@ Bacon <- function(wdir,
     msg("Running Bacon")
 
   # Start parallel backend
+  log_file <- file.path(wdir, paste0("log-", entity,".txt"))
+  if (file.exists(log_file))
+    file.remove(log_file)
   cl <- parallel::makeCluster(cpus,
-                              outfile = file.path(wdir,
-                                                  paste0("log-",
-                                                         entity,
-                                                         ".txt")))
+                              outfile = log_file)
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
   out <- foreach::foreach (i = idx) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
+    if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
+      msg("Attempting to restart execution...")
+      path <- file.path(wdir, entity, coredir, entity)
+
+      if (file.exists(file.path(path, "alt_age_depth_plot.csv")) &&
+          file.exists(file.path(path, "calib_ages_core.csv"))) {
+        core <- read.csv(file.path(path, "calib_ages_core.csv"))
+        df <- read.csv(file.path(path, "alt_age_depth_plot.csv"))
+        alt_plot <- plot_age_depth(df,
+                                   core = core,
+                                   entity = entity,
+                                   hiatuses = hiatuses)
+        return(alt_plot)
+      } else if (file.exists(file.path(path, "bacon_chronology.csv")) &&
+                 file.exists(file.path(path, "calib_ages_core.csv"))) {
+        core <- read.csv(file.path(path, "calib_ages_core.csv"))
+        bacon_chronology <- read.csv(file.path(path, "bacon_chronology.csv"))
+        df <- data.frame(x = bacon_chronology$depths,
+                         y = bacon_chronology$median,
+                         q5 = bacon_chronology$median +
+                           bacon_chronology$uncert_5,
+                         q95 = bacon_chronology$median -
+                           bacon_chronology$uncert_95)
+        alt_plot <- plot_age_depth(df,
+                                   core = core,
+                                   entity = entity,
+                                   hiatuses = hiatuses)
+        return(alt_plot)
+      } else {
+        warning("Could not restart the execution of the model. \n",
+                "Running Bacon...")
+      }
+    } else {
+      warning("Could not restart the execution of the model. \n",
+              "Running Bacon...")
+    }
     run_bacon(wdir = wdir,
               entity = entity,
               postbomb = postbomb,
@@ -551,14 +589,22 @@ run_bacon <- function(wdir,
   core$age_min <- out[, 1]
   core$age_max <- out[, 2]
   core$col[core$age <= 0] <- "#008060"
+  write.csv(core,
+            file.path(path, "calib_ages_core.csv"),
+            row.names = FALSE)
   # print({
   #   rbacon::accrate.age.ghost()
   #   rbacon::agedepth(verbose = TRUE)
   # })
-  df <- data.frame(x = bacon_age[, 1],
-                   y = bacon_age[, 2],
-                   q5 = bacon_age[, 2] + bacon_age[, 3],
-                   q95 = bacon_age[, 2] - bacon_age[, 4])
+  chronology <- as.data.frame(chronology)
+  df <- data.frame(x = chronology$depths,
+                   y = chronology$median,
+                   q5 = chronology$median + chronology$uncert_5,
+                   q95 = chronology$median - chronology$uncert_95)
+  write.csv(df,
+            file.path(path, "alt_age_depth_plot.csv"),
+            row.names = FALSE)
+
   alt_plot <- plot_age_depth(df,
                              core = core,
                              entity = entity,
@@ -576,6 +622,7 @@ run_bacon <- function(wdir,
   # print(alt_plot)
   # set <- get('info')
   # return(set)
+  done(path, entity)
   return(alt_plot)
 }
 
