@@ -135,6 +135,7 @@
   thick_lower <span class='op'>=</span> <span class='cn'>NULL</span>,
   thick_upper <span class='op'>=</span> <span class='cn'>NULL</span>,
   dry_run <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  restart <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -227,6 +228,11 @@ alternative scenarios.</p></td>
       <td><p>Boolean flag to show (<code>dry_run = TRUE</code>) the scenarios
 that would be run with the current set of parameters, without actually
 running them.</p></td>
+    </tr>
+    <tr>
+      <th>restart</th>
+      <td><p>Boolean flag to indicate if the execution should be resume
+from a previous one.</p></td>
     </tr>
     <tr>
       <th>...</th>
