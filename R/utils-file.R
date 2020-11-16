@@ -1,3 +1,16 @@
+#' Get absolute path
+#'
+#' @param path String with path to file or directory.
+#'
+#' @return String with the absolute path.
+#'
+#' @keywords internal
+absolute_path <- function(path) {
+  if (!R.utils::isAbsolutePath(path))
+    path <- R.utils::getAbsolutePath(path)
+  return(path)
+}
+
 #' Check file structure
 #'
 #' Check file structure before running the age model.
@@ -21,7 +34,6 @@
 #'     ageR:::check_files("/", "test")
 #' }
 #'
-#' @noRd
 #' @keywords internal
 check_files <- function(wdir, entity = NULL, am = "bacon") {
   if (is.null(entity)) {
@@ -240,23 +252,6 @@ file_structure <- function(entity, am = "bacon") {
   }
 }
 
-#' Create symbolic link
-#'
-#' Create symbolic link \code{to} file using the function
-#' \code{\link{file.symlink}}.
-#'
-#' @param from Source file.
-#' @param to Target file (link).
-#' @param overwrite Boolean flag that deletes existing file or link.
-#'
-#' @noRd
-#' @keywords internal
-sym_link <- function(from, to, overwrite = TRUE) {
-  if (file.exists(to) && overwrite)
-    file.remove(to)
-  . <- file.symlink(from = from, to = to)
-}
-
 #' Find adjusted K
 #'
 #' Find adjusted number of sections in the core.
@@ -303,15 +298,19 @@ find_K <- function(K, wdir, entity) {
   return(Ks[idx])
 }
 
-#' Get absolute path
+#' Create symbolic link
 #'
-#' @param path String with path to file or directory.
+#' Create symbolic link \code{to} file using the function
+#' \code{\link{file.symlink}}.
 #'
-#' @return String with the absolute path.
+#' @param from Source file.
+#' @param to Target file (link).
+#' @param overwrite Boolean flag that deletes existing file or link.
 #'
 #' @keywords internal
-absolute_path <- function(path) {
-  if (!R.utils::isAbsolutePath(path))
-    path <- R.utils::getAbsolutePath(path)
-  return(path)
+sym_link <- function(from, to, overwrite = TRUE) {
+  if (file.exists(to) && overwrite)
+    file.remove(to)
+  . <- file.symlink(from = from, to = to)
 }
+
