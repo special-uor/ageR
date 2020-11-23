@@ -145,7 +145,7 @@ Bacon <- function(wdir,
     print(knitr::kable(scenarios,
                        col.names = c("Accumulation rate", "Thickness")))
     message("A total of ", nrow(scenarios), " scenarios.")
-    return(invisible())
+    return(scenarios)
   }
   wd0 <- getwd()
   setwd(file.path(wdir, entity))
