@@ -4,7 +4,7 @@
 #' Bacon age model
 #'
 #' @importFrom foreach %dopar%
-#' @importFrom utils setTxtProgressBar txtProgressBar
+# @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -182,8 +182,7 @@ Bacon <- function(wdir,
   avail_cpus <- parallel::detectCores() - 1
   cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
 
-  if (!quiet)
-    msg("Running Bacon")
+  msg("Running Bacon", quiet = quiet, nl = FALSE)
 
   # Start parallel backend
   log_file <- file.path(wdir, paste0("log-", entity,".txt"))
@@ -195,8 +194,12 @@ Bacon <- function(wdir,
   idx <- seq_len(nrow(scenarios))
 
   # Set up progress bar
-  pb <- txtProgressBar(max = length(idx), style = 3)
-  progress <- function(n) setTxtProgressBar(pb, n)
+  # pb <- txtProgressBar(max = length(idx), style = 3)
+  pb <- progress::progress_bar$new(
+    format = "(:current/:total) [:bar] :percent",
+    total = length(idx), clear = TRUE, width = 80)
+
+  progress <- function(n) if (!quiet) pb$tick() # setTxtProgressBar(pb, n)
   opts <- list(progress = progress)
 
   out <- foreach::foreach (i = idx,
@@ -259,6 +262,9 @@ Bacon <- function(wdir,
               close.connections = FALSE,
               ...)
   }
+  # Add new line after the progress bar
+  if (!quiet) cat("\n")
+
   parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
@@ -297,7 +303,7 @@ Bacon <- function(wdir,
   mcmcs <- vector("list", length = nrow(scenarios))
   pb <- progress::progress_bar$new(
     format = "(:current/:total) [:bar] :percent",
-    total = length(idx), clear = FALSE, width = 80)
+    total = length(idx), clear = TRUE, width = 80)
   if (!quiet)
     msg("Bacon QC", nl = FALSE)
   for (i in idx) {
