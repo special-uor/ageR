@@ -4,6 +4,7 @@
 #' Bacon age model
 #'
 #' @importFrom foreach %dopar%
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -192,7 +193,14 @@ Bacon <- function(wdir,
                               outfile = log_file)
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
-  out <- foreach::foreach (i = idx) %dopar% {
+
+  # Set up progress bar
+  pb <- txtProgressBar(max = length(idx), style = 3)
+  progress <- function(n) setTxtProgressBar(pb, n)
+  opts <- list(progress = progress)
+
+  out <- foreach::foreach (i = idx,
+                           .options.snow = opts) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
