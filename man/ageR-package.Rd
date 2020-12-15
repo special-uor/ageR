@@ -12,10 +12,10 @@ Provides functions to facilitate the creation of age models using
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/special-uor/ageR}
-  \item \url{https://special-uor.github.io/ageR}
-  \item \url{https://research.reading.ac.uk/palaeoclimate}
-  \item Report bugs at \url{https://github.com/special-uor/ageR/issues}
+  \item \url{https://github.com/special-uor/ageR/}
+  \item \url{https://special-uor.github.io/ageR/}
+  \item \url{https://research.reading.ac.uk/palaeoclimate/}
+  \item Report bugs at \url{https://github.com/special-uor/ageR/issues/}
 }
 
 }
