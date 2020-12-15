@@ -43,6 +43,8 @@
 #'     running them.
 #' @param restart Boolean flag to indicate if the execution should be resume
 #'     from a previous one.
+#' @param max_scenarios Numeric value with the maximum number of scenarios to
+#' execute.
 # @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #' @inheritDotParams rbacon::Bacon -core -thick -coredir -seed -depths.file
 #' -acc.mean -acc.shape -postbomb -hiatus.depths -cc -suggest -ask -ssize -th0
@@ -69,6 +71,7 @@ Bacon <- function(wdir,
                   thick_upper = NULL,
                   dry_run = FALSE,
                   restart = FALSE,
+                  max_scenarios = 100,
                   ...) {
   tictoc::tic(entity)
   wdir <- absolute_path(wdir)
@@ -139,6 +142,15 @@ Bacon <- function(wdir,
   # Create sub-directories for each scenario
   scenarios <- data.frame(acc.mean = accMean,
                           thick = rep(thickness, each = length(accMean)))
+
+  # Check the number of scenarios does not exceed the threshold, max_scenarios
+  if (nrow(scenarios) > max_scenarios) {
+    warning("The number of scenarios, exceeds the threshold of ",
+            max_scenarios,
+            ". If you are sure you want to proceed, then set max_scenarios > ",
+            nrow(scenarios))
+    return(invisible(list()))
+  }
 
   if (dry_run) {
     message("The following scenarios will be executed: ")
