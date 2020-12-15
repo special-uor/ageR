@@ -23,6 +23,7 @@ Bacon(
   thick_upper = NULL,
   dry_run = FALSE,
   restart = FALSE,
+  max_scenarios = 100,
   ...
 )
 }
@@ -82,6 +83,9 @@ running them.}
 
 \item{restart}{Boolean flag to indicate if the execution should be resume
 from a previous one.}
+
+\item{max_scenarios}{Numeric value with the maximum number of scenarios to
+execute.}
 
 \item{...}{
   Arguments passed on to \code{\link[rbacon:Bacon]{rbacon::Bacon}}
