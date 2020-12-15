@@ -149,7 +149,8 @@ Bacon <- function(wdir,
     warning("The number of scenarios, exceeds the threshold of ",
             max_scenarios,
             ". If you are sure you want to proceed, then set max_scenarios > ",
-            nrow(scenarios))
+            nrow(scenarios),
+            call. = FALSE)
     return(invisible(list()))
   }
 
@@ -182,7 +183,7 @@ Bacon <- function(wdir,
   avail_cpus <- parallel::detectCores() - 1
   cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
 
-  msg("Running Bacon", quiet = quiet, nl = FALSE)
+  msg("Running Bacon", quiet, nl = FALSE)
 
   # Start parallel backend
   log_file <- file.path(wdir, paste0("log-", entity,".txt"))
@@ -236,11 +237,13 @@ Bacon <- function(wdir,
         return(alt_plot)
       } else {
         warning("Could not restart the execution of the model. \n",
-                "Running Bacon...")
+                "Running Bacon...",
+                call. = FALSE)
       }
     } else {
       warning("Could not restart the execution of the model. \n",
-              "Running Bacon...")
+              "Running Bacon...",
+              call. = FALSE)
     }
     run_bacon(wdir = wdir,
               entity = entity,
