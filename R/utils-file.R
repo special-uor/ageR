@@ -39,16 +39,16 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
   if (is.null(entity)) {
     entity <- basename(wdir)
     if (entity == "" || entity == ".") {
-      stop("The given path (wdir) is too short!")
+      stop("The given path (wdir) is too short!", call. = FALSE)
     }
     wdir <- dirname(wdir)
   }
 
   # Verify both the working and entity directory exist
   if (!dir.exists(wdir)) {
-    stop("The working directory not found")
+    stop("The working directory not found", call. = FALSE)
   } else if (!dir.exists(file.path(wdir, entity))) {
-    stop("Entity directory not found")
+    stop("Entity directory not found", call. = FALSE)
   }
 
   if (tolower(am) == "bacon") {
@@ -66,10 +66,11 @@ check_files <- function(wdir, entity = NULL, am = "bacon") {
                   " not found inside the entity directory [",
                   file.path(entity),
                   "]\n",
-                  paste0("- ", filenames[!idx], collapse = "\n")))
+                  paste0("- ", filenames[!idx], collapse = "\n")),
+           call. = FALSE)
     }
   } else {
-    warning(paste0(am, " is not a valid age model."))
+    warning(paste0(am, " is not a valid age model."), call. = FALSE)
   }
 }
 
@@ -137,7 +138,7 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
   if (is.null(entity)) {
     entity <- basename(wdir)
     if (entity == "" || entity == ".") {
-      stop("The given path (wdir) is too short!")
+      stop("The given path (wdir) is too short!", call. = FALSE)
     }
     wdir <- dirname(wdir)
   }
@@ -152,19 +153,21 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
   if (tolower(am) == "bacon") {
     # Verify input data format
     if (!any(c("sample_depths", "core") %in% names(data))) {
-      stop("Wrong format for the data parameter")
+      stop("Wrong format for the data parameter", call. = FALSE)
     } else if (!any(c("id", "sample") %in% names(data$sample))) {
       stop(paste0("\nThe sampling depths (sample_depths) structure ",
                   "must contain 2 variables:",
                   "\n - id",
-                  "\n - depth"))
+                  "\n - depth"),
+           call. = FALSE)
     } else if (!any(c("labID", "age", "error", "depth")
                     %in% names(data$core))) {
       stop(paste0("\nThe core structure must contain 4 variables:",
                   "\n - labID",
                   "\n - age",
                   "\n - error",
-                  "\n - depth"))
+                  "\n - depth"),
+           call. = FALSE)
     }
 
     # Data for the Bacon model
@@ -214,7 +217,7 @@ create_input <- function(data, wdir, entity = NULL, am = "bacon") {
                 row.names = FALSE)
     }
   } else {
-    warning(paste0(am, " is not a valid age model."))
+    warning(paste0(am, " is not a valid age model."), call. = FALSE)
   }
 }
 
@@ -248,7 +251,7 @@ file_structure <- function(entity, am = "bacon") {
     plot(tree)
     print(tree)
   } else {
-    warning(paste0(am, " is not a valid age model."))
+    warning(paste0(am, " is not a valid age model."), call. = FALSE)
   }
 }
 
@@ -279,19 +282,20 @@ find_K <- function(K, wdir, entity) {
                         replace = ""))
     tryCatch(Ks <- as.numeric(Ks),
              error = function(e) {
-               stop("\nNo Bacon output files were found inside: \n", wdir)
+               stop("\nNo Bacon output files were found inside: \n",
+                    wdir, call. = FALSE)
              })
     paths <- file.path(wdir, paths)
     idx <- unlist(lapply(paths, file.exists))
   }
   if (sum(idx) == 0) {
-    stop("\nNo Bacon output files were found inside: \n", wdir)
+    stop("\nNo Bacon output files were found inside: \n", wdir, call. = FALSE)
   } else if (sum(idx) > 1) {
     times_idx <- order(unlist(lapply(paths[idx], file.mtime)),
                        decreasing = TRUE)
     warning("\nBacon output files for multiple executions were found, ",
             "using the newest: \n",
-            basename(paths[idx][times_idx][1]))
+            basename(paths[idx][times_idx][1]), call. = FALSE)
 
     return(Ks[idx][times_idx][1])
   }

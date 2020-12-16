@@ -4,6 +4,7 @@
 #' Bacon age model
 #'
 #' @importFrom foreach %dopar%
+# @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @param wdir Path where input files are stored.
 #' @param entity Name of the entity.
@@ -43,6 +44,8 @@
 #'     running them.
 #' @param restart Boolean flag to indicate if the execution should be resume
 #'     from a previous one.
+#' @param max_scenarios Numeric value with the maximum number of scenarios to
+#' execute.
 # @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #' @inheritDotParams rbacon::Bacon -core -thick -coredir -seed -depths.file
 #' -acc.mean -acc.shape -postbomb -hiatus.depths -cc -suggest -ask -ssize -th0
@@ -69,6 +72,7 @@ Bacon <- function(wdir,
                   thick_upper = NULL,
                   dry_run = FALSE,
                   restart = FALSE,
+                  max_scenarios = 100,
                   ...) {
   tictoc::tic(entity)
   wdir <- absolute_path(wdir)
@@ -140,6 +144,16 @@ Bacon <- function(wdir,
   scenarios <- data.frame(acc.mean = accMean,
                           thick = rep(thickness, each = length(accMean)))
 
+  # Check the number of scenarios does not exceed the threshold, max_scenarios
+  if (nrow(scenarios) > max_scenarios) {
+    warning("The number of scenarios, exceeds the threshold of ",
+            max_scenarios,
+            ". If you are sure you want to proceed, then set max_scenarios > ",
+            nrow(scenarios),
+            call. = FALSE)
+    return(invisible(list()))
+  }
+
   if (dry_run) {
     message("The following scenarios will be executed: ")
     print(knitr::kable(scenarios,
@@ -169,8 +183,7 @@ Bacon <- function(wdir,
   avail_cpus <- parallel::detectCores() - 1
   cpus <- ifelse(cpus > avail_cpus, avail_cpus, cpus)
 
-  if (!quiet)
-    msg("Running Bacon")
+  msg("Running Bacon", quiet, nl = FALSE)
 
   # Start parallel backend
   log_file <- file.path(wdir, paste0("log-", entity,".txt"))
@@ -180,7 +193,18 @@ Bacon <- function(wdir,
                               outfile = log_file)
   doSNOW::registerDoSNOW(cl)
   idx <- seq_len(nrow(scenarios))
-  out <- foreach::foreach (i = idx) %dopar% {
+
+  # Set up progress bar
+  # pb <- txtProgressBar(max = length(idx), style = 3)
+  pb <- progress::progress_bar$new(
+    format = "(:current/:total) [:bar] :percent",
+    total = length(idx), clear = TRUE, width = 80)
+
+  progress <- function(n) if (!quiet) pb$tick() # setTxtProgressBar(pb, n)
+  opts <- list(progress = progress)
+
+  out <- foreach::foreach (i = idx,
+                           .options.snow = opts) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
@@ -213,11 +237,13 @@ Bacon <- function(wdir,
         return(alt_plot)
       } else {
         warning("Could not restart the execution of the model. \n",
-                "Running Bacon...")
+                "Running Bacon...",
+                call. = FALSE)
       }
     } else {
       warning("Could not restart the execution of the model. \n",
-              "Running Bacon...")
+              "Running Bacon...",
+              call. = FALSE)
     }
     run_bacon(wdir = wdir,
               entity = entity,
@@ -239,6 +265,9 @@ Bacon <- function(wdir,
               close.connections = FALSE,
               ...)
   }
+  # Add new line after the progress bar
+  if (!quiet) cat("\n")
+
   parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
@@ -277,7 +306,7 @@ Bacon <- function(wdir,
   mcmcs <- vector("list", length = nrow(scenarios))
   pb <- progress::progress_bar$new(
     format = "(:current/:total) [:bar] :percent",
-    total = length(idx), clear = FALSE, width = 80)
+    total = length(idx), clear = TRUE, width = 80)
   if (!quiet)
     msg("Bacon QC", nl = FALSE)
   for (i in idx) {
