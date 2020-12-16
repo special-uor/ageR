@@ -318,3 +318,91 @@ sym_link <- function(from, to, overwrite = TRUE) {
   . <- file.symlink(from = from, to = to)
 }
 
+#' Zip files
+#'
+#' @importFrom utils zip
+#' @param wdir Path where input files are stored.
+#' @param entity Name of the entity.
+#' @param acc Accumulation rate.
+#' @param thick Core segment thickness.
+#' @param output Output filename.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' zip_files(wdir, entity_name, acc = ACC, thick = THICK)
+#' }
+zip_files <- function(wdir, entity, acc = NULL, thick = NULL, output = NULL) {
+  if (!dir.exists(file.path(wdir, entity))) {
+    stop("The given directory does not exist!", call. = FALSE)
+  }
+
+  # Change working directory
+  wd0 <- setwd(file.path(wdir, entity))
+  on.exit(setwd(wd0))
+
+  # Get pattern
+  pattern <- ""
+  if(!is.null(acc) & !is.null(thick)) {
+    pattern <- paste0("AR",
+                      ifelse(acc < 10, "00", ifelse(acc < 100, "0", "")),
+                      acc,
+                      "-T", thick, "$")
+
+  } else if (is.null(acc) | !is.null(thick)) {
+    pattern <- paste0("-T", thick, "$")
+  } else if (!is.null(acc) | is.null(thick)) {
+    pattern <- paste0("AR",
+                      ifelse(acc < 10, "00", ifelse(acc < 100, "0", "")),
+                      acc,
+                      "-T([0-9])+$")
+  }
+
+  if (pattern != "") {
+    # List directories
+    dirs <- list.files(file.path(wdir, entity),
+                       pattern = pattern,
+                       include.dirs = TRUE)
+
+    if (is.null(dirs) | length(dirs) < 1)
+      stop("No files were found inside: \n",
+           file.path(wdir, entity),
+           "\nFor the following scenario: ",
+           "\n - Accumulation rate: ", acc,
+           "\n - Thickness: ", thick, ".", call. = FALSE)
+
+    files <- c()
+    for (d in dirs) {
+      if (dir.exists(file.path(wdir, entity, d))) {
+        files <- c(files, file.path(d, list.files(file.path(wdir, entity, d),
+                                                  recursive = TRUE)))
+      } else {
+        files <- c(files, d)
+      }
+    }
+  } else {
+    files <- list.files(file.path(wdir, entity),
+                        recursive = TRUE)
+  }
+
+  if (is.null(files) | length(files) < 1)
+    stop("No files were found inside: \n",
+         file.path(wdir, entity),
+         "\nFor the following scenario: ",
+         "\n - Accumulation rate: ", acc,
+         "\n - Thickness: ", thick, ".", call. = FALSE)
+
+  # Check if output is NULL
+  if (is.null(output))
+    output <- file.path(wdir, paste0(entity, ".zip"))
+
+  if (dir.exists(output))
+    output <- file.path(output, paste0(entity, ".zip"))
+
+  # Create subdirectories
+  dir.create(dirname(output), recursive = TRUE, showWarnings = FALSE)
+
+  # Compress files
+  zip(zipfile = output, files = files)
+}
