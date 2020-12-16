@@ -1,7 +1,6 @@
 ---
 output: github_document
 ---
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
@@ -46,6 +45,8 @@ remotes::install_github("special-uor/ageR")
 ```
 
 ## Example
+:warning: __Users of Windows:__ `ageR::Bacon` creates symbolic links (think of them as shortcuts), you should run RStudio in "Administrator mode" to avoid error messages.
+
 ### Bacon model
 #### Input structure
 For an entity X, the input structure should look like
