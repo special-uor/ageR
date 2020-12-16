@@ -8,5 +8,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^inst/images$
 ^inst/training$
 ^.*_cache$
