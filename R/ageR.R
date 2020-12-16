@@ -159,7 +159,7 @@ Bacon <- function(wdir,
     print(knitr::kable(scenarios,
                        col.names = c("Accumulation rate", "Thickness")))
     message("A total of ", nrow(scenarios), " scenarios.")
-    return(scenarios)
+    return(invisible(scenarios))
   }
   wd0 <- getwd()
   setwd(file.path(wdir, entity))
@@ -562,9 +562,10 @@ run_bacon <- function(wdir,
                                      col.names = ""))[[1]]
   bacon_mcmc <- sapply(depths_eval, rbacon::Bacon.Age.d)
   bacon_age_mean <- apply(bacon_mcmc, 2, mean)
+
   # 95% CI
   bacon_age <- get_bacon_median_quantile(depths_eval,
-                                         hiatuses,
+                                         NULL, # hiatuses,
                                          bacon_mcmc,
                                          q1 = 0.05,
                                          q2 = 0.95)
@@ -573,7 +574,7 @@ run_bacon <- function(wdir,
 
   # 75% CI
   bacon_age_75 <- get_bacon_median_quantile(depths_eval,
-                                            hiatuses,
+                                            NULL, # hiatuses,
                                             bacon_mcmc,
                                             q1 = 0.25,
                                             q2 = 0.75)
@@ -590,15 +591,19 @@ run_bacon <- function(wdir,
     names(h) <- names(bacon_mcmc)
   }
 
+
+  bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[, 2]), ]
+  sample_ids <- bacon_mcmc[, 1]
+
   bacon_mcmc <- rbind(bacon_mcmc, h)
   bacon_mcmc <- bacon_mcmc[order(bacon_mcmc[, 2]), ]
-
-  sample_ids <- bacon_mcmc[, 1]
+  # sample_ids <- bacon_mcmc[, 1]
 
   write.table(bacon_mcmc,
               file.path(path, "mc_bacon_ensemble.txt"),
               col.names = FALSE,
               row.names = FALSE)
+  # Excluding hiatuses
   chronology <- cbind(sample_ids, bacon_age, bacon_age_75[, 3:4])
   colnames(chronology)[2] <- "depths"
   write.csv(chronology,
