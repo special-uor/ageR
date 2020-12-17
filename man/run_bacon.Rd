@@ -23,6 +23,7 @@ run_bacon(
   ssize = 2000,
   th0 = c(),
   thick = 5,
+  p = NULL,
   ...
 )
 }
@@ -80,6 +81,9 @@ age-model graph) appears problematic.}
 
 \item{thick}{Bacon will divide the core into sections of equal thickness
 specified by \code{thick} (default \code{thick = 5}).}
+
+\item{p}{\code{progressor} object from the package
+\code{\link[progressr]{progressr}}.}
 
 \item{...}{Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.}
 }
