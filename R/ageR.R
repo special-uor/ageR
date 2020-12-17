@@ -439,6 +439,8 @@ Bacon <- function(wdir,
 #' @param th0 Starting years for the MCMC iterations.
 #' @param thick Bacon will divide the core into sections of equal thickness
 #'     specified by \code{thick} (default \code{thick = 5}).
+#' @param p \code{progressor} object from the package
+#'     \code{\link[progressr]{progressr}}.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #' @inheritParams Bacon
 #'
@@ -473,6 +475,7 @@ run_bacon <- function(wdir,
                       ssize = 2000,
                       th0 = c(),
                       thick = 5,
+                      p = NULL,
                       ...) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
@@ -657,6 +660,8 @@ run_bacon <- function(wdir,
   # set <- get('info')
   # return(set)
   done(path, entity)
+  if (!is.null(p)) # Signal progress
+    p()
   return(alt_plot)
 }
 
@@ -759,7 +764,8 @@ gelman_test <- function(data, confidence = 0.975) {
 #' ageR::mix_curves(0.7, 1, 2, name = "nh_coastal.14C")
 #' # Curve for coastline (Southern hemisphere)
 #' ageR::mix_curves(0.7, 3, 2, name = "sh_coastal.14C")
-#'
+#' # Clean output
+#' unlink("ccurves", TRUE, TRUE)
 mix_curves <- function(proportion = 0.5,
                        cc1 = 1,
                        cc2 = 2,
