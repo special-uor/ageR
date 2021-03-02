@@ -29,7 +29,7 @@ Imports:
     coda,
     data.tree,
     DiagrammeR,
-    doFuture
+    doFuture,
     dplyr,
     foreach,
     future,
@@ -41,10 +41,12 @@ Imports:
     progress,
     progressr,
     rbacon,
+    RColorBrewer,
     R.utils,
     scales,
     SimDesign,
     stringi,
+    tibble,
     tictoc
 Suggests:
     badger,
