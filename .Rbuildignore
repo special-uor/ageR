@@ -11,3 +11,6 @@
 ^inst/images$
 ^inst/training$
 ^.*_cache$
+^tests$
+^X$
+^.*\.txt$
