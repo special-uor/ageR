@@ -185,26 +185,36 @@ Bacon <- function(wdir,
 
   msg("Running Bacon", quiet, nl = FALSE)
 
-  # Start parallel backend
-  log_file <- file.path(wdir, paste0("log-", entity,".txt"))
-  if (file.exists(log_file))
-    file.remove(log_file)
-  cl <- parallel::makeCluster(cpus,
-                              outfile = log_file)
-  doSNOW::registerDoSNOW(cl)
+  # # Start parallel backend
+  # log_file <- file.path(wdir, paste0("log-", entity,".txt"))
+  # if (file.exists(log_file))
+  #   file.remove(log_file)
+  # cl <- parallel::makeCluster(cpus,
+  #                             outfile = log_file)
+  # doSNOW::registerDoSNOW(cl)
+  doFuture::registerDoFuture()
+  oplan <- future::plan(future::multisession, workers = cpus)
+  on.exit(future::plan(oplan), add = TRUE)
+  oopt <- options(future.rng.onMisuse = "ignore")
+  on.exit(options(oopt), add = TRUE)
+
   idx <- seq_len(nrow(scenarios))
 
-  # Set up progress bar
-  # pb <- txtProgressBar(max = length(idx), style = 3)
-  pb <- progress::progress_bar$new(
-    format = "(:current/:total) [:bar] :percent",
-    total = length(idx), clear = TRUE, width = 80)
+  # # Set up progress bar
+  # # pb <- txtProgressBar(max = length(idx), style = 3)
+  # pb <- progress::progress_bar$new(
+  #   format = "(:current/:total) [:bar] :percent",
+  #   total = length(idx), clear = TRUE, width = 80)
+  #
+  # progress <- function(n) if (!quiet) pb$tick() # setTxtProgressBar(pb, n)
+  # opts <- list(progress = progress)
+  # Set up progress API
+  p <- progressr::progressor(along = idx)
 
-  progress <- function(n) if (!quiet) pb$tick() # setTxtProgressBar(pb, n)
-  opts <- list(progress = progress)
-
-  out <- foreach::foreach (i = idx,
-                           .options.snow = opts) %dopar% {
+  # out <- foreach::foreach (i = idx,
+  #                          .options.snow = opts) %dopar% {
+  out <- foreach::foreach(i = idx,
+                          .verbose = FALSE) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
@@ -235,40 +245,42 @@ Bacon <- function(wdir,
                                    entity = entity,
                                    hiatuses = hiatuses)
         return(alt_plot)
-      } else {
+      } else if (restart) {
+          warning("Could not restart the execution of the model. \n",
+                  "Running Bacon...",
+                  call. = FALSE)
+      }
+    } else if (restart) {
         warning("Could not restart the execution of the model. \n",
                 "Running Bacon...",
                 call. = FALSE)
-      }
-    } else {
-      warning("Could not restart the execution of the model. \n",
-              "Running Bacon...",
-              call. = FALSE)
     }
-    run_bacon(wdir = wdir,
-              entity = entity,
-              postbomb = postbomb,
-              cc = cc,
-              alt_depths = alt_depths,
-              quiet = quiet,
-              core = core,
-              seed = seed,
-              depths_eval = depths_eval,
-              hiatuses = hiatuses,
-              sample_ids = sample_ids,
-              unknown_age = unknown_age,
-              coredir = coredir,
-              acc.mean = scenarios[i, 1],
-              ssize = 2000,
-              th0 = c(),
-              thick = scenarios[i, 2],
-              close.connections = FALSE,
-              ...)
+    output <- run_bacon(wdir = wdir,
+                        entity = entity,
+                        postbomb = postbomb,
+                        cc = cc,
+                        alt_depths = alt_depths,
+                        quiet = quiet,
+                        core = core,
+                        seed = seed,
+                        depths_eval = depths_eval,
+                        hiatuses = hiatuses,
+                        sample_ids = sample_ids,
+                        unknown_age = unknown_age,
+                        coredir = coredir,
+                        acc.mean = scenarios[i, 1],
+                        ssize = 2000,
+                        th0 = c(),
+                        thick = scenarios[i, 2],
+                        close.connections = FALSE,
+                        ...)
+    p()
+    output
   }
   # Add new line after the progress bar
   if (!quiet) cat("\n")
 
-  parallel::stopCluster(cl) # Stop cluster
+  # parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
   prefix <- paste0(entity, "_AR",
@@ -620,7 +632,7 @@ run_bacon <- function(wdir,
     unknown_age$col <- "#56B4E9"
     core <- rbind(core, unknown_age)
   }
-  out <- rbacon::Bacon.hist(core$depth)
+  out <- rbacon::Bacon.hist(core$depth, draw = FALSE)
   # dput(out)
   core$age <- out[, 3]
   core$age_min <- out[, 1]
