@@ -1,4 +1,5 @@
-
+#' @importFrom grDevices colorRampPalette extendrange
+#' @importFrom graphics par
 #' @keywords internal
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
@@ -31,6 +32,8 @@ plot_age_depth2 <- function(ages,
                             slump = c(),
                             dark = c(),
                             rotate.axes = FALSE) {
+  # Add local bindings
+  x <- y <- z <- NULL
   # calculate and plot the ranges and 'best' estimates for each required depth
   if(length(d.min) == 0)
     d.min <- set$d.min
@@ -174,4 +177,4 @@ plot_age_depth2 <- function(ages,
     #   image(ageseq, dseq, t(scales), add=TRUE, col=colours, useRaster=FALS§E) else
     #     image(dseq, ageseq, scales, add=TRUE, col=colours, useRaster=FALSE)
 }
-plot_age_depth2(core$age)
+# plot_age_depth2(core$age)
