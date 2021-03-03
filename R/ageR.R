@@ -4,6 +4,7 @@
 #' Bacon age model
 #'
 #' @importFrom foreach %dopar%
+#' @importFrom utils capture.output
 # @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @param wdir Path where input files are stored.
@@ -258,6 +259,14 @@ Bacon <- function(wdir,
                 "Running Bacon...",
                 call. = FALSE)
     }
+    # Bacon log
+    bacon_log <- file(paste0(coredir, ".log"), open = "wt")
+    capture.output({
+    # sink(file = paste0(coredir, ".log"))
+    # sink(file = bacon_log, type = "output")
+    # sink(file = bacon_log, type = "message")
+    # oopt <- options(warn = -1)
+    # on.exit(oopt, add = TRUE)
     output <- run_bacon(wdir = wdir,
                         entity = entity,
                         postbomb = postbomb,
@@ -277,6 +286,12 @@ Bacon <- function(wdir,
                         thick = scenarios[i, 2],
                         close.connections = FALSE,
                         ...)
+    }, file = bacon_log, type = c("message", "output"))
+    # sink(type = "message")
+    # sink(type = "output")
+    close(bacon_log)
+    # # sink()
+    # sink()
     p()
     output
   }
