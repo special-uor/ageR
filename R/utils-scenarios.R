@@ -60,7 +60,8 @@ is.done <- function(wdir, entity) {
 #' @export
 pb <- function(expr, ...) {
   progress_bar <-
-    progressr::handler_progress(format = "(:current/:total) [:bar] :percent")
+    progressr::handler_progress(format = "(:current/:total) [:bar] :percent",
+                                width = 80)
   progressr::with_progress(expr,
                            ...,
                            handlers = progress_bar)
