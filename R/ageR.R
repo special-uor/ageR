@@ -286,7 +286,7 @@ Bacon <- function(wdir,
                         thick = scenarios[i, 2],
                         close.connections = FALSE,
                         ...)
-    }, file = bacon_log, type = c("message", "output"))
+    }, file = bacon_log)
     # sink(type = "message")
     # sink(type = "output")
     close(bacon_log)
