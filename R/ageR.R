@@ -192,10 +192,12 @@ Bacon <- function(wdir,
   # cl <- parallel::makeCluster(cpus,
   #                             outfile = log_file)
   # doSNOW::registerDoSNOW(cl)
+  # on.exit(parallel::stopCluster(cl)) # Stop cluster
   doFuture::registerDoFuture()
   oplan <- future::plan(future::multisession, workers = cpus)
   on.exit(future::plan(oplan), add = TRUE)
-  oopt <- options(future.rng.onMisuse = "ignore")
+  oopt <- options(future.rng.onMisuse = "ignore") #,
+                  # doFuture.foreach.export = ".export-and-automatic-with-warning")
   on.exit(options(oopt), add = TRUE)
 
   idx <- seq_len(nrow(scenarios))
@@ -214,6 +216,7 @@ Bacon <- function(wdir,
   # out <- foreach::foreach (i = idx,
   #                          .options.snow = opts) %dopar% {
   out <- foreach::foreach(i = idx,
+                          .export = c("core"),
                           .verbose = FALSE) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
@@ -279,8 +282,6 @@ Bacon <- function(wdir,
   }
   # Add new line after the progress bar
   if (!quiet) cat("\n")
-
-  # parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
   prefix <- paste0(entity, "_AR",
