@@ -28,7 +28,6 @@ Language: en-GB
 Imports:
     coda,
     data.tree,
-    DiagrammeR,
     doFuture,
     dplyr,
     foreach,
