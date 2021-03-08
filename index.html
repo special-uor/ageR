@@ -40,7 +40,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -51,7 +51,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/special-uor/ageR/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -72,7 +72,6 @@
 <a href="#ager-supervised-age-modelling" class="anchor"></a>ageR: Supervised Age Modelling</h1></div>
 <!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> -->
 <!-- badges: start -->
-<!-- [![](https://img.shields.io/github/languages/code-size/special-uor/ageR.svg)](https://github.com/special-uor/ageR) -->
 
 <p>The goal of ageR is to provide functions that facilitate the creation of age models using different data sources, including databases, comma and tab separated files.</p>
 <div id="installation" class="section level2">
@@ -83,13 +82,14 @@
 <!-- install.packages("ageR") -->
 <!-- ``` -->
 <p>You can install the development version from <a href="https://github.com/special-uor/ageR">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"special-uor/ageR"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"special-uor/ageR"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
+<p><span class="emoji" data-emoji="warning">⚠️</span> <strong>Users of Windows:</strong> <code><a href="reference/Bacon.html">ageR::Bacon</a></code> creates symbolic links (think of them as shortcuts), you should run RStudio in “Administrator mode” to avoid error messages.</p>
 <div id="bacon-model" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bacon-model" class="anchor"></a>Bacon model</h3>
@@ -97,8 +97,8 @@
 <h4 class="hasAnchor">
 <a href="#input-structure" class="anchor"></a>Input structure</h4>
 <p>For an entity X, the input structure should look like</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/file_structure.html">file_structure</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="st">"X"</span>, am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/file_structure.html">file_structure</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="st">"X"</span>, am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span>
 <span class="co">#&gt;                      levelName</span>
 <span class="co">#&gt; 1 X                           </span>
 <span class="co">#&gt; 2  ¦--Bacon_runs              </span>
@@ -107,7 +107,7 @@
 <span class="co">#&gt; 5  ¦       ¦--X_sample_ids.csv</span>
 <span class="co">#&gt; 6  ¦       °--X.csv           </span>
 <span class="co">#&gt; 7  ¦--hiatus.csv              </span>
-<span class="co">#&gt; 8  °--not_used_dates.csv</span></pre></div>
+<span class="co">#&gt; 8  °--not_used_dates.csv</span></code></pre></div>
 <p>The function <code><a href="reference/create_input.html">ageR::create_input</a></code> can be used to automatically create the appropriate file structure (as shown previously).</p>
 </div>
 <div id="create-input-structure" class="section level4">
@@ -116,10 +116,10 @@
 <ol>
 <li>
 <p>Start by creating a data frame for the sampling depths, this should have two numeric columns called <code>id</code> and <code>depth</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="va">sample_depths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sample_depths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,
                             depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">500</span>, length.out <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_depths</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_depths</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -155,13 +155,13 @@
 </li>
 <li>
 <p>Create a data frame with the core’s data, this should have at least four columns. The first column can be of character type and the remaining must be numeric. The column names should be <code>labID</code>, <code>age</code>, <code>error</code>, and <code>depth</code>. Optionally, a fifth column, <code>cc</code>, can be included to manually select the calibration curve for each observation.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
                    age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,
                    error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,
                    depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,
                    cc <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">labID</th>
@@ -211,10 +211,10 @@
 </li>
 <li>
 <p>(Optional) Create a data frame with the hiatuses depths, this should have two numeric columns called <code>id</code> and <code>depth</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="va">hiatus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hiatus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
                      depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">hiatus</span><span class="op">)</span></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">hiatus</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -234,23 +234,22 @@
 </li>
 <li>
 <p>Call the <code><a href="reference/create_input.html">ageR::create_input</a></code> function. The first parameter should be a list containing the previous data frames, which must be called <code>sample_depths</code>, <code>core</code>, and <code>hiatus</code> (if included). Next, a working directory (<code>wdir</code>), the entity’s name, and optionally the age model’s name (by default is Bacon).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/create_input.html">create_input</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sample_depths <span class="op">=</span> <span class="va">sample_depths</span>, 
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/create_input.html">create_input</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sample_depths <span class="op">=</span> <span class="va">sample_depths</span>, 
                                core <span class="op">=</span> <span class="va">core</span>,
                                <span class="co"># Optional</span>
                                hiatus <span class="op">=</span> <span class="va">hiatus</span><span class="op">)</span>, 
                    wdir <span class="op">=</span> <span class="st">"./"</span>, 
                    entity <span class="op">=</span> <span class="st">"X"</span>,
-                   am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span>
-<span class="co">#&gt; [1] "sample_depths" "core"          "hiatus"</span></pre></div>
+                   am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span></code></pre></div>
 </li>
 </ol>
 </div>
 <div id="run-bacon" class="section level4">
 <h4 class="hasAnchor">
 <a href="#run-bacon" class="anchor"></a>Run Bacon</h4>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, 
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, 
             entity <span class="op">=</span> <span class="st">"X"</span>, 
             <span class="co"># Optional parameters</span>
             cpus <span class="op">=</span> <span class="fl">1</span>,
@@ -266,13 +265,13 @@
             thick_lower <span class="op">=</span> <span class="cn">NULL</span>,
             thick_upper <span class="op">=</span> <span class="cn">NULL</span>,
             dry_run <span class="op">=</span> <span class="cn">FALSE</span>,
-            <span class="va">...</span><span class="op">)</span></pre></div>
+            <span class="va">...</span><span class="op">)</span></code></pre></div>
 <div id="dry-run" class="section level5">
 <h5 class="hasAnchor">
 <a href="#dry-run" class="anchor"></a>Dry-run</h5>
 <p>Dry-runs are useful to check how many scenarios will be generated with the current configuration:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; The following scenarios will be executed:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
@@ -293,14 +292,14 @@
 <span class="co">#&gt; |                 5|        40|</span>
 <span class="co">#&gt; |                10|        40|</span>
 <span class="co">#&gt; |                20|        40|</span>
-<span class="co">#&gt; A total of 15 scenarios.</span></pre></div>
+<span class="co">#&gt; A total of 15 scenarios.</span></code></pre></div>
 </div>
 <div id="change-upper-and-lower-bounds" class="section level5">
 <h5 class="hasAnchor">
 <a href="#change-upper-and-lower-bounds" class="anchor"></a>Change upper and lower bounds</h5>
 <p>Based on a dry-run, we might want to constraint our execution to a smaller set of scenarios. This can be done for both accumulation rate and core segment thickness.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, acc_lower <span class="op">=</span> <span class="fl">10</span>, acc_upper <span class="op">=</span> <span class="fl">20</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, acc_lower <span class="op">=</span> <span class="fl">10</span>, acc_upper <span class="op">=</span> <span class="fl">20</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; The following scenarios will be executed:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
@@ -316,9 +315,9 @@
 <span class="co">#&gt; |                20|        30|</span>
 <span class="co">#&gt; |                10|        40|</span>
 <span class="co">#&gt; |                20|        40|</span>
-<span class="co">#&gt; A total of 10 scenarios.</span></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, thick_lower <span class="op">=</span> <span class="fl">10</span>, thick_upper <span class="op">=</span> <span class="fl">30</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; A total of 10 scenarios.</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, thick_lower <span class="op">=</span> <span class="fl">10</span>, thick_upper <span class="op">=</span> <span class="fl">30</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; The following scenarios will be executed:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
@@ -336,7 +335,7 @@
 <span class="co">#&gt; |                 5|        30|</span>
 <span class="co">#&gt; |                10|        30|</span>
 <span class="co">#&gt; |                20|        30|</span>
-<span class="co">#&gt; A total of 12 scenarios.</span></pre></div>
+<span class="co">#&gt; A total of 12 scenarios.</span></code></pre></div>
 </div>
 <div id="use-mixed-calibration-curves" class="section level5">
 <h5 class="hasAnchor">
@@ -345,13 +344,13 @@
 <ol>
 <li>
 <p>Assign <code>cc = 4</code> to the <code>core</code> data:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
                    age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,
                    error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,
                    depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,
                    cc <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">labID</th>
@@ -401,25 +400,25 @@
 </li>
 <li>
 <p>Create a mixed calibration curve with <code><a href="reference/mix_curves.html">ageR::mix_curves</a></code>. The following example uses a 50/50 mix between <code>IntCal20</code> (<code>cc1 = 1</code>) and <code>SHCal20</code> (<code>cc2 = 3</code>).</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="va">ccdir</span> <span class="op">&lt;-</span> <span class="st">"./ccurves"</span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ccdir</span> <span class="op">&lt;-</span> <span class="st">"./ccurves"</span>
 <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/mix_curves.html">mix_curves</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="fl">0.5</span>, cc1 <span class="op">=</span> <span class="fl">1</span>, cc <span class="op">=</span> <span class="fl">3</span>, name <span class="op">=</span> <span class="st">"neotropics.14C"</span>, dirname <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                         Mixed curved: 50/50 created.                         |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span></pre></div>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span></code></pre></div>
 </li>
 <li>
 <p>Add two new parameters to the <code><a href="reference/Bacon.html">ageR::Bacon</a></code> call:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cc4 <span class="op">=</span> <span class="st">"neotropics.14C"</span>, ccdir <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cc4 <span class="op">=</span> <span class="st">"neotropics.14C"</span>, ccdir <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></code></pre></div>
 </li>
 </ol>
 </div>
 <div id="run-example" class="section level5">
 <h5 class="hasAnchor">
 <a href="#run-example" class="anchor"></a>Run example</h5>
-<div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                             Checking input files                             |</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
@@ -450,7 +449,7 @@
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                                     Bye!                                     |</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; X: 139.526 sec elapsed</span></pre></div>
+<span class="co">#&gt; X: 117.028 sec elapsed</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -464,106 +463,106 @@
 <td align="left">2</td>
 <td align="right">10</td>
 <td align="right">10</td>
-<td align="right">0.9226303</td>
-<td align="left">7.32e-17</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">5</td>
-<td align="right">10</td>
-<td align="right">1.1925252</td>
-<td align="left">5.50e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">5</td>
-<td align="right">10</td>
-<td align="right">15</td>
-<td align="right">1.2657517</td>
-<td align="left">-5.74e-17</td>
+<td align="right">1.008527</td>
+<td align="left">4.54e-17</td>
 </tr>
 <tr class="even">
 <td align="left">8</td>
 <td align="right">10</td>
 <td align="right">20</td>
-<td align="right">1.3099333</td>
-<td align="left">3.28e-17</td>
+<td align="right">1.109480</td>
+<td align="left">-4.92e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">11</td>
+<td align="left">5</td>
 <td align="right">10</td>
-<td align="right">30</td>
-<td align="right">1.4955667</td>
-<td align="left">7.11e-17</td>
+<td align="right">15</td>
+<td align="right">1.123248</td>
+<td align="left">3.92e-17</td>
 </tr>
 <tr class="even">
-<td align="left">3</td>
-<td align="right">20</td>
-<td align="right">10</td>
-<td align="right">1.8431809</td>
-<td align="left">-2.70e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">9</td>
-<td align="right">20</td>
-<td align="right">20</td>
-<td align="right">1.8612235</td>
-<td align="left">5.19e-17</td>
-</tr>
-<tr class="even">
-<td align="left">4</td>
+<td align="left">1</td>
 <td align="right">5</td>
-<td align="right">15</td>
-<td align="right">1.8620340</td>
-<td align="left">6.44e-17</td>
+<td align="right">10</td>
+<td align="right">1.235346</td>
+<td align="left">-3.99e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">6</td>
+<td align="left">12</td>
 <td align="right">20</td>
-<td align="right">15</td>
-<td align="right">1.8944341</td>
-<td align="left">6.43e-17</td>
+<td align="right">30</td>
+<td align="right">1.369152</td>
+<td align="left">-8.11e-17</td>
 </tr>
 <tr class="even">
 <td align="left">14</td>
 <td align="right">10</td>
 <td align="right">40</td>
-<td align="right">2.1879246</td>
-<td align="left">-7.86e-17</td>
+<td align="right">1.374740</td>
+<td align="left">4.64e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">7</td>
+<td align="left">4</td>
 <td align="right">5</td>
-<td align="right">20</td>
-<td align="right">2.3382032</td>
-<td align="left">2.92e-17</td>
+<td align="right">15</td>
+<td align="right">1.436867</td>
+<td align="left">3.66e-17</td>
 </tr>
 <tr class="even">
-<td align="left">12</td>
-<td align="right">20</td>
+<td align="left">11</td>
+<td align="right">10</td>
 <td align="right">30</td>
-<td align="right">3.1319497</td>
-<td align="left">-5.30e-17</td>
+<td align="right">1.438911</td>
+<td align="left">-1.96e-17</td>
 </tr>
 <tr class="odd">
 <td align="left">15</td>
 <td align="right">20</td>
 <td align="right">40</td>
-<td align="right">3.7019349</td>
-<td align="left">-9.42e-17</td>
+<td align="right">1.561613</td>
+<td align="left">-6.17e-17</td>
+</tr>
+<tr class="even">
+<td align="left">9</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">1.773644</td>
+<td align="left">2.65e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">6</td>
+<td align="right">20</td>
+<td align="right">15</td>
+<td align="right">1.904571</td>
+<td align="left">6.54e-17</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="right">20</td>
+<td align="right">10</td>
+<td align="right">2.035408</td>
+<td align="left">2.59e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="right">5</td>
+<td align="right">20</td>
+<td align="right">2.081590</td>
+<td align="left">6.20e-17</td>
 </tr>
 <tr class="even">
 <td align="left">10</td>
 <td align="right">5</td>
 <td align="right">30</td>
-<td align="right">4.8989651</td>
-<td align="left">5.40e-17</td>
+<td align="right">4.262364</td>
+<td align="left">-8.76e-17</td>
 </tr>
 <tr class="odd">
 <td align="left">13</td>
 <td align="right">5</td>
 <td align="right">40</td>
-<td align="right">6.3470265</td>
-<td align="left">5.88e-17</td>
+<td align="right">6.154565</td>
+<td align="left">-1.66e-17</td>
 </tr>
 </tbody>
 </table>
@@ -588,7 +587,7 @@
 <ul class="list-unstyled">
 <li>Browse source code at <br><a href="https://github.com/special-uor/ageR/">https://​github.com/​special-uor/​ageR/​</a>
 </li>
-<li>Report a bug at <br><a href="https://github.com/special-uor/ageR/issues">https://​github.com/​special-uor/​ageR/​issues</a>
+<li>Report a bug at <br><a href="https://github.com/special-uor/ageR/issues/">https://​github.com/​special-uor/​ageR/​issues/​</a>
 </li>
 </ul>
 </div>
