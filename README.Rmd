@@ -40,7 +40,7 @@ You can install the development version from
 [GitHub](https://github.com/special-uor/ageR) with:
 ``` r
 # install.packages("remotes")
-remotes::install_github("special-uor/ageR")
+remotes::install_github("special-uor/ageR", "dev")
 ```
 
 ## Example
@@ -161,9 +161,26 @@ This is particular useful for "neo-tropical" sites. It involves three steps:
     out <- ageR::Bacon(wdir = "./", entity = "X", cc4 = "neotropics.14C", ccdir = ccdir)
     ```
 
+##### Display progress bar
+A progress bar can be displayed for long computations. Just "pipe" the
+function call to `ageR::pb()`.
+```{r, eval = FALSE}
+`%>%` <- magrittr::`%>%`
+out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 2) %>%
+  ageR::pb()
+```
+
+Alternatively, if you are not familiar with the "pipe" operator, you can run the
+following code:
+```{r, eval = FALSE}
+out <- ageR::pb(ageR::Bacon(wdir = "./", entity = "X", cpus = 2))
+```
+
 ##### Run example
 ```{r bacon-run, cache = TRUE}
-out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8)
+`%>%` <- magrittr::`%>%`
+out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
+  ageR::pb()
 ```
 
 ```{r bacon-run-stats, echo = FALSE}
