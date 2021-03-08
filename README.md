@@ -7,8 +7,6 @@
 
 <!-- badges: start -->
 
-<!-- [![](https://img.shields.io/github/languages/code-size/special-uor/ageR.svg)](https://github.com/special-uor/ageR) -->
-
 [![](https://img.shields.io/badge/devel%20version-0.1.0.900-yellow.svg)](https://github.com/special-uor/ageR)
 [![R build
 status](https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg)](https://github.com/special-uor/ageR/actions)

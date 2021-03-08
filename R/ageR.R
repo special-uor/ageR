@@ -4,6 +4,7 @@
 #' Bacon age model
 #'
 #' @importFrom foreach %dopar%
+#' @importFrom utils capture.output
 # @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @param wdir Path where input files are stored.
@@ -185,26 +186,39 @@ Bacon <- function(wdir,
 
   msg("Running Bacon", quiet, nl = FALSE)
 
-  # Start parallel backend
-  log_file <- file.path(wdir, paste0("log-", entity,".txt"))
-  if (file.exists(log_file))
-    file.remove(log_file)
-  cl <- parallel::makeCluster(cpus,
-                              outfile = log_file)
-  doSNOW::registerDoSNOW(cl)
+  # # Start parallel backend
+  # log_file <- file.path(wdir, paste0("log-", entity,".txt"))
+  # if (file.exists(log_file))
+  #   file.remove(log_file)
+  # cl <- parallel::makeCluster(cpus,
+  #                             outfile = log_file)
+  # doSNOW::registerDoSNOW(cl)
+  # on.exit(parallel::stopCluster(cl)) # Stop cluster
+  doFuture::registerDoFuture()
+  oplan <- future::plan(future::multisession, workers = cpus)
+  on.exit(future::plan(oplan), add = TRUE)
+  oopt <- options(future.rng.onMisuse = "ignore") #,
+                  # doFuture.foreach.export = ".export-and-automatic-with-warning")
+  on.exit(options(oopt), add = TRUE)
+
   idx <- seq_len(nrow(scenarios))
 
-  # Set up progress bar
-  # pb <- txtProgressBar(max = length(idx), style = 3)
-  pb <- progress::progress_bar$new(
-    format = "(:current/:total) [:bar] :percent",
-    total = length(idx), clear = TRUE, width = 80)
+  # # Set up progress bar
+  # # pb <- txtProgressBar(max = length(idx), style = 3)
+  # pb <- progress::progress_bar$new(
+  #   format = "(:current/:total) [:bar] :percent",
+  #   total = length(idx), clear = TRUE, width = 80)
+  #
+  # progress <- function(n) if (!quiet) pb$tick() # setTxtProgressBar(pb, n)
+  # opts <- list(progress = progress)
+  # Set up progress API
+  p <- progressr::progressor(along = idx)
 
-  progress <- function(n) if (!quiet) pb$tick() # setTxtProgressBar(pb, n)
-  opts <- list(progress = progress)
-
-  out <- foreach::foreach (i = idx,
-                           .options.snow = opts) %dopar% {
+  # out <- foreach::foreach (i = idx,
+  #                          .options.snow = opts) %dopar% {
+  out <- foreach::foreach(i = idx,
+                          .export = c("core"),
+                          .verbose = FALSE) %dopar% {
     coredir <- sprintf("S%03d-AR%03d-T%d", i, scenarios[i, 1], scenarios[i, 2])
     msg(coredir)
     if (restart && is.done(file.path(wdir, entity, coredir, entity), entity)) {
@@ -235,40 +249,54 @@ Bacon <- function(wdir,
                                    entity = entity,
                                    hiatuses = hiatuses)
         return(alt_plot)
-      } else {
+      } else if (restart) {
+          warning("Could not restart the execution of the model. \n",
+                  "Running Bacon...",
+                  call. = FALSE)
+      }
+    } else if (restart) {
         warning("Could not restart the execution of the model. \n",
                 "Running Bacon...",
                 call. = FALSE)
-      }
-    } else {
-      warning("Could not restart the execution of the model. \n",
-              "Running Bacon...",
-              call. = FALSE)
     }
-    run_bacon(wdir = wdir,
-              entity = entity,
-              postbomb = postbomb,
-              cc = cc,
-              alt_depths = alt_depths,
-              quiet = quiet,
-              core = core,
-              seed = seed,
-              depths_eval = depths_eval,
-              hiatuses = hiatuses,
-              sample_ids = sample_ids,
-              unknown_age = unknown_age,
-              coredir = coredir,
-              acc.mean = scenarios[i, 1],
-              ssize = 2000,
-              th0 = c(),
-              thick = scenarios[i, 2],
-              close.connections = FALSE,
-              ...)
+    # Bacon log
+    bacon_log <- file(paste0(coredir, ".log"), open = "wt")
+    capture.output({
+    # sink(file = paste0(coredir, ".log"))
+    # sink(file = bacon_log, type = "output")
+    # sink(file = bacon_log, type = "message")
+    # oopt <- options(warn = -1)
+    # on.exit(oopt, add = TRUE)
+    output <- run_bacon(wdir = wdir,
+                        entity = entity,
+                        postbomb = postbomb,
+                        cc = cc,
+                        alt_depths = alt_depths,
+                        quiet = quiet,
+                        core = core,
+                        seed = seed,
+                        depths_eval = depths_eval,
+                        hiatuses = hiatuses,
+                        sample_ids = sample_ids,
+                        unknown_age = unknown_age,
+                        coredir = coredir,
+                        acc.mean = scenarios[i, 1],
+                        ssize = 2000,
+                        th0 = c(),
+                        thick = scenarios[i, 2],
+                        close.connections = FALSE,
+                        ...)
+    }, file = bacon_log)
+    # sink(type = "message")
+    # sink(type = "output")
+    close(bacon_log)
+    # # sink()
+    # sink()
+    p()
+    output
   }
   # Add new line after the progress bar
   if (!quiet) cat("\n")
-
-  parallel::stopCluster(cl) # Stop cluster
 
   # Create output filename
   prefix <- paste0(entity, "_AR",
@@ -439,6 +467,8 @@ Bacon <- function(wdir,
 #' @param th0 Starting years for the MCMC iterations.
 #' @param thick Bacon will divide the core into sections of equal thickness
 #'     specified by \code{thick} (default \code{thick = 5}).
+#' @param p \code{progressor} object from the package
+#'     \code{\link[progressr]{progressr}}.
 #' @param ... Optional parameters for \code{\link[rbacon:Bacon]{rbacon::Bacon}}.
 #' @inheritParams Bacon
 #'
@@ -473,6 +503,7 @@ run_bacon <- function(wdir,
                       ssize = 2000,
                       th0 = c(),
                       thick = 5,
+                      p = NULL,
                       ...) {
   if (is.null(coredir))
     coredir <- "Bacon_runs"
@@ -617,7 +648,7 @@ run_bacon <- function(wdir,
     unknown_age$col <- "#56B4E9"
     core <- rbind(core, unknown_age)
   }
-  out <- rbacon::Bacon.hist(core$depth)
+  out <- rbacon::Bacon.hist(core$depth, draw = FALSE)
   # dput(out)
   core$age <- out[, 3]
   core$age_min <- out[, 1]
@@ -657,6 +688,8 @@ run_bacon <- function(wdir,
   # set <- get('info')
   # return(set)
   done(path, entity)
+  if (!is.null(p)) # Signal progress
+    p()
   return(alt_plot)
 }
 
@@ -759,7 +792,8 @@ gelman_test <- function(data, confidence = 0.975) {
 #' ageR::mix_curves(0.7, 1, 2, name = "nh_coastal.14C")
 #' # Curve for coastline (Southern hemisphere)
 #' ageR::mix_curves(0.7, 3, 2, name = "sh_coastal.14C")
-#'
+#' # Clean output
+#' unlink("ccurves", TRUE, TRUE)
 mix_curves <- function(proportion = 0.5,
                        cc1 = 1,
                        cc2 = 2,
