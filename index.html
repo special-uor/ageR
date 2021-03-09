@@ -84,7 +84,7 @@
 <p>You can install the development version from <a href="https://github.com/special-uor/ageR">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"special-uor/ageR"</span><span class="op">)</span></code></pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"special-uor/ageR"</span>, <span class="st">"dev"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
@@ -414,11 +414,25 @@
 </li>
 </ol>
 </div>
+<div id="display-progress-bar" class="section level5">
+<h5 class="hasAnchor">
+<a href="#display-progress-bar" class="anchor"></a>Display progress bar</h5>
+<p>A progress bar can be displayed for long computations. Just “pipe” the function call to <code><a href="reference/pb.html">ageR::pb()</a></code>.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">`%&gt;%`</span> <span class="op">&lt;-</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Alternatively, if you are not familiar with the “pipe” operator, you can run the following code:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
 <div id="run-example" class="section level5">
 <h5 class="hasAnchor">
 <a href="#run-example" class="anchor"></a>Run example</h5>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">`%&gt;%`</span> <span class="op">&lt;-</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                             Checking input files                             |</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
@@ -430,6 +444,201 @@
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                                Running Bacon                                 |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S001-AR005-T10                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 396 yr, min. 119 yr at 25.2525252525253 cm, max. 822 yr at 489.89898989899 cm</span>
+<span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S002-AR010-T10                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 506 yr, min. 107 yr at 5.05050505050505 cm, max. 1065 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S003-AR020-T10                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 527 yr, min. 118 yr between 0 and 5.05050505050505 cm, max. 1578 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S004-AR005-T15                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 571 yr, min. 114 yr at 5.05050505050505 cm, max. 1441 yr at 500 cm</span>
+<span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S005-AR010-T15                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 550 yr, min. 117 yr at 10.1010101010101 cm, max. 1202 yr at 373.737373737374 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S006-AR020-T15                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 583 yr, min. 123 yr at 10.1010101010101 cm, max. 1791 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S007-AR005-T20                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 759 yr, min. 117 yr at 5.05050505050505 cm, max. 2038 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S008-AR010-T20                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 585 yr, min. 113 yr at 10.1010101010101 cm, max. 1347 yr at 358.585858585859 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S009-AR020-T20                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 618 yr, min. 99 yr at 10.1010101010101 cm, max. 2026 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S010-AR005-T30                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 742 yr, min. 104 yr at 5.05050505050505 cm, max. 1742 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S011-AR010-T30                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 641 yr, min. 109 yr at 5.05050505050505 cm, max. 1600 yr at 388.888888888889 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S012-AR020-T30                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 707 yr, min. 111 yr at 5.05050505050505 cm, max. 2292 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S013-AR005-T40                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 647 yr, min. 141 yr at 95.959595959596 cm, max. 1610 yr at 398.989898989899 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S014-AR010-T40                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 617 yr, min. 102 yr at 5.05050505050505 cm, max. 1584 yr at 358.585858585859 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                S015-AR020-T40                                |</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt;   Boundary set at depth(s) NA</span>
+<span class="co">#&gt; Calculating age ranges...</span>
+<span class="co">#&gt; Preparing ghost graph...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Mean 95% confidence ranges 674 yr, min. 106 yr between 5.05050505050505 and 10.1010101010101 cm, max. 2198 yr at 500 cm</span>
+<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; --------------------------------------------------------------------------------</span>
+<span class="co">#&gt; |                                Saving results                                |</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                                   Bacon QC                                   |</span>
@@ -449,7 +658,7 @@
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
 <span class="co">#&gt; |                                     Bye!                                     |</span>
 <span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; X: 117.028 sec elapsed</span></code></pre></div>
+<span class="co">#&gt; X: 111.495 sec elapsed</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -463,106 +672,106 @@
 <td align="left">2</td>
 <td align="right">10</td>
 <td align="right">10</td>
-<td align="right">1.008527</td>
-<td align="left">4.54e-17</td>
+<td align="right">0.9326852</td>
+<td align="left">9.11e-17</td>
+</tr>
+<tr class="even">
+<td align="left">5</td>
+<td align="right">10</td>
+<td align="right">15</td>
+<td align="right">1.0126659</td>
+<td align="left">-1.98e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">1.0860756</td>
+<td align="left">-2.39e-17</td>
 </tr>
 <tr class="even">
 <td align="left">8</td>
 <td align="right">10</td>
 <td align="right">20</td>
-<td align="right">1.109480</td>
-<td align="left">-4.92e-17</td>
+<td align="right">1.1218350</td>
+<td align="left">-2.72e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">5</td>
-<td align="right">10</td>
-<td align="right">15</td>
-<td align="right">1.123248</td>
-<td align="left">3.92e-17</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">5</td>
-<td align="right">10</td>
-<td align="right">1.235346</td>
-<td align="left">-3.99e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">12</td>
-<td align="right">20</td>
-<td align="right">30</td>
-<td align="right">1.369152</td>
-<td align="left">-8.11e-17</td>
-</tr>
-<tr class="even">
 <td align="left">14</td>
 <td align="right">10</td>
 <td align="right">40</td>
-<td align="right">1.374740</td>
-<td align="left">4.64e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">4</td>
-<td align="right">5</td>
-<td align="right">15</td>
-<td align="right">1.436867</td>
-<td align="left">3.66e-17</td>
+<td align="right">1.2549433</td>
+<td align="left">5.62e-17</td>
 </tr>
 <tr class="even">
 <td align="left">11</td>
 <td align="right">10</td>
 <td align="right">30</td>
-<td align="right">1.438911</td>
-<td align="left">-1.96e-17</td>
+<td align="right">1.2746580</td>
+<td align="left">3.61e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">15</td>
-<td align="right">20</td>
-<td align="right">40</td>
-<td align="right">1.561613</td>
-<td align="left">-6.17e-17</td>
-</tr>
-<tr class="even">
-<td align="left">9</td>
-<td align="right">20</td>
-<td align="right">20</td>
-<td align="right">1.773644</td>
-<td align="left">2.65e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">6</td>
-<td align="right">20</td>
+<td align="left">4</td>
+<td align="right">5</td>
 <td align="right">15</td>
-<td align="right">1.904571</td>
-<td align="left">6.54e-17</td>
+<td align="right">1.5669064</td>
+<td align="left">6.89e-18</td>
 </tr>
 <tr class="even">
 <td align="left">3</td>
 <td align="right">20</td>
 <td align="right">10</td>
-<td align="right">2.035408</td>
-<td align="left">2.59e-17</td>
+<td align="right">1.6753912</td>
+<td align="left">8.44e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="right">20</td>
+<td align="right">40</td>
+<td align="right">1.7488795</td>
+<td align="left">-6.00e-17</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="right">20</td>
+<td align="right">15</td>
+<td align="right">1.8364451</td>
+<td align="left">8.16e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">9</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">1.8430827</td>
+<td align="left">8.95e-17</td>
+</tr>
+<tr class="even">
+<td align="left">12</td>
+<td align="right">20</td>
+<td align="right">30</td>
+<td align="right">2.0176597</td>
+<td align="left">-2.02e-18</td>
 </tr>
 <tr class="odd">
 <td align="left">7</td>
 <td align="right">5</td>
 <td align="right">20</td>
-<td align="right">2.081590</td>
-<td align="left">6.20e-17</td>
+<td align="right">2.1233027</td>
+<td align="left">-9.82e-18</td>
 </tr>
 <tr class="even">
 <td align="left">10</td>
 <td align="right">5</td>
 <td align="right">30</td>
-<td align="right">4.262364</td>
-<td align="left">-8.76e-17</td>
+<td align="right">4.6779974</td>
+<td align="left">6.95e-17</td>
 </tr>
 <tr class="odd">
 <td align="left">13</td>
 <td align="right">5</td>
 <td align="right">40</td>
-<td align="right">6.154565</td>
-<td align="left">-1.66e-17</td>
+<td align="right">5.7286335</td>
+<td align="left">2.31e-17</td>
 </tr>
 </tbody>
 </table>
