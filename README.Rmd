@@ -20,7 +20,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 `r badger::badge_devel("special-uor/ageR", "yellow")`
 `r badger::badge_github_actions("special-uor/ageR")`
-`r badger::badge_cran_release("ageR", "black")`
+`r badger::badge_doi("10.5281/zenodo.4636715", "black")`
+`r badger::badge_cran_release("ageR", "red")`
 <!-- `r badger::badge_codecov("special-uor/ageR", "Q6SYL7AOGR")` -->
 <!-- badges: end -->
 
@@ -166,7 +167,7 @@ A progress bar can be displayed for long computations. Just "pipe" the
 function call to `ageR::pb()`.
 ```{r, eval = FALSE}
 `%>%` <- magrittr::`%>%`
-out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 2) %>%
+out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
   ageR::pb()
 ```
 
