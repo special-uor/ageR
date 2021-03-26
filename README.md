@@ -10,7 +10,8 @@
 [![](https://img.shields.io/badge/devel%20version-0.1.0.900-yellow.svg)](https://github.com/special-uor/ageR)
 [![R build
 status](https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg)](https://github.com/special-uor/ageR/actions)
-[![](https://www.r-pkg.org/badges/version/ageR?color=black)](https://cran.r-project.org/package=ageR)
+[![](https://img.shields.io/badge/doi-10.5281/zenodo.4636715-black.svg)](https://doi.org/10.5281/zenodo.4636715)
+[![](https://www.r-pkg.org/badges/version/ageR?color=red)](https://cran.r-project.org/package=ageR)
 <!-- [![](https://codecov.io/gh/special-uor/ageR/branch/master/graph/badge.svg?token=Q6SYL7AOGR)](https://codecov.io/gh/special-uor/ageR) -->
 <!-- badges: end -->
 
@@ -291,7 +292,7 @@ function call to `ageR::pb()`.
 
 ``` r
 `%>%` <- magrittr::`%>%`
-out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 2) %>%
+out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
   ageR::pb()
 ```
 

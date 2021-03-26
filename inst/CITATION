@@ -1,0 +1,24 @@
+citHeader("To cite ageR in publications use:")
+
+citEntry(
+  entry       = "Misc",
+  title       = "{ageR: Supervised Age Models}",
+  author      = personList(person(given = "Roberto",
+                                  family = "Villegas-Diaz",
+                                  email = "r.villegas-diaz@reading.ac.uk",
+                                  comment = c(ORCID = "0000-0001-5036-8661")),
+                           person(given = "Esmeralda",
+                                  family = "Cruz-Silva",
+                                  email = "e.cruz-silva@pgr.reading.ac.uk",
+                                  comment = c(ORCID = "0000-0003-2906-9290")),
+                           person(given = "Sandy P.",
+                                  family = "Harrison",
+                                  comment = c(ORCID = "0000-0001-5687-1903"))),
+  month       = "March",
+  year        = 2021,
+  publisher   = "Zenodo",
+  doi         = "10.5281/zenodo.4636715",
+  url         = "https://doi.org/10.5281/zenodo.4636715",
+  textVersion = paste("Villegas-Diaz, Roberto, Cruz-Silva, Esmeralda, Harrison, Sandy P., 2021. ageR: Supervised Age Models. doi:10.5281/zenodo.4636715"),
+  key         = "ageR_villegas_diaz_2021"
+)
