@@ -22,9 +22,6 @@ mix_curves(
 
 \item{name}{Name of the new calibration curve.}
 
-\item{dirname}{Directory where the file will be written. If using the default \code{dirname="."},
-the new curve will be saved in current working directory.}
-
 \item{quiet}{Boolean to hide status messages.}
 }
 \description{

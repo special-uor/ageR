@@ -6,8 +6,7 @@
 \alias{ageR-package}
 \title{ageR: Supervised Age Modelling}
 \description{
-Provides functions to facilitate the creation of age models using 
-    different data sources, including databases, comma and tab separated files.
+Provides functions to facilitate the creation of age models using different data sources, including databases, comma and tab separated files.
 }
 \seealso{
 Useful links:
