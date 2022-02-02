@@ -19,7 +19,7 @@ Description: Provides functions to facilitate the creation of age models using
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 URL: https://github.com/special-uor/ageR/, 
      https://special-uor.github.io/ageR/,
      https://research.reading.ac.uk/palaeoclimate/
@@ -32,15 +32,18 @@ Imports:
     doFuture,
     dplyr,
     foreach,
+    furrr,
     future,
     ggplot2,
     gridExtra,
-    IntCal,
+    IntCal (>= 0.3.0),
+    magrittr,
     parallel,
     plyr,
     progress,
     progressr,
-    rbacon,
+    rbacon (>= 2.5.7),
+    readr,
     RColorBrewer,
     R.utils,
     scales,
