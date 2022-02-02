@@ -352,7 +352,7 @@ Bacon <- function(wdir,
     logs[[i]] <- tmp$log
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
-    abc_chrono_dates[[i]] <- tmp$abc_chrono_dates
+    abc_chrono_ages[[i]] <- tmp$abc_chrono_ages
   }
   if (!quiet)
     cat("\n")
@@ -365,10 +365,15 @@ Bacon <- function(wdir,
 
   if (!quiet)
     msg(paste0("Best scenario: Acc. Rate = ",
-               df_stats[idx, 1][1],
+               df_stats[idx, ]$acc[1],
                "yr/cm - Thickness: ",
-               df_stats[idx, 2][1],
+               df_stats[idx, ]$thick[1],
                "cm"))
+    # msg(paste0("Best scenario: Acc. Rate = ",
+    #            df_stats[idx, 1][1],
+    #            "yr/cm - Thickness: ",
+    #            df_stats[idx, 2][1],
+    #            "cm"))
 
   # Create PDF with all the plots
   ## Accumulation Rate
@@ -743,10 +748,10 @@ bacon_qc <- function(wdir,
                       plot = FALSE)
   out_abc <- plot_abc(out_acc$data, plot = FALSE)
   out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
-  abc_chrono_dates <- abc_chrono_ages(path)
+  abc_chrono_ages <- abc_chrono_ages(path)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
-              abc_chrono_dates = abc_chrono_dates,
+              abc_chrono_ages = abc_chrono_ages,
               log = out_log$plot,
               diff = out_abc$abc,
               bias = out_log$bias,
@@ -828,7 +833,7 @@ gelman_test <- function(data, confidence = 0.975) {
 
 #' Create a mixed calibration curved
 #'
-#' @inheritParams IntCal::mix.curves
+#' @inheritParams IntCal::mix.ccurves
 #' @inheritParams Bacon
 #'
 #' @export
@@ -851,9 +856,9 @@ mix_curves <- function(proportion = 0.5,
   if (!dir.exists(dirname)) # Create output directory
     dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
   # Extract the IntCal20 calibration curves from IntCal
-  cc1_df <- IntCal::copyCalibrationCurve(1)
-  cc2_df <- IntCal::copyCalibrationCurve(2)
-  cc3_df <- IntCal::copyCalibrationCurve(3)
+  cc1_df <- IntCal::ccurve(1)
+  cc2_df <- IntCal::ccurve(2)
+  cc3_df <- IntCal::ccurve(3)
 
   # Calibration curve names
   ccnames <- c("3Col_intcal20.14C",
