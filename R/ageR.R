@@ -352,6 +352,7 @@ Bacon <- function(wdir,
     logs[[i]] <- tmp$log
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
+    abc_chrono_dates[[i]] <- tmp$abc_chrono_dates
   }
   if (!quiet)
     cat("\n")
@@ -742,13 +743,60 @@ bacon_qc <- function(wdir,
                       plot = FALSE)
   out_abc <- plot_abc(out_acc$data, plot = FALSE)
   out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
+  abc_chrono_dates <- abc_chrono_ages(path)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
+              abc_chrono_dates = abc_chrono_dates,
               log = out_log$plot,
               diff = out_abc$abc,
               bias = out_log$bias,
               bias_rel = out_log$bias_rel,
               mcmc = mcmc))
+}
+
+#' Area Between Curves: Chronology and dates
+#'
+#' Find the area between the chronology curved and the original dates.
+#'
+#' @param path String with path were the bacon outputs are located.
+#' @param sample_size Integer with the number of samples to use to find the area
+#' between the chronology and original dates curves.
+#' @param use_median Boolean flag to indicate which outputs of the chronology
+#' should be used, `use_median = TRUE` uses the `median`, otherwise use `mean`.
+#'
+#' @return Numeric value with the area between curves
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stats approxfun
+abc_chrono_ages <- function(path, sample_size = 1000, use_median = TRUE) {
+  files <- list.files(path, recursive = TRUE, full.names = TRUE)
+  csv_files <- stringr::str_subset(files, "\\.csv$")
+  suppressMessages({
+  bacon_chrono <- csv_files %>%
+    stringr::str_subset("bacon_chronology") %>%
+    purrr::map_df(~suppressMessages(readr::read_csv(.x)))
+  dates <- csv_files %>%
+    # stringr::str_subset("alt_age_depth_plot|bacon_chronology|calib_ages_core|_sample_ids", negate = TRUE) %>%
+    stringr::str_subset("alt_age_depth_plot", negate = TRUE) %>%
+    stringr::str_subset("bacon_chronology", negate = TRUE) %>%
+    stringr::str_subset("calib_ages_core", negate = TRUE) %>%
+    stringr::str_subset("_sample_ids", negate = TRUE) %>%
+    purrr::map_df(~suppressMessages(readr::read_csv(.x)))
+  })
+
+  fx1 <- NULL
+  if (use_median) {
+    fx1 <- approxfun(bacon_chrono$depths, bacon_chrono$median, na.rm = TRUE)
+  } else {
+    fx1 <- approxfun(bacon_chrono$depths, bacon_chrono$mean, na.rm = TRUE)
+  }
+  fx2 <- approxfun(dates$depth, dates$age, na.rm = TRUE)
+  range_depths <- range(c(bacon_chrono$depths, dates$depth))
+  test <- seq(from = min(range_depths),
+              to = max(range_depths),
+              length.out = sample_size)
+  sum(fx2(test) - fx1(test), na.rm = TRUE)
 }
 
 #' Gelman-Rubin test
