@@ -48,7 +48,7 @@ Bacon2 <- function(wdir,
   msg("Setting up environment", quiet)
   if (is.null(acc)) {
     accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
-    ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
+    ballpacc <- lm(core[, 2] ~ core[, 4])$coefficients[2]
     ballpacc <- abs(accMean - ballpacc)
     ballpacc <- ballpacc[ballpacc > 0]
     accMean <- sce_seq(accMean[order(ballpacc)[1]],
@@ -183,7 +183,8 @@ Bacon2 <- function(wdir,
                   call. = FALSE)
         }
         # Bacon log
-        bacon_log <- file(paste0(coredir, ".log"), open = "wt")
+        bacon_log <- file(file.path(wdir, paste0(entity, "_", coredir, ".log")),
+                          open = "wt")
         capture.output({
           output <- run_bacon(wdir = wdir,
                               entity = entity,
@@ -224,8 +225,9 @@ Bacon2 <- function(wdir,
                           thickness))
 
   # Create PDF with all the plots (age-depth)
+  alt_plots <- purrr::map(out, ~.x$ALT)
   ggplot2::ggsave(filename = paste0(prefix, ".pdf"),
-                  plot = plot_grid(out,
+                  plot = plot_grid(alt_plots,
                                    scenarios,
                                    cond_x = "Acc. Rate",
                                    cond_y = "Thickness",
@@ -240,14 +242,26 @@ Bacon2 <- function(wdir,
                   height = 5 * length(thickness),
                   limitsize = FALSE)
 
+  bacon_plots <- purrr::map(out, ~.x$BACON)
+  bacon_plots_labels <- scenarios %>%
+    dplyr::mutate(n = seq_along(acc.mean),
+                  label = sprintf("S%03d-AR%03d-T%d", n, acc.mean, thick)) %>%
+    .$label
+  ggplot2::ggsave(filename = paste0(prefix, "_bacon.pdf"),
+                  plot = cowplot::plot_grid(plotlist = bacon_plots,
+                                            nrow = length(thickness),
+                                            labels = bacon_plots_labels,
+                                            label_size = 12,
+                                            label_x = 0, label_y = 0,
+                                            hjust = -0.1, vjust = -0.7),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
+
   # Assess quality checks for the Bacon models
   idx <- seq_len(nrow(scenarios))
-  # accs <- vector("list", length = nrow(scenarios))
-  # abcs <- vector("list", length = nrow(scenarios))
-  # logs <- vector("list", length = nrow(scenarios))
-  # df_stats <- data.frame(matrix(nrow = nrow(scenarios), ncol = 4))
-  # colnames(df_stats) <- c("acc", "thick", "abc", "bias_rel")
-  mcmcs <- vector("list", length = nrow(scenarios))
   if (!quiet)
     msg("Bacon QC", nl = FALSE)
   p <- progressr::progressor(along = idx)
@@ -351,11 +365,4 @@ Bacon2 <- function(wdir,
     msg("Bye!")
   tictoc::toc(quiet = quiet)
   return(output_qc[idx, ])
-  # return(list(ag = out,
-  #             acc = accs,
-  #             abc = abcs,
-  #             log = logs,
-  #             stats = df_stats[idx, ],
-  #             mcmc = mcmcs,
-  #             best_idx = idx[1]))
 }

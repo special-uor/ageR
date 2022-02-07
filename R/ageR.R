@@ -309,8 +309,9 @@ Bacon <- function(wdir,
                           thickness))
 
   # Create PDF with all the plots (age-depth)
+  alt_plots <- purrr::map(out, ~.x$ALT)
   ggplot2::ggsave(filename = paste0(prefix, ".pdf"),
-                  plot = plot_grid(out,
+                  plot = plot_grid(alt_plots,
                                    scenarios,
                                    cond_x = "Acc. Rate",
                                    cond_y = "Thickness",
@@ -319,6 +320,24 @@ Bacon <- function(wdir,
                                    top = entity,
                                    left = "cal Age [yrs BP]",
                                    bottom = "Depth [mm]"),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
+
+  bacon_plots <- purrr::map(out, ~.x$BACON)
+  bacon_plots_labels <- scenarios %>%
+    dplyr::mutate(n = seq_along(acc.mean),
+                  label = sprintf("S%03d-AR%03d-T%d", n, acc.mean, thick)) %>%
+    .$label
+  ggplot2::ggsave(filename = paste0(prefix, "_bacon.pdf"),
+                  plot = cowplot::plot_grid(plotlist = bacon_plots,
+                                            nrow = length(thickness),
+                                            labels = bacon_plots_labels,
+                                            label_size = 12,
+                                            label_x = 0, label_y = 0,
+                                            hjust = -0.1, vjust = -0.7),
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
