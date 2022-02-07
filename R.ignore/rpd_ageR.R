@@ -19,7 +19,6 @@ out <- ageR::Bacon2(wdir = WDIR, entity = "X", cpus = 8, verbose = FALSE) %>%
   ageR::pb()
 
 
-run_bacon_RPD("Glenmire", wdir = WDIR, dry_run = F, cpus = 8)
 
 run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
   entity_tb <- rpdata::entity %>%
@@ -30,7 +29,10 @@ run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
     stop("Multiple entities found: ",
          paste0(entity_tb$entity_name, collapse = ", "),
          call. = FALSE)
-  cc <- ifelse(entity_tb$latitude[1] > 0, 1, 2)
+  # Calibration curves
+  cc <- ifelse(entity_tb$latitude[1] > 0,
+               1, # Northern hemisphere
+               3) # Southern hemisphere
   ### Date info ----
   date_info_tb <- rpdata::date_info %>%
     dplyr::filter(date_type %in% c("Radiocarbon date",
@@ -61,6 +63,7 @@ run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
                                    # "pollen correlation"
     )) %>%
     dplyr::filter(ID_ENTITY %in% entity_tb$ID_ENTITY) %>%
+    dplyr::filter(age_used == "yes") %>%
     dplyr::mutate(error = ifelse(is.na(error) | error <= 0, 1, error),
                   age_C14 = ifelse(age_C14 < -777777, NA, age_C14),
                   age_calib = ifelse(age_calib < -777777, NA, age_calib),
@@ -100,4 +103,39 @@ run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
                      entity = entity_cln)
   ageR::Bacon2(wdir = wdir, entity = entity_cln, ...)
 }
+
+# Test cases ----
+## Aguas Frias ----
+run_bacon_RPD("Aguas Frias", wdir = WDIR, dry_run = F, cpus = 2, thick = c(5,6)) %>%
+  ageR::pb()
+
+## Bermu mire ----
+run_bacon_RPD("Bermu Mire core_large", wdir = WDIR, dry_run = F, cpus = 4) %>%
+  ageR::pb()
+
+## El Brezosa core_macro ---
+run_bacon_RPD("El Brezosa core_macro", wdir = WDIR, dry_run = F, cpus = 4, acc = c(5, 10, 20)) %>%
+  ageR::pb()
+
+# bacon_plots <- purrr::map(out, ~.x$BACON)
+# bacon_plots_labels <- scenarios %>%
+#   dplyr::mutate(n = seq_along(acc.mean),
+#                 label = sprintf("S%03d-AR%03d-T%d", n, acc.mean, thick)) %>%
+#   .$label
+# ggplot2::ggsave(filename = paste0(prefix, "_BACON.pdf"),
+#                 plot = cowplot::plot_grid(plotlist = bacon_plots,
+#                                           nrow = length(thickness),
+#                                           labels = bacon_plots_labels,
+#                                           label_size = 12,
+#                                           label_x = 0, label_y = 0,
+#                                           hjust = -0.1, vjust = -0.7),
+#                 # plot = cowplot::ggdraw(bacon_plots[[1]]),
+#                 device = "pdf",
+#                 path = wdir,
+#                 width = 7 * length(accMean),
+#                 height = 5 * length(thickness),
+#                 limitsize = FALSE)
+
+## Glenmire ----
+run_bacon_RPD("Glenmire", wdir = WDIR, dry_run = F, cpus = 8)
 
