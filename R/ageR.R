@@ -260,7 +260,8 @@ Bacon <- function(wdir,
                 call. = FALSE)
     }
     # Bacon log
-    bacon_log <- file(paste0(coredir, ".log"), open = "wt")
+    bacon_log <- file(file.path(wdir, paste0(entity, "_", coredir, ".log")),
+                      open = "wt")
     capture.output({
     # sink(file = paste0(coredir, ".log"))
     # sink(file = bacon_log, type = "output")
@@ -525,9 +526,8 @@ run_bacon <- function(wdir,
   if (!is.null(hiatuses) && nrow(hiatuses) > 0)
     hiatus.depths <- hiatuses[, 2]
   tryCatch({
-    pdf(file.path(path, paste0(entity, ".pdf")),
-        width = 8,
-        height = 6)
+    pdf(NULL)
+    dev.control(displaylist = "enable")
     rbacon::Bacon(core = entity,
                   thick = thick,
                   coredir = file.path(wdir, entity, coredir),
@@ -544,7 +544,11 @@ run_bacon <- function(wdir,
                   th0 = th0,
                   plot.pdf = FALSE,
                   ...)
-    dev.off()
+    bacon_depth_ages_plot <- recordPlot()
+    invisible(dev.off())
+    pdf(file.path(path, paste0(entity, ".pdf")), width = 8, height = 6)
+    bacon_depth_ages_plot
+    invisible(dev.off())
     sym_link(from = file.path(path, paste0(entity, ".pdf")),
              to = file.path(wdir,
                             entity,
@@ -696,7 +700,8 @@ run_bacon <- function(wdir,
   done(path, entity)
   if (!is.null(p)) # Signal progress
     p()
-  return(alt_plot)
+  return(list(ALT = alt_plot,
+              BACON = bacon_depth_ages_plot))
 }
 
 #' Bacon quality control
@@ -792,16 +797,39 @@ abc_chrono_ages <- function(path, sample_size = 1000, use_median = TRUE) {
 
   fx1 <- NULL
   if (use_median) {
-    fx1 <- approxfun(bacon_chrono$depths, bacon_chrono$median, na.rm = TRUE)
+    fx1 <- list(
+      mid = approxfun(bacon_chrono$depths, bacon_chrono$median, na.rm = TRUE),
+      upper = approxfun(bacon_chrono$depths,
+                        bacon_chrono$median + bacon_chrono$uncert_5,
+                        na.rm = TRUE),
+      lower = approxfun(bacon_chrono$depths,
+                        bacon_chrono$median - bacon_chrono$uncert_95,
+                        na.rm = TRUE)
+    )
   } else {
-    fx1 <- approxfun(bacon_chrono$depths, bacon_chrono$mean, na.rm = TRUE)
+    fx1 <- list(
+      mid = approxfun(bacon_chrono$depths, bacon_chrono$mean, na.rm = TRUE),
+      upper = approxfun(bacon_chrono$depths,
+                        bacon_chrono$mean + bacon_chrono$uncert_5,
+                        na.rm = TRUE),
+      lower = approxfun(bacon_chrono$depths,
+                        bacon_chrono$mean - bacon_chrono$uncert_95,
+                        na.rm = TRUE)
+    )
   }
+  # plot(test, fx1$mid(test))
+  # lines(test, fx1$upper(test), col = "red")
+  # lines(test, fx1$lower(test), col = "blue")
+  # points(dates$depth, dates$age)
   fx2 <- approxfun(dates$depth, dates$age, na.rm = TRUE)
   range_depths <- range(c(bacon_chrono$depths, dates$depth))
   test <- seq(from = min(range_depths),
               to = max(range_depths),
               length.out = sample_size)
-  sum(fx2(test) - fx1(test), na.rm = TRUE)
+  abc_mid_curve <- sum(fx2(test) - fx1$mid(test), na.rm = TRUE)
+  abc_lower_curve <- sum(fx2(test) - fx1$lower(test), na.rm = TRUE)
+  abc_upper_curve <- sum(fx1$upper(test) - fx2(test), na.rm = TRUE)
+  sum(abc_mid_curve, abc_lower_curve, abc_upper_curve)
 }
 
 #' Gelman-Rubin test
