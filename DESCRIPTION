@@ -27,6 +27,7 @@ BugReports: https://github.com/special-uor/ageR/issues/
 Language: en-GB
 Imports:
     coda,
+    cowplot,
     data.tree,
     DiagrammeR,
     doFuture,
@@ -49,6 +50,7 @@ Imports:
     scales,
     SimDesign,
     stringi,
+    stringr,
     tibble,
     tictoc
 Suggests:
