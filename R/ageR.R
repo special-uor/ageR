@@ -128,6 +128,32 @@ Bacon <- function(wdir,
       thickness <- 5 # Default thickness
     }
 
+    # Find optimal upper bound thickness by dividing the core in at least 8
+    find_max_thickness <- function(depths) {
+      max_thickness <- (ceiling(max(depths, na.rm = TRUE)) -
+                          floor(min(depths, na.rm = TRUE)) + 1) / 8
+      thick_upper_mul5 <- trunc(max_thickness / 5)
+      if (thick_upper_mul5 > 0) {
+        thick_upper <- thick_upper_mul5 * 5
+      } else {
+        thick_upper <- ceiling(max_thickness)
+      }
+      return(thick_upper)
+    }
+
+
+    # Check that thickness maximum upper bound is not more than 1/8 of the
+    # core's length
+    max_thick_upper <- find_max_thickness(depths_eval)
+    if (missing(thick_upper)) {
+      thick_upper <- max_thick_upper
+    } else {
+      if (thick_upper > max_thick_upper)
+        warning("You have set the upper bound for thickness, `thick_upper`, ",
+                "over the recommended threshold, ", max_thick_upper, "!",
+                call. = FALSE, immediate. = TRUE)
+    }
+
     # Create range of thickness for alternative scenarios
     # if (is.null(thick_lower))
     #   thick_lower <- min(k)
@@ -331,13 +357,14 @@ Bacon <- function(wdir,
     dplyr::mutate(n = seq_along(acc.mean),
                   label = sprintf("S%03d-AR%03d-T%d", n, acc.mean, thick)) %>%
     .$label
+  bacon_plots_all <- cowplot::plot_grid(plotlist = bacon_plots,
+                                        nrow = length(thickness),
+                                        labels = bacon_plots_labels,
+                                        label_size = 11,
+                                        label_x = 0, label_y = 1,
+                                        hjust = -0.1, vjust = 1.2)
   ggplot2::ggsave(filename = paste0(prefix, "_bacon.pdf"),
-                  plot = cowplot::plot_grid(plotlist = bacon_plots,
-                                            nrow = length(thickness),
-                                            labels = bacon_plots_labels,
-                                            label_size = 12,
-                                            label_x = 0, label_y = 0,
-                                            hjust = -0.1, vjust = -0.7),
+                  plot = bacon_plots_all,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
