@@ -925,10 +925,10 @@ mix_curves <- function(proportion = 0.5,
                        cc1 = 1,
                        cc2 = 2,
                        name = "mixed.14C",
-                       dirname = file.path(getwd(), "ccurves"),
+                       dir = file.path(getwd(), "ccurves"),
                        quiet = FALSE) {
-  if (!dir.exists(dirname)) # Create output directory
-    dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
+  if (!dir.exists(dir)) # Create output directory
+    dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   # Extract the IntCal20 calibration curves from IntCal
   cc1_df <- IntCal::ccurve(1)
   cc2_df <- IntCal::ccurve(2)
@@ -938,8 +938,9 @@ mix_curves <- function(proportion = 0.5,
   ccnames <- c("3Col_intcal20.14C",
                "3Col_marine20.14C",
                "3Col_shcal20.14C")
+  alt_names <- c("IntCal20", "Marine20", "ShCal20")
   # Calibration curve paths
-  ccpaths <- file.path(dirname, ccnames)
+  ccpaths <- file.path(dir, ccnames)
 
   # Delete old calibration curves
   idx <- unlist(lapply(ccpaths, file.exists))
@@ -951,11 +952,13 @@ mix_curves <- function(proportion = 0.5,
   write.table(cc3_df, ccpaths[3], row.names = FALSE, col.names = FALSE)
 
   # Create a mixed calibration curve
-  IntCal::mix.curves(proportion = proportion,
-                     cc1 = ccnames[cc1],
-                     cc2 = ccnames[cc2],
-                     name = name,
-                     dirname = dirname)
+  suppressMessages({
+    IntCal::mix.ccurves(proportion = proportion,
+                        cc1 = alt_names[cc1],
+                        cc2 = alt_names[cc2],
+                        name = name,
+                        dir = dir)
+  })
   if (!quiet)
     msg(paste0("Mixed curved: ",
                proportion * 100, "/", (1 - proportion) * 100,
