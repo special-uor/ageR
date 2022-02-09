@@ -592,9 +592,14 @@ run_bacon <- function(wdir,
                   ...)
     bacon_depth_ages_plot <- recordPlot()
     invisible(dev.off())
-    pdf(file.path(path, paste0(entity, ".pdf")), width = 8, height = 6)
-    bacon_depth_ages_plot
-    invisible(dev.off())
+    ggplot2::ggsave(filename = paste0(entity, ".pdf"),
+                    plot = cowplot::plot_grid(bacon_depth_ages_plot,
+                                              labels = NULL),
+                    device = "pdf",
+                    path = path,
+                    width = 8,
+                    height = 6,
+                    limitsize = FALSE)
     sym_link(from = file.path(path, paste0(entity, ".pdf")),
              to = file.path(wdir,
                             entity,
