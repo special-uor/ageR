@@ -37,6 +37,7 @@ Imports:
     future,
     ggplot2,
     gridExtra,
+    gridGraphics,
     IntCal (>= 0.3.0),
     magrittr,
     parallel,
