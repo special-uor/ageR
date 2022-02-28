@@ -1,4 +1,6 @@
 WDIR <- "~/Downloads/ageR-training/tests"
+
+## Demo ----
 sample_depths <- data.frame(id = 1:100,
                             depth = seq(0, 500, length.out = 100))
 core <- data.frame(labID = paste0("X", sprintf("%03d", 1:5)),
@@ -17,7 +19,6 @@ ageR::create_input(data = list(sample_depths = sample_depths,
                    am = "bacon")
 out <- ageR::Bacon2(wdir = WDIR, entity = "X", cpus = 8, verbose = FALSE) %>%
   ageR::pb()
-
 
 
 run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
@@ -45,10 +46,10 @@ run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
                                    # "Pb",
                                    # "-777777",
                                    # "OSL",
-                                   # "Liquid Scintillation Counting",
-                                   # "Stratigraphic correlation",
-                                   # "Hiatus",
-                                   # "Annual laminations",
+                                   "Liquid Scintillation Counting",
+                                   "Stratigraphic correlation",
+                                   "Hiatus",
+                                   "Annual laminations",
                                    # "Archaeological dating",
                                    # "TL",
                                    # "-999999",
@@ -106,15 +107,20 @@ run_bacon_RPD <- function(entity_name, wdir = getwd(), ...) {
 
 # Test cases ----
 ## Aguas Frias ----
-run_bacon_RPD("Aguas Frias", wdir = WDIR, dry_run = F, cpus = 2, thick = c(5,6)) %>%
+aguas_frias <-
+  run_bacon_RPD("Aguas Frias", wdir = WDIR, dry_run = F, cpus = 2) %>%
   ageR::pb()
 
 ## Bermu mire ----
-run_bacon_RPD("Bermu Mire core_large", wdir = WDIR, dry_run = F, cpus = 4) %>%
+run_bacon_RPD("Bermu Mire core_large", wdir = WDIR, dry_run = T, cpus = 4) %>%
   ageR::pb()
 
-## El Brezosa core_macro ---
-run_bacon_RPD("El Brezosa core_macro", wdir = WDIR, dry_run = F, cpus = 4, acc = c(5, 10, 20)) %>%
+## ELA-320 Lake core_area ----
+run_bacon_RPD("ELA-320 Lake core_area", wdir = WDIR, dry_run = F, cpus = 8) %>%#, acc = c(5, 10, 20)) %>%
+  ageR::pb()
+
+ ## El Brezosa core_macro ---
+run_bacon_RPD("El Brezosa core_macro", wdir = WDIR, dry_run = T, cpus = 4) %>%#, acc = c(5, 10, 20)) %>%
   ageR::pb()
 
 # bacon_plots <- purrr::map(out, ~.x$BACON)
