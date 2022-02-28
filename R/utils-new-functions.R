@@ -20,6 +20,8 @@ Bacon2 <- function(wdir,
                    restart = FALSE,
                    max_scenarios = 100,
                    ...) {
+  # Local bindings
+  acc.mean <- n <- NULL
   tictoc::tic(entity)
   wdir <- absolute_path(wdir)
   msg("Checking input files", quiet)
