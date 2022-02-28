@@ -466,7 +466,7 @@ Bacon <- function(wdir,
 #'
 #' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 #'
-#' @importFrom grDevices dev.off pdf
+#' @importFrom grDevices dev.off pdf dev.control recordPlot
 #' @importFrom graphics abline arrows lines matplot points
 #' @importFrom stats lm
 #' @importFrom utils read.csv read.table write.csv write.table
