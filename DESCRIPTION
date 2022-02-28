@@ -44,6 +44,7 @@ Imports:
     plyr,
     progress,
     progressr,
+    purrr,
     rbacon (>= 2.5.7),
     readr,
     RColorBrewer,
