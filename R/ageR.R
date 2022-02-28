@@ -103,7 +103,7 @@ Bacon <- function(wdir,
   msg("Setting up environment", quiet)
   if (is.null(acc)) {
     accMean <- sapply(c(1, 2, 5), function(x) x * 10^(-1:2))
-    ballpacc <- lm(core[, 2] ~ core[, 4])$coefficients[2]
+    ballpacc <- lm(core[, 2] * 1.1 ~ core[, 4])$coefficients[2]
     ballpacc <- abs(accMean - ballpacc)
     ballpacc <- ballpacc[ballpacc > 0]
     accMean <- sce_seq(accMean[order(ballpacc)[1]],
@@ -126,32 +126,6 @@ Bacon <- function(wdir,
       thickness <- max(pretty(5 * (k/20)))
     } else {
       thickness <- 5 # Default thickness
-    }
-
-    # Find optimal upper bound thickness by dividing the core in at least 8
-    find_max_thickness <- function(depths) {
-      max_thickness <- (ceiling(max(depths, na.rm = TRUE)) -
-                          floor(min(depths, na.rm = TRUE)) + 1) / 8
-      thick_upper_mul5 <- trunc(max_thickness / 5)
-      if (thick_upper_mul5 > 0) {
-        thick_upper <- thick_upper_mul5 * 5
-      } else {
-        thick_upper <- ceiling(max_thickness)
-      }
-      return(thick_upper)
-    }
-
-
-    # Check that thickness maximum upper bound is not more than 1/8 of the
-    # core's length
-    max_thick_upper <- find_max_thickness(depths_eval)
-    if (missing(thick_upper)) {
-      thick_upper <- max_thick_upper
-    } else {
-      if (thick_upper > max_thick_upper)
-        warning("You have set the upper bound for thickness, `thick_upper`, ",
-                "over the recommended threshold, ", max_thick_upper, "!",
-                call. = FALSE, immediate. = TRUE)
     }
 
     # Create range of thickness for alternative scenarios
