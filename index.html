@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,25 +34,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ageR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.900</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/special-uor/ageR/">
+  <a href="https://github.com/special-uor/ageR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -67,59 +63,53 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="ager-supervised-age-modelling" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#ager-supervised-age-modelling" class="anchor"></a>ageR: Supervised Age Modelling</h1></div>
-<!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> -->
-<!-- badges: start -->
-
+<div class="section level1">
+<div class="page-header"><h1 id="ager-supervised-age-modelling">ageR: Supervised Age Modelling<a class="anchor" aria-label="anchor" href="#ager-supervised-age-modelling"></a>
+</h1></div>
+<!-- <img src="inst/images/logo.png" alt="logo" align="right" height=200px/> --><!-- badges: start -->
 <p>The goal of ageR is to provide functions that facilitate the creation of age models using different data sources, including databases, comma and tab separated files.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<!-- You can install the released version of ageR from [CRAN](https://CRAN.R-project.org) with: -->
-<!-- ``` r -->
-<!-- install.packages("ageR") -->
-<!-- ``` -->
-<p>You can install the development version from <a href="https://github.com/special-uor/ageR">GitHub</a> with:</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<!-- You can install the released version of ageR from [CRAN](https://CRAN.R-project.org) with: --><!-- ``` r --><!-- install.packages("ageR") --><!-- ``` --><p>You can install the development version from <a href="https://github.com/special-uor/ageR" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"special-uor/ageR"</span>, <span class="st">"dev"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"special-uor/ageR"</span>, <span class="st">"dev"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h2>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
 <p><span class="emoji" data-emoji="warning">⚠️</span> <strong>Users of Windows:</strong> <code><a href="reference/Bacon.html">ageR::Bacon</a></code> creates symbolic links (think of them as shortcuts), you should run RStudio in “Administrator mode” to avoid error messages.</p>
-<div id="bacon-model" class="section level3">
-<h3 class="hasAnchor">
-<a href="#bacon-model" class="anchor"></a>Bacon model</h3>
-<div id="input-structure" class="section level4">
-<h4 class="hasAnchor">
-<a href="#input-structure" class="anchor"></a>Input structure</h4>
+<div class="section level3">
+<h3 id="bacon-model">Bacon model<a class="anchor" aria-label="anchor" href="#bacon-model"></a>
+</h3>
+<div class="section level4">
+<h4 id="input-structure">Input structure<a class="anchor" aria-label="anchor" href="#input-structure"></a>
+</h4>
 <p>For an entity X, the input structure should look like</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/file_structure.html">file_structure</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="st">"X"</span>, am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span>
-<span class="co">#&gt;                      levelName</span>
-<span class="co">#&gt; 1 X                           </span>
-<span class="co">#&gt; 2  ¦--Bacon_runs              </span>
-<span class="co">#&gt; 3  ¦   °--X                   </span>
-<span class="co">#&gt; 4  ¦       ¦--X_depths.txt    </span>
-<span class="co">#&gt; 5  ¦       ¦--X_sample_ids.csv</span>
-<span class="co">#&gt; 6  ¦       °--X.csv           </span>
-<span class="co">#&gt; 7  ¦--hiatus.csv              </span>
-<span class="co">#&gt; 8  °--not_used_dates.csv</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/file_structure.html">file_structure</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="st">"X"</span>, am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                      levelName</span></span>
+<span><span class="co">#&gt; 1 X                           </span></span>
+<span><span class="co">#&gt; 2  ¦--Bacon_runs              </span></span>
+<span><span class="co">#&gt; 3  ¦   °--X                   </span></span>
+<span><span class="co">#&gt; 4  ¦       ¦--X_depths.txt    </span></span>
+<span><span class="co">#&gt; 5  ¦       ¦--X_sample_ids.csv</span></span>
+<span><span class="co">#&gt; 6  ¦       °--X.csv           </span></span>
+<span><span class="co">#&gt; 7  ¦--hiatus.csv              </span></span>
+<span><span class="co">#&gt; 8  °--not_used_dates.csv</span></span></code></pre></div>
 <p>The function <code><a href="reference/create_input.html">ageR::create_input</a></code> can be used to automatically create the appropriate file structure (as shown previously).</p>
 </div>
-<div id="create-input-structure" class="section level4">
-<h4 class="hasAnchor">
-<a href="#create-input-structure" class="anchor"></a>Create input structure</h4>
-<ol>
+<div class="section level4">
+<h4 id="create-input-structure">Create input structure<a class="anchor" aria-label="anchor" href="#create-input-structure"></a>
+</h4>
+<ol style="list-style-type: decimal">
 <li>
 <p>Start by creating a data frame for the sampling depths, this should have two numeric columns called <code>id</code> and <code>depth</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sample_depths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,
-                            depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">500</span>, length.out <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sample_depths</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sample_depths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,</span>
+<span>                            depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">500</span>, length.out <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sample_depths</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -156,12 +146,12 @@
 <li>
 <p>Create a data frame with the core’s data, this should have at least four columns. The first column can be of character type and the remaining must be numeric. The column names should be <code>labID</code>, <code>age</code>, <code>error</code>, and <code>depth</code>. Optionally, a fifth column, <code>cc</code>, can be included to manually select the calibration curve for each observation.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
-                   age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,
-                   error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,
-                   depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,
-                   cc <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,</span>
+<span>                   error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,</span>
+<span>                   depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,</span>
+<span>                   cc <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">labID</th>
@@ -212,9 +202,9 @@
 <li>
 <p>(Optional) Create a data frame with the hiatuses depths, this should have two numeric columns called <code>id</code> and <code>depth</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hiatus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
-                     depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">hiatus</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">hiatus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                     depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">hiatus</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -235,122 +225,122 @@
 <li>
 <p>Call the <code><a href="reference/create_input.html">ageR::create_input</a></code> function. The first parameter should be a list containing the previous data frames, which must be called <code>sample_depths</code>, <code>core</code>, and <code>hiatus</code> (if included). Next, a working directory (<code>wdir</code>), the entity’s name, and optionally the age model’s name (by default is Bacon).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/create_input.html">create_input</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sample_depths <span class="op">=</span> <span class="va">sample_depths</span>, 
-                               core <span class="op">=</span> <span class="va">core</span>,
-                               <span class="co"># Optional</span>
-                               hiatus <span class="op">=</span> <span class="va">hiatus</span><span class="op">)</span>, 
-                   wdir <span class="op">=</span> <span class="st">"./"</span>, 
-                   entity <span class="op">=</span> <span class="st">"X"</span>,
-                   am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/create_input.html">create_input</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample_depths <span class="op">=</span> <span class="va">sample_depths</span>, </span>
+<span>                               core <span class="op">=</span> <span class="va">core</span>,</span>
+<span>                               <span class="co"># Optional</span></span>
+<span>                               hiatus <span class="op">=</span> <span class="va">hiatus</span><span class="op">)</span>, </span>
+<span>                   wdir <span class="op">=</span> <span class="st">"./"</span>, </span>
+<span>                   entity <span class="op">=</span> <span class="st">"X"</span>,</span>
+<span>                   am <span class="op">=</span> <span class="st">"bacon"</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol>
 </div>
-<div id="run-bacon" class="section level4">
-<h4 class="hasAnchor">
-<a href="#run-bacon" class="anchor"></a>Run Bacon</h4>
+<div class="section level4">
+<h4 id="run-bacon">Run Bacon<a class="anchor" aria-label="anchor" href="#run-bacon"></a>
+</h4>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, 
-            entity <span class="op">=</span> <span class="st">"X"</span>, 
-            <span class="co"># Optional parameters</span>
-            cpus <span class="op">=</span> <span class="fl">1</span>,
-            postbomb <span class="op">=</span> <span class="fl">0</span>,
-            cc <span class="op">=</span> <span class="fl">0</span>,
-            seed <span class="op">=</span> <span class="cn">NA</span>,
-            alt_depths <span class="op">=</span> <span class="cn">NULL</span>,
-            quiet <span class="op">=</span> <span class="cn">FALSE</span>,
-            acc_step <span class="op">=</span> <span class="fl">5</span>,
-            acc_lower <span class="op">=</span> <span class="cn">NULL</span>,
-            acc_upper <span class="op">=</span> <span class="cn">NULL</span>,
-            thick_step <span class="op">=</span> <span class="fl">5</span>,
-            thick_lower <span class="op">=</span> <span class="cn">NULL</span>,
-            thick_upper <span class="op">=</span> <span class="cn">NULL</span>,
-            dry_run <span class="op">=</span> <span class="cn">FALSE</span>,
-            <span class="va">...</span><span class="op">)</span></code></pre></div>
-<div id="dry-run" class="section level5">
-<h5 class="hasAnchor">
-<a href="#dry-run" class="anchor"></a>Dry-run</h5>
+<code class="sourceCode R"><span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, </span>
+<span>            entity <span class="op">=</span> <span class="st">"X"</span>, </span>
+<span>            <span class="co"># Optional parameters</span></span>
+<span>            cpus <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>            postbomb <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>            cc <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>            seed <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>            alt_depths <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>            quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>            acc_step <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>            acc_lower <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>            acc_upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>            thick_step <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>            thick_lower <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>            thick_upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>            dry_run <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>            <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<div class="section level5">
+<h5 id="dry-run">Dry-run<a class="anchor" aria-label="anchor" href="#dry-run"></a>
+</h5>
 <p>Dry-runs are useful to check how many scenarios will be generated with the current configuration:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; The following scenarios will be executed:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; | Accumulation rate| Thickness|</span>
-<span class="co">#&gt; |-----------------:|---------:|</span>
-<span class="co">#&gt; |                 5|        10|</span>
-<span class="co">#&gt; |                10|        10|</span>
-<span class="co">#&gt; |                20|        10|</span>
-<span class="co">#&gt; |                 5|        15|</span>
-<span class="co">#&gt; |                10|        15|</span>
-<span class="co">#&gt; |                20|        15|</span>
-<span class="co">#&gt; |                 5|        20|</span>
-<span class="co">#&gt; |                10|        20|</span>
-<span class="co">#&gt; |                20|        20|</span>
-<span class="co">#&gt; |                 5|        30|</span>
-<span class="co">#&gt; |                10|        30|</span>
-<span class="co">#&gt; |                20|        30|</span>
-<span class="co">#&gt; |                 5|        40|</span>
-<span class="co">#&gt; |                10|        40|</span>
-<span class="co">#&gt; |                20|        40|</span>
-<span class="co">#&gt; A total of 15 scenarios.</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The following scenarios will be executed:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; | Accumulation rate| Thickness|</span></span>
+<span><span class="co">#&gt; |-----------------:|---------:|</span></span>
+<span><span class="co">#&gt; |                 5|        10|</span></span>
+<span><span class="co">#&gt; |                10|        10|</span></span>
+<span><span class="co">#&gt; |                20|        10|</span></span>
+<span><span class="co">#&gt; |                 5|        15|</span></span>
+<span><span class="co">#&gt; |                10|        15|</span></span>
+<span><span class="co">#&gt; |                20|        15|</span></span>
+<span><span class="co">#&gt; |                 5|        20|</span></span>
+<span><span class="co">#&gt; |                10|        20|</span></span>
+<span><span class="co">#&gt; |                20|        20|</span></span>
+<span><span class="co">#&gt; |                 5|        30|</span></span>
+<span><span class="co">#&gt; |                10|        30|</span></span>
+<span><span class="co">#&gt; |                20|        30|</span></span>
+<span><span class="co">#&gt; |                 5|        40|</span></span>
+<span><span class="co">#&gt; |                10|        40|</span></span>
+<span><span class="co">#&gt; |                20|        40|</span></span>
+<span><span class="co">#&gt; A total of 15 scenarios.</span></span></code></pre></div>
 </div>
-<div id="change-upper-and-lower-bounds" class="section level5">
-<h5 class="hasAnchor">
-<a href="#change-upper-and-lower-bounds" class="anchor"></a>Change upper and lower bounds</h5>
+<div class="section level5">
+<h5 id="change-upper-and-lower-bounds">Change upper and lower bounds<a class="anchor" aria-label="anchor" href="#change-upper-and-lower-bounds"></a>
+</h5>
 <p>Based on a dry-run, we might want to constraint our execution to a smaller set of scenarios. This can be done for both accumulation rate and core segment thickness.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, acc_lower <span class="op">=</span> <span class="fl">10</span>, acc_upper <span class="op">=</span> <span class="fl">20</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; The following scenarios will be executed:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; | Accumulation rate| Thickness|</span>
-<span class="co">#&gt; |-----------------:|---------:|</span>
-<span class="co">#&gt; |                10|        10|</span>
-<span class="co">#&gt; |                20|        10|</span>
-<span class="co">#&gt; |                10|        15|</span>
-<span class="co">#&gt; |                20|        15|</span>
-<span class="co">#&gt; |                10|        20|</span>
-<span class="co">#&gt; |                20|        20|</span>
-<span class="co">#&gt; |                10|        30|</span>
-<span class="co">#&gt; |                20|        30|</span>
-<span class="co">#&gt; |                10|        40|</span>
-<span class="co">#&gt; |                20|        40|</span>
-<span class="co">#&gt; A total of 10 scenarios.</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, acc_lower <span class="op">=</span> <span class="fl">10</span>, acc_upper <span class="op">=</span> <span class="fl">20</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The following scenarios will be executed:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; | Accumulation rate| Thickness|</span></span>
+<span><span class="co">#&gt; |-----------------:|---------:|</span></span>
+<span><span class="co">#&gt; |                10|        10|</span></span>
+<span><span class="co">#&gt; |                20|        10|</span></span>
+<span><span class="co">#&gt; |                10|        15|</span></span>
+<span><span class="co">#&gt; |                20|        15|</span></span>
+<span><span class="co">#&gt; |                10|        20|</span></span>
+<span><span class="co">#&gt; |                20|        20|</span></span>
+<span><span class="co">#&gt; |                10|        30|</span></span>
+<span><span class="co">#&gt; |                20|        30|</span></span>
+<span><span class="co">#&gt; |                10|        40|</span></span>
+<span><span class="co">#&gt; |                20|        40|</span></span>
+<span><span class="co">#&gt; A total of 10 scenarios.</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, thick_lower <span class="op">=</span> <span class="fl">10</span>, thick_upper <span class="op">=</span> <span class="fl">30</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; The following scenarios will be executed:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; | Accumulation rate| Thickness|</span>
-<span class="co">#&gt; |-----------------:|---------:|</span>
-<span class="co">#&gt; |                 5|        10|</span>
-<span class="co">#&gt; |                10|        10|</span>
-<span class="co">#&gt; |                20|        10|</span>
-<span class="co">#&gt; |                 5|        15|</span>
-<span class="co">#&gt; |                10|        15|</span>
-<span class="co">#&gt; |                20|        15|</span>
-<span class="co">#&gt; |                 5|        20|</span>
-<span class="co">#&gt; |                10|        20|</span>
-<span class="co">#&gt; |                20|        20|</span>
-<span class="co">#&gt; |                 5|        30|</span>
-<span class="co">#&gt; |                10|        30|</span>
-<span class="co">#&gt; |                20|        30|</span>
-<span class="co">#&gt; A total of 12 scenarios.</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, thick_lower <span class="op">=</span> <span class="fl">10</span>, thick_upper <span class="op">=</span> <span class="fl">30</span>, dry_run <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The following scenarios will be executed:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; | Accumulation rate| Thickness|</span></span>
+<span><span class="co">#&gt; |-----------------:|---------:|</span></span>
+<span><span class="co">#&gt; |                 5|        10|</span></span>
+<span><span class="co">#&gt; |                10|        10|</span></span>
+<span><span class="co">#&gt; |                20|        10|</span></span>
+<span><span class="co">#&gt; |                 5|        15|</span></span>
+<span><span class="co">#&gt; |                10|        15|</span></span>
+<span><span class="co">#&gt; |                20|        15|</span></span>
+<span><span class="co">#&gt; |                 5|        20|</span></span>
+<span><span class="co">#&gt; |                10|        20|</span></span>
+<span><span class="co">#&gt; |                20|        20|</span></span>
+<span><span class="co">#&gt; |                 5|        30|</span></span>
+<span><span class="co">#&gt; |                10|        30|</span></span>
+<span><span class="co">#&gt; |                20|        30|</span></span>
+<span><span class="co">#&gt; A total of 12 scenarios.</span></span></code></pre></div>
 </div>
-<div id="use-mixed-calibration-curves" class="section level5">
-<h5 class="hasAnchor">
-<a href="#use-mixed-calibration-curves" class="anchor"></a>Use mixed calibration curves</h5>
+<div class="section level5">
+<h5 id="use-mixed-calibration-curves">Use mixed calibration curves<a class="anchor" aria-label="anchor" href="#use-mixed-calibration-curves"></a>
+</h5>
 <p>This is particular useful for “neo-tropical” sites. It involves three steps:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>
 <p>Assign <code>cc = 4</code> to the <code>core</code> data:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,
-                   age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,
-                   error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,
-                   depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,
-                   cc <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">core</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>labID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%03d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">1150</span>, <span class="fl">2060</span>, <span class="fl">4050</span><span class="op">)</span>,</span>
+<span>                   error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">15</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">70</span><span class="op">)</span>,</span>
+<span>                   depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span>, <span class="fl">230</span>, <span class="fl">300</span>, <span class="fl">450</span><span class="op">)</span>,</span>
+<span>                   cc <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">core</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">labID</th>
@@ -401,264 +391,264 @@
 <li>
 <p>Create a mixed calibration curve with <code><a href="reference/mix_curves.html">ageR::mix_curves</a></code>. The following example uses a 50/50 mix between <code>IntCal20</code> (<code>cc1 = 1</code>) and <code>SHCal20</code> (<code>cc2 = 3</code>).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ccdir</span> <span class="op">&lt;-</span> <span class="st">"./ccurves"</span>
-<span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/mix_curves.html">mix_curves</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="fl">0.5</span>, cc1 <span class="op">=</span> <span class="fl">1</span>, cc <span class="op">=</span> <span class="fl">3</span>, name <span class="op">=</span> <span class="st">"neotropics.14C"</span>, dirname <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                         Mixed curved: 50/50 created.                         |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ccdir</span> <span class="op">&lt;-</span> <span class="st">"./ccurves"</span></span>
+<span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/mix_curves.html">mix_curves</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="fl">0.5</span>, cc1 <span class="op">=</span> <span class="fl">1</span>, cc <span class="op">=</span> <span class="fl">3</span>, name <span class="op">=</span> <span class="st">"neotropics.14C"</span>, dirname <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                         Mixed curved: 50/50 created.                         |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
 </li>
 <li>
 <p>Add two new parameters to the <code><a href="reference/Bacon.html">ageR::Bacon</a></code> call:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cc4 <span class="op">=</span> <span class="st">"neotropics.14C"</span>, ccdir <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cc4 <span class="op">=</span> <span class="st">"neotropics.14C"</span>, ccdir <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol>
 </div>
-<div id="display-progress-bar" class="section level5">
-<h5 class="hasAnchor">
-<a href="#display-progress-bar" class="anchor"></a>Display progress bar</h5>
+<div class="section level5">
+<h5 id="display-progress-bar">Display progress bar<a class="anchor" aria-label="anchor" href="#display-progress-bar"></a>
+</h5>
 <p>A progress bar can be displayed for long computations. Just “pipe” the function call to <code><a href="reference/pb.html">ageR::pb()</a></code>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">`%&gt;%`</span> <span class="op">&lt;-</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span>
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">`%&gt;%`</span> <span class="op">&lt;-</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, if you are not familiar with the “pipe” operator, you can run the following code:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="run-example" class="section level5">
-<h5 class="hasAnchor">
-<a href="#run-example" class="anchor"></a>Run example</h5>
+<div class="section level5">
+<h5 id="run-example">Run example<a class="anchor" aria-label="anchor" href="#run-example"></a>
+</h5>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">`%&gt;%`</span> <span class="op">&lt;-</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span>
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                             Checking input files                             |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                             Loading input files                              |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                            Setting up environment                            |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Running Bacon                                 |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S001-AR005-T10                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 396 yr, min. 119 yr at 25.2525252525253 cm, max. 822 yr at 489.89898989899 cm</span>
-<span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S002-AR010-T10                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 506 yr, min. 107 yr at 5.05050505050505 cm, max. 1065 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S003-AR020-T10                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 527 yr, min. 118 yr between 0 and 5.05050505050505 cm, max. 1578 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S004-AR005-T15                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 571 yr, min. 114 yr at 5.05050505050505 cm, max. 1441 yr at 500 cm</span>
-<span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S005-AR010-T15                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 550 yr, min. 117 yr at 10.1010101010101 cm, max. 1202 yr at 373.737373737374 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S006-AR020-T15                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 583 yr, min. 123 yr at 10.1010101010101 cm, max. 1791 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S007-AR005-T20                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 759 yr, min. 117 yr at 5.05050505050505 cm, max. 2038 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S008-AR010-T20                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 585 yr, min. 113 yr at 10.1010101010101 cm, max. 1347 yr at 358.585858585859 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S009-AR020-T20                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 618 yr, min. 99 yr at 10.1010101010101 cm, max. 2026 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S010-AR005-T30                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 742 yr, min. 104 yr at 5.05050505050505 cm, max. 1742 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S011-AR010-T30                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 641 yr, min. 109 yr at 5.05050505050505 cm, max. 1600 yr at 388.888888888889 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S012-AR020-T30                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 707 yr, min. 111 yr at 5.05050505050505 cm, max. 2292 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S013-AR005-T40                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 647 yr, min. 141 yr at 95.959595959596 cm, max. 1610 yr at 398.989898989899 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S014-AR010-T40                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 617 yr, min. 102 yr at 5.05050505050505 cm, max. 1584 yr at 358.585858585859 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                S015-AR020-T40                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt;   Boundary set at depth(s) NA</span>
-<span class="co">#&gt; Calculating age ranges...</span>
-<span class="co">#&gt; Preparing ghost graph...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Mean 95% confidence ranges 674 yr, min. 106 yr between 5.05050505050505 and 10.1010101010101 cm, max. 2198 yr at 500 cm</span>
-<span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                Saving results                                |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                   Bacon QC                                   |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |             Best scenario: Acc. Rate = 10yr/cm - Thickness: 10cm             |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                            Plot Accumulation Rate                            |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                  Plot Accumulation Rate: Posterior vs Prior                  |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                          Plot Log Posterior (MCMC)                           |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; |                                     Bye!                                     |</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------</span>
-<span class="co">#&gt; X: 111.495 sec elapsed</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">`%&gt;%`</span> <span class="op">&lt;-</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/Bacon.html">Bacon</a></span><span class="op">(</span>wdir <span class="op">=</span> <span class="st">"./"</span>, entity <span class="op">=</span> <span class="st">"X"</span>, cpus <span class="op">=</span> <span class="fl">8</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/pb.html">pb</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                             Checking input files                             |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                             Loading input files                              |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                            Setting up environment                            |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Running Bacon                                 |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S001-AR005-T10                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 396 yr, min. 119 yr at 25.2525252525253 cm, max. 822 yr at 489.89898989899 cm</span></span>
+<span><span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S002-AR010-T10                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 506 yr, min. 107 yr at 5.05050505050505 cm, max. 1065 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S003-AR020-T10                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 527 yr, min. 118 yr between 0 and 5.05050505050505 cm, max. 1578 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S004-AR005-T15                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 571 yr, min. 114 yr at 5.05050505050505 cm, max. 1441 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S005-AR010-T15                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 550 yr, min. 117 yr at 10.1010101010101 cm, max. 1202 yr at 373.737373737374 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S006-AR020-T15                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 583 yr, min. 123 yr at 10.1010101010101 cm, max. 1791 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S007-AR005-T20                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 759 yr, min. 117 yr at 5.05050505050505 cm, max. 2038 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S008-AR010-T20                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 585 yr, min. 113 yr at 10.1010101010101 cm, max. 1347 yr at 358.585858585859 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S009-AR020-T20                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 618 yr, min. 99 yr at 10.1010101010101 cm, max. 2026 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S010-AR005-T30                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 742 yr, min. 104 yr at 5.05050505050505 cm, max. 1742 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S011-AR010-T30                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 641 yr, min. 109 yr at 5.05050505050505 cm, max. 1600 yr at 388.888888888889 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S012-AR020-T30                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 707 yr, min. 111 yr at 5.05050505050505 cm, max. 2292 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S013-AR005-T40                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 647 yr, min. 141 yr at 95.959595959596 cm, max. 1610 yr at 398.989898989899 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S014-AR010-T40                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 617 yr, min. 102 yr at 5.05050505050505 cm, max. 1584 yr at 358.585858585859 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                S015-AR020-T40                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; Preparing ghost graph...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 674 yr, min. 106 yr between 5.05050505050505 and 10.1010101010101 cm, max. 2198 yr at 500 cm</span></span>
+<span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                Saving results                                |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                   Bacon QC                                   |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |             Best scenario: Acc. Rate = 10yr/cm - Thickness: 10cm             |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                            Plot Accumulation Rate                            |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                  Plot Accumulation Rate: Posterior vs Prior                  |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                          Plot Log Posterior (MCMC)                           |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; |                                     Bye!                                     |</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; X: 111.495 sec elapsed</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -775,12 +765,14 @@
 </tr>
 </tbody>
 </table>
-<div id="log-of-posterior-mcmc" class="section level6">
-<h6>Log of posterior (MCMC)</h6>
+<div class="section level6">
+<h6 id="log-of-posterior-mcmc">Log of posterior (MCMC)<a class="anchor" aria-label="anchor" href="#log-of-posterior-mcmc"></a>
+</h6>
 <p><img src="reference/figures/README-bacon-run-log-posterior-1.png" width="100%"></p>
 </div>
-<div id="accumulation-rate-posterior-vs-prior" class="section level6">
-<h6>Accumulation Rate: Posterior vs Prior</h6>
+<div class="section level6">
+<h6 id="accumulation-rate-posterior-vs-prior">Accumulation Rate: Posterior vs Prior<a class="anchor" aria-label="anchor" href="#accumulation-rate-posterior-vs-prior"></a>
+</h6>
 <p><img src="reference/figures/README-bacon-run-acc-rate-1.png" width="100%"></p>
 </div>
 </div>
@@ -792,55 +784,60 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/special-uor/ageR/">https://​github.com/​special-uor/​ageR/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/special-uor/ageR/issues/">https://​github.com/​special-uor/​ageR/​issues/​</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></small></li>
-</ul>
-</div>
-<div class="citation">
-<h2>Citation</h2>
-<ul class="list-unstyled">
-<li><a href="authors.html">Citing ageR</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Roberto Villegas-Diaz <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5036-8661" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Esmeralda Cruz-Silva <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2906-9290" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="https://github.com/special-uor/ageR/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/special-uor/ageR/issues/" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/special-uor/ageR"><img src="https://img.shields.io/badge/devel%20version-0.1.0.900-yellow.svg"></a></li>
-<li><a href="https://github.com/special-uor/ageR/actions"><img src="https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://doi.org/10.5281/zenodo.4636715"><img src="https://img.shields.io/badge/doi-10.5281/zenodo.4636715-black.svg"></a></li>
-<li><a href="https://cran.r-project.org/package=ageR"><img src="https://www.r-pkg.org/badges/version/ageR?color=red"></a></li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></small></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing ageR</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Roberto Villegas-Diaz <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5036-8661" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Esmeralda Cruz-Silva <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2906-9290" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/special-uor/ageR" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.1.0.900-yellow.svg"></a></li>
+<li><a href="https://github.com/special-uor/ageR/actions" class="external-link"><img src="https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.4636715" class="external-link"><img src="https://img.shields.io/badge/doi-10.5281/zenodo.4636715-black.svg"></a></li>
+<li><a href="https://cran.r-project.org/package=ageR" class="external-link"><img src="https://www.r-pkg.org/badges/version/ageR?color=red"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Roberto Villegas-Diaz, Esmeralda Cruz-Silva.</p>
+  <p></p>
+<p>Developed by Roberto Villegas-Diaz, Esmeralda Cruz-Silva.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -848,6 +845,8 @@
 
   
 
+
+  
 
   </body>
 </html>
