@@ -9,7 +9,7 @@ mix_curves(
   cc1 = 1,
   cc2 = 2,
   name = "mixed.14C",
-  dirname = file.path(getwd(), "ccurves"),
+  dir = file.path(getwd(), "ccurves"),
   quiet = FALSE
 )
 }
@@ -22,8 +22,7 @@ mix_curves(
 
 \item{name}{Name of the new calibration curve.}
 
-\item{dirname}{Directory where the file will be written. If using the default \code{dirname="."},
-the new curve will be saved in current working directory.}
+\item{dir}{Name of the directory where to save the file. Since R does not allow automatic saving of files, this points to a temporary directory by default. Adapt to your own folder, e.g., \code{dir="~/Curves"} or in your current working directory, \code{dir="."}.}
 
 \item{quiet}{Boolean to hide status messages.}
 }

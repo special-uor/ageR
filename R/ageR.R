@@ -75,6 +75,8 @@ Bacon <- function(wdir,
                   restart = FALSE,
                   max_scenarios = 100,
                   ...) {
+  # Local bindings
+  acc.mean <- n <- NULL
   tictoc::tic(entity)
   wdir <- absolute_path(wdir)
   msg("Checking input files", quiet)
@@ -260,7 +262,8 @@ Bacon <- function(wdir,
                 call. = FALSE)
     }
     # Bacon log
-    bacon_log <- file(paste0(coredir, ".log"), open = "wt")
+    bacon_log <- file(file.path(wdir, paste0(entity, "_", coredir, ".log")),
+                      open = "wt")
     capture.output({
     # sink(file = paste0(coredir, ".log"))
     # sink(file = bacon_log, type = "output")
@@ -308,8 +311,9 @@ Bacon <- function(wdir,
                           thickness))
 
   # Create PDF with all the plots (age-depth)
+  alt_plots <- purrr::map(out, ~.x$ALT)
   ggplot2::ggsave(filename = paste0(prefix, ".pdf"),
-                  plot = plot_grid(out,
+                  plot = plot_grid(alt_plots,
                                    scenarios,
                                    cond_x = "Acc. Rate",
                                    cond_y = "Thickness",
@@ -318,6 +322,25 @@ Bacon <- function(wdir,
                                    top = entity,
                                    left = "cal Age [yrs BP]",
                                    bottom = "Depth [mm]"),
+                  device = "pdf",
+                  path = wdir,
+                  width = 7 * length(accMean),
+                  height = 5 * length(thickness),
+                  limitsize = FALSE)
+
+  bacon_plots <- purrr::map(out, ~.x$BACON)
+  bacon_plots_labels <- scenarios %>%
+    dplyr::mutate(n = seq_along(acc.mean),
+                  label = sprintf("S%03d-AR%03d-T%d", n, acc.mean, thick)) %>%
+    .$label
+  bacon_plots_all <- cowplot::plot_grid(plotlist = bacon_plots,
+                                        nrow = length(thickness),
+                                        labels = bacon_plots_labels,
+                                        label_size = 11,
+                                        label_x = 0, label_y = 1,
+                                        hjust = -0.1, vjust = 1.2)
+  ggplot2::ggsave(filename = paste0(prefix, "_bacon.pdf"),
+                  plot = bacon_plots_all,
                   device = "pdf",
                   path = wdir,
                   width = 7 * length(accMean),
@@ -352,6 +375,7 @@ Bacon <- function(wdir,
     logs[[i]] <- tmp$log
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
+    abc_chrono_ages[[i]] <- tmp$abc_chrono_ages
   }
   if (!quiet)
     cat("\n")
@@ -364,10 +388,15 @@ Bacon <- function(wdir,
 
   if (!quiet)
     msg(paste0("Best scenario: Acc. Rate = ",
-               df_stats[idx, 1][1],
+               df_stats[idx, ]$acc[1],
                "yr/cm - Thickness: ",
-               df_stats[idx, 2][1],
+               df_stats[idx, ]$thick[1],
                "cm"))
+    # msg(paste0("Best scenario: Acc. Rate = ",
+    #            df_stats[idx, 1][1],
+    #            "yr/cm - Thickness: ",
+    #            df_stats[idx, 2][1],
+    #            "cm"))
 
   # Create PDF with all the plots
   ## Accumulation Rate
@@ -439,7 +468,7 @@ Bacon <- function(wdir,
 #'
 #' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
 #'
-#' @importFrom grDevices dev.off pdf
+#' @importFrom grDevices dev.off pdf dev.control recordPlot
 #' @importFrom graphics abline arrows lines matplot points
 #' @importFrom stats lm
 #' @importFrom utils read.csv read.table write.csv write.table
@@ -519,9 +548,8 @@ run_bacon <- function(wdir,
   if (!is.null(hiatuses) && nrow(hiatuses) > 0)
     hiatus.depths <- hiatuses[, 2]
   tryCatch({
-    pdf(file.path(path, paste0(entity, ".pdf")),
-        width = 8,
-        height = 6)
+    pdf(NULL)
+    dev.control(displaylist = "enable")
     rbacon::Bacon(core = entity,
                   thick = thick,
                   coredir = file.path(wdir, entity, coredir),
@@ -538,7 +566,16 @@ run_bacon <- function(wdir,
                   th0 = th0,
                   plot.pdf = FALSE,
                   ...)
-    dev.off()
+    bacon_depth_ages_plot <- recordPlot()
+    invisible(dev.off())
+    ggplot2::ggsave(filename = paste0(entity, ".pdf"),
+                    plot = cowplot::plot_grid(bacon_depth_ages_plot,
+                                              labels = NULL),
+                    device = "pdf",
+                    path = path,
+                    width = 8,
+                    height = 6,
+                    limitsize = FALSE)
     sym_link(from = file.path(path, paste0(entity, ".pdf")),
              to = file.path(wdir,
                             entity,
@@ -690,7 +727,8 @@ run_bacon <- function(wdir,
   done(path, entity)
   if (!is.null(p)) # Signal progress
     p()
-  return(alt_plot)
+  return(list(ALT = alt_plot,
+              BACON = bacon_depth_ages_plot))
 }
 
 #' Bacon quality control
@@ -742,13 +780,83 @@ bacon_qc <- function(wdir,
                       plot = FALSE)
   out_abc <- plot_abc(out_acc$data, plot = FALSE)
   out_log <- plot_log_post(mcmc[, ncol(mcmc)])#, 0.1)
+  abc_chrono_ages <- abc_chrono_ages(path)
   return(list(acc = out_acc$plot,
               abc = out_abc$plot,
+              abc_chrono_ages = abc_chrono_ages,
               log = out_log$plot,
               diff = out_abc$abc,
               bias = out_log$bias,
               bias_rel = out_log$bias_rel,
               mcmc = mcmc))
+}
+
+#' Area Between Curves: Chronology and dates
+#'
+#' Find the area between the chronology curved and the original dates.
+#'
+#' @param path String with path were the bacon outputs are located.
+#' @param sample_size Integer with the number of samples to use to find the area
+#' between the chronology and original dates curves.
+#' @param use_median Boolean flag to indicate which outputs of the chronology
+#' should be used, `use_median = TRUE` uses the `median`, otherwise use `mean`.
+#'
+#' @return Numeric value with the area between curves
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stats approxfun
+abc_chrono_ages <- function(path, sample_size = 1000, use_median = TRUE) {
+  files <- list.files(path, recursive = TRUE, full.names = TRUE)
+  csv_files <- stringr::str_subset(files, "\\.csv$")
+  suppressMessages({
+  bacon_chrono <- csv_files %>%
+    stringr::str_subset("bacon_chronology") %>%
+    purrr::map_df(~suppressMessages(readr::read_csv(.x)))
+  dates <- csv_files %>%
+    # stringr::str_subset("alt_age_depth_plot|bacon_chronology|calib_ages_core|_sample_ids", negate = TRUE) %>%
+    stringr::str_subset("alt_age_depth_plot", negate = TRUE) %>%
+    stringr::str_subset("bacon_chronology", negate = TRUE) %>%
+    stringr::str_subset("calib_ages_core", negate = TRUE) %>%
+    stringr::str_subset("_sample_ids", negate = TRUE) %>%
+    purrr::map_df(~suppressMessages(readr::read_csv(.x)))
+  })
+
+  fx1 <- NULL
+  if (use_median) {
+    fx1 <- list(
+      mid = approxfun(bacon_chrono$depths, bacon_chrono$median, na.rm = TRUE),
+      upper = approxfun(bacon_chrono$depths,
+                        bacon_chrono$median + bacon_chrono$uncert_5,
+                        na.rm = TRUE),
+      lower = approxfun(bacon_chrono$depths,
+                        bacon_chrono$median - bacon_chrono$uncert_95,
+                        na.rm = TRUE)
+    )
+  } else {
+    fx1 <- list(
+      mid = approxfun(bacon_chrono$depths, bacon_chrono$mean, na.rm = TRUE),
+      upper = approxfun(bacon_chrono$depths,
+                        bacon_chrono$mean + bacon_chrono$uncert_5,
+                        na.rm = TRUE),
+      lower = approxfun(bacon_chrono$depths,
+                        bacon_chrono$mean - bacon_chrono$uncert_95,
+                        na.rm = TRUE)
+    )
+  }
+  # plot(test, fx1$mid(test))
+  # lines(test, fx1$upper(test), col = "red")
+  # lines(test, fx1$lower(test), col = "blue")
+  # points(dates$depth, dates$age)
+  fx2 <- approxfun(dates$depth, dates$age, na.rm = TRUE)
+  range_depths <- range(c(bacon_chrono$depths, dates$depth))
+  test <- seq(from = min(range_depths),
+              to = max(range_depths),
+              length.out = sample_size)
+  abc_mid_curve <- sum(fx2(test) - fx1$mid(test), na.rm = TRUE)
+  abc_lower_curve <- sum(fx2(test) - fx1$lower(test), na.rm = TRUE)
+  abc_upper_curve <- sum(fx1$upper(test) - fx2(test), na.rm = TRUE)
+  sum(abc_mid_curve, abc_lower_curve, abc_upper_curve)
 }
 
 #' Gelman-Rubin test
@@ -780,7 +888,7 @@ gelman_test <- function(data, confidence = 0.975) {
 
 #' Create a mixed calibration curved
 #'
-#' @inheritParams IntCal::mix.curves
+#' @inheritParams IntCal::mix.ccurves
 #' @inheritParams Bacon
 #'
 #' @export
@@ -798,21 +906,22 @@ mix_curves <- function(proportion = 0.5,
                        cc1 = 1,
                        cc2 = 2,
                        name = "mixed.14C",
-                       dirname = file.path(getwd(), "ccurves"),
+                       dir = file.path(getwd(), "ccurves"),
                        quiet = FALSE) {
-  if (!dir.exists(dirname)) # Create output directory
-    dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
+  if (!dir.exists(dir)) # Create output directory
+    dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   # Extract the IntCal20 calibration curves from IntCal
-  cc1_df <- IntCal::copyCalibrationCurve(1)
-  cc2_df <- IntCal::copyCalibrationCurve(2)
-  cc3_df <- IntCal::copyCalibrationCurve(3)
+  cc1_df <- IntCal::ccurve(1)
+  cc2_df <- IntCal::ccurve(2)
+  cc3_df <- IntCal::ccurve(3)
 
   # Calibration curve names
   ccnames <- c("3Col_intcal20.14C",
                "3Col_marine20.14C",
                "3Col_shcal20.14C")
+  alt_names <- c("IntCal20", "Marine20", "ShCal20")
   # Calibration curve paths
-  ccpaths <- file.path(dirname, ccnames)
+  ccpaths <- file.path(dir, ccnames)
 
   # Delete old calibration curves
   idx <- unlist(lapply(ccpaths, file.exists))
@@ -824,11 +933,13 @@ mix_curves <- function(proportion = 0.5,
   write.table(cc3_df, ccpaths[3], row.names = FALSE, col.names = FALSE)
 
   # Create a mixed calibration curve
-  IntCal::mix.curves(proportion = proportion,
-                     cc1 = ccnames[cc1],
-                     cc2 = ccnames[cc2],
-                     name = name,
-                     dirname = dirname)
+  suppressMessages({
+    IntCal::mix.ccurves(proportion = proportion,
+                        cc1 = alt_names[cc1],
+                        cc2 = alt_names[cc2],
+                        name = name,
+                        dir = dir)
+  })
   if (!quiet)
     msg(paste0("Mixed curved: ",
                proportion * 100, "/", (1 - proportion) * 100,
