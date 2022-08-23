@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ageR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.900</span>
       </span>
     </div>
 
@@ -392,7 +392,7 @@
 <p>Create a mixed calibration curve with <code><a href="reference/mix_curves.html">ageR::mix_curves</a></code>. The following example uses a 50/50 mix between <code>IntCal20</code> (<code>cc1 = 1</code>) and <code>SHCal20</code> (<code>cc2 = 3</code>).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ccdir</span> <span class="op">&lt;-</span> <span class="st">"./ccurves"</span></span>
-<span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/mix_curves.html">mix_curves</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="fl">0.5</span>, cc1 <span class="op">=</span> <span class="fl">1</span>, cc <span class="op">=</span> <span class="fl">3</span>, name <span class="op">=</span> <span class="st">"neotropics.14C"</span>, dirname <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></span>
+<span><span class="fu">ageR</span><span class="fu">::</span><span class="fu"><a href="reference/mix_curves.html">mix_curves</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="fl">0.5</span>, cc1 <span class="op">=</span> <span class="fl">1</span>, cc <span class="op">=</span> <span class="fl">3</span>, name <span class="op">=</span> <span class="st">"neotropics.14C"</span>, dir <span class="op">=</span> <span class="va">ccdir</span><span class="op">)</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                         Mixed curved: 50/50 created.                         |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
@@ -438,11 +438,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S001-AR005-T10                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 10908000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 396 yr, min. 119 yr at 25.2525252525253 cm, max. 822 yr at 489.89898989899 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 412 yr, min. 111 yr at 15.1515151515152 cm, max. 907 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -451,11 +453,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S002-AR010-T10                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 10908000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 506 yr, min. 107 yr at 5.05050505050505 cm, max. 1065 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 515 yr, min. 130 yr at 0 cm, max. 1065 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -464,11 +468,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S003-AR020-T10                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 10908000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 527 yr, min. 118 yr between 0 and 5.05050505050505 cm, max. 1578 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 535 yr, min. 141 yr at 0 cm, max. 1534 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -477,11 +483,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S004-AR005-T15                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 7474000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 571 yr, min. 114 yr at 5.05050505050505 cm, max. 1441 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 578 yr, min. 110 yr at 10.1010101010101 cm, max. 1480 yr at 489.89898989899 cm</span></span>
 <span><span class="co">#&gt; 80% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -490,11 +498,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S005-AR010-T15                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 7474000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 550 yr, min. 117 yr at 10.1010101010101 cm, max. 1202 yr at 373.737373737374 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 564 yr, min. 138 yr at 10.1010101010101 cm, max. 1248 yr at 373.737373737374 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -503,11 +513,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S006-AR020-T15                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 7474000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 583 yr, min. 123 yr at 10.1010101010101 cm, max. 1791 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 600 yr, min. 129 yr at 5.05050505050505 cm, max. 1805 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -516,11 +528,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S007-AR005-T20                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 5858000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 759 yr, min. 117 yr at 5.05050505050505 cm, max. 2038 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 763 yr, min. 111 yr between 5.05050505050505 and 10.1010101010101 cm, max. 2049 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -529,11 +543,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S008-AR010-T20                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 5858000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 585 yr, min. 113 yr at 10.1010101010101 cm, max. 1347 yr at 358.585858585859 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 600 yr, min. 114 yr at 5.05050505050505 cm, max. 1378 yr at 378.787878787879 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -542,11 +558,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S009-AR020-T20                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 5858000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 618 yr, min. 99 yr at 10.1010101010101 cm, max. 2026 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 627 yr, min. 121 yr at 10.1010101010101 cm, max. 1968 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -555,11 +573,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S010-AR005-T30                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 4040000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 742 yr, min. 104 yr at 5.05050505050505 cm, max. 1742 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 761 yr, min. 101 yr at 5.05050505050505 cm, max. 1819 yr at 494.949494949495 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -568,11 +588,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S011-AR010-T30                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 4040000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 641 yr, min. 109 yr at 5.05050505050505 cm, max. 1600 yr at 388.888888888889 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 641 yr, min. 108 yr at 10.1010101010101 cm, max. 1601 yr at 388.888888888889 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -581,11 +603,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S012-AR020-T30                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 4040000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 707 yr, min. 111 yr at 5.05050505050505 cm, max. 2292 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 696 yr, min. 108 yr at 10.1010101010101 cm, max. 2356 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -594,11 +618,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S013-AR005-T40                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 3232000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 647 yr, min. 141 yr at 95.959595959596 cm, max. 1610 yr at 398.989898989899 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 653 yr, min. 105 yr at 5.05050505050505 cm, max. 1626 yr at 358.585858585859 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -607,11 +633,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S014-AR010-T40                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 3232000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 617 yr, min. 102 yr at 5.05050505050505 cm, max. 1584 yr at 358.585858585859 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 627 yr, min. 107 yr between 5.05050505050505 and 10.1010101010101 cm, max. 1615 yr at 398.989898989899 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -620,11 +648,13 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                                S015-AR020-T40                                |</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Boundary set at depth(s) NA</span></span>
+<span><span class="co">#&gt;   Boundary set at depth(s)  NA</span></span>
+<span><span class="co">#&gt;  Will run 3232000 iterations and store around 2019</span></span>
 <span><span class="co">#&gt; Calculating age ranges...</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preparing ghost graph...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Mean 95% confidence ranges 674 yr, min. 106 yr between 5.05050505050505 and 10.1010101010101 cm, max. 2198 yr at 500 cm</span></span>
+<span><span class="co">#&gt; Mean 95% confidence ranges 689 yr, min. 105 yr at 5.05050505050505 cm, max. 2357 yr at 500 cm</span></span>
 <span><span class="co">#&gt; 100% of the dates overlap with the age-depth model (95% ranges)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
@@ -638,17 +668,21 @@
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; |                            Plot Accumulation Rate                            |</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; |                  Plot Accumulation Rate: Posterior vs Prior                  |</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; |                          Plot Log Posterior (MCMC)                           |</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; |                                     Bye!                                     |</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; X: 111.495 sec elapsed</span></span></code></pre></div>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
+<p><img src="reference/figures/README-bacon-run-1.png" width="100%"></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="co">#&gt; |                  Plot Accumulation Rate: Posterior vs Prior                  |</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
+<p><img src="reference/figures/README-bacon-run-2.png" width="100%"></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="co">#&gt; |                          Plot Log Posterior (MCMC)                           |</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
+<p><img src="reference/figures/README-bacon-run-3.png" width="100%"></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co">#&gt; |                                     Bye!                                     |</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
+<p><img src="reference/figures/README-bacon-run-4.png" width="100%"></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co">#&gt; X: 138.776 sec elapsed</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -662,106 +696,106 @@
 <td align="left">2</td>
 <td align="right">10</td>
 <td align="right">10</td>
-<td align="right">0.9326852</td>
-<td align="left">9.11e-17</td>
+<td align="right">0.8834312</td>
+<td align="left">3.89e-17</td>
 </tr>
 <tr class="even">
 <td align="left">5</td>
 <td align="right">10</td>
 <td align="right">15</td>
-<td align="right">1.0126659</td>
-<td align="left">-1.98e-17</td>
+<td align="right">1.1360135</td>
+<td align="left">-1.23e-18</td>
 </tr>
 <tr class="odd">
 <td align="left">1</td>
 <td align="right">5</td>
 <td align="right">10</td>
-<td align="right">1.0860756</td>
-<td align="left">-2.39e-17</td>
+<td align="right">1.2462380</td>
+<td align="left">2.95e-17</td>
 </tr>
 <tr class="even">
 <td align="left">8</td>
 <td align="right">10</td>
 <td align="right">20</td>
-<td align="right">1.1218350</td>
-<td align="left">-2.72e-17</td>
+<td align="right">1.2506841</td>
+<td align="left">-1.72e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">14</td>
-<td align="right">10</td>
-<td align="right">40</td>
-<td align="right">1.2549433</td>
-<td align="left">5.62e-17</td>
-</tr>
-<tr class="even">
 <td align="left">11</td>
 <td align="right">10</td>
 <td align="right">30</td>
-<td align="right">1.2746580</td>
-<td align="left">3.61e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">4</td>
-<td align="right">5</td>
-<td align="right">15</td>
-<td align="right">1.5669064</td>
-<td align="left">6.89e-18</td>
+<td align="right">1.4717409</td>
+<td align="left">5.34e-17</td>
 </tr>
 <tr class="even">
-<td align="left">3</td>
-<td align="right">20</td>
+<td align="left">14</td>
 <td align="right">10</td>
-<td align="right">1.6753912</td>
-<td align="left">8.44e-17</td>
+<td align="right">40</td>
+<td align="right">1.6285692</td>
+<td align="left">-4.89e-17</td>
 </tr>
 <tr class="odd">
-<td align="left">15</td>
-<td align="right">20</td>
-<td align="right">40</td>
-<td align="right">1.7488795</td>
-<td align="left">-6.00e-17</td>
-</tr>
-<tr class="even">
 <td align="left">6</td>
 <td align="right">20</td>
 <td align="right">15</td>
-<td align="right">1.8364451</td>
-<td align="left">8.16e-17</td>
-</tr>
-<tr class="odd">
-<td align="left">9</td>
-<td align="right">20</td>
-<td align="right">20</td>
-<td align="right">1.8430827</td>
-<td align="left">8.95e-17</td>
+<td align="right">1.7309200</td>
+<td align="left">-7.50e-17</td>
 </tr>
 <tr class="even">
 <td align="left">12</td>
 <td align="right">20</td>
 <td align="right">30</td>
-<td align="right">2.0176597</td>
-<td align="left">-2.02e-18</td>
+<td align="right">1.8129729</td>
+<td align="left">-4.43e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">4</td>
+<td align="right">5</td>
+<td align="right">15</td>
+<td align="right">1.8264077</td>
+<td align="left">-4.90e-18</td>
+</tr>
+<tr class="even">
+<td align="left">15</td>
+<td align="right">20</td>
+<td align="right">40</td>
+<td align="right">1.8987923</td>
+<td align="left">-4.71e-17</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="right">20</td>
+<td align="right">10</td>
+<td align="right">1.9251454</td>
+<td align="left">2.82e-17</td>
+</tr>
+<tr class="even">
+<td align="left">9</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">1.9450044</td>
+<td align="left">9.11e-17</td>
 </tr>
 <tr class="odd">
 <td align="left">7</td>
 <td align="right">5</td>
 <td align="right">20</td>
-<td align="right">2.1233027</td>
-<td align="left">-9.82e-18</td>
+<td align="right">2.4208650</td>
+<td align="left">-1.28e-17</td>
 </tr>
 <tr class="even">
 <td align="left">10</td>
 <td align="right">5</td>
 <td align="right">30</td>
-<td align="right">4.6779974</td>
-<td align="left">6.95e-17</td>
+<td align="right">4.3136892</td>
+<td align="left">-8.37e-17</td>
 </tr>
 <tr class="odd">
 <td align="left">13</td>
 <td align="right">5</td>
 <td align="right">40</td>
-<td align="right">5.7286335</td>
-<td align="left">2.31e-17</td>
+<td align="right">6.0654689</td>
+<td align="left">2.07e-17</td>
 </tr>
 </tbody>
 </table>
@@ -812,6 +846,7 @@
 <ul class="list-unstyled">
 <li>Roberto Villegas-Diaz <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5036-8661" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Esmeralda Cruz-Silva <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2906-9290" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Sandy P. Harrison <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-5687-1903" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -819,7 +854,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/special-uor/ageR" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.1.0.900-yellow.svg"></a></li>
+<li><a href="https://github.com/special-uor/ageR" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.2.0.900-yellow.svg"></a></li>
 <li><a href="https://github.com/special-uor/ageR/actions" class="external-link"><img src="https://github.com/special-uor/ageR/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://doi.org/10.5281/zenodo.4636715" class="external-link"><img src="https://img.shields.io/badge/doi-10.5281/zenodo.4636715-black.svg"></a></li>
 <li><a href="https://cran.r-project.org/package=ageR" class="external-link"><img src="https://www.r-pkg.org/badges/version/ageR?color=red"></a></li>
@@ -832,7 +867,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Roberto Villegas-Diaz, Esmeralda Cruz-Silva.</p>
+<p>Developed by Roberto Villegas-Diaz, Esmeralda Cruz-Silva, Sandy P. Harrison.</p>
 </div>
 
 <div class="pkgdown">
