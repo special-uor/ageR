@@ -375,7 +375,7 @@ Bacon <- function(wdir,
     logs[[i]] <- tmp$log
     df_stats[i, ] <- c(scenarios[i, 1], scenarios[i, 2], tmp$diff, tmp$bias)
     mcmcs[[i]] <- tmp$mcmc
-    abc_chrono_ages[[i]] <- tmp$abc_chrono_ages
+    # abc_chrono_ages[[i]] <- tmp$abc_chrono_ages
   }
   if (!quiet)
     cat("\n")
