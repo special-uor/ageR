@@ -25,7 +25,9 @@ standard output is relayed.}
 If TRUE and a interrupt is signaled, progress handlers are asked to
 report on the current amount progress when the evaluation was terminated
 by the interrupt, e.g. when a user pressed Ctrl-C in an interactive session,
-or a batch process was interrupted because it ran out of time.}
+or a batch process was interrupted because it ran out of time.
+Note that it's optional for a progress handler to support this and only
+some do.}
     \item{\code{interval}}{(numeric) The minimum time (in seconds) between
 successive progression updates from handlers.}
     \item{\code{enable}}{(logical) If FALSE, then progress is not reported.  The
