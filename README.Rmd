@@ -9,8 +9,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  dpi = 300, 
-  fig.width = 7
+  dpi = 600, 
+  fig.width = 15
 )
 ```
 
@@ -178,7 +178,7 @@ out <- ageR::pb(ageR::Bacon(wdir = "./", entity = "X", cpus = 2))
 ```
 
 ##### Run example
-```{r bacon-run, cache = TRUE}
+```{r bacon-run, cache = TRUE, fig.height=20}
 `%>%` <- magrittr::`%>%`
 out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
   ageR::pb()
@@ -193,12 +193,16 @@ knitr::kable(out$stats, col.names = c("Acc. Rate",
 best_scenario <- out$stats[1, 1:2]
 idx <- as.numeric(rownames(best_scenario))
 ```
-###### Log of posterior (MCMC)
+
+###### Best Scenario (Acc. Rate: `r best_scenario[1]` & Thicknes: `r best_scenario[2]`)
+
+**- Log of posterior (MCMC)**
+
 ```{r bacon-run-log-posterior, echo = FALSE}
 print(out$log[[idx]])
 ```
 
-###### Accumulation Rate: Posterior vs Prior
+**- Accumulation Rate: Posterior vs Prior**
 ```{r bacon-run-acc-rate, echo = FALSE}
 print(out$acc[[idx]])
 ```
