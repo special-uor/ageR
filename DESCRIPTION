@@ -59,7 +59,12 @@ Imports:
     stringi,
     stringr,
     tibble,
-    tictoc
+    tictoc,
+    rlang,
+    lifecycle,
+    cli,
+    glue,
+    withr
 Suggests:
     badger,
     dabr,
