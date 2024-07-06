@@ -316,14 +316,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S001-AR005-T10                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 7,425,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 424 yr, min. 108 yr at 5.05050505050505 cm, max. 937 yr at 500 cm
+#> Mean 95% confidence ranges 426 yr, min. 136 yr at 303.030303030303 cm, max. 920 yr at 500 cm
 #> 80% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -332,14 +331,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S002-AR010-T10                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 7,425,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 519 yr, min. 159 yr at 15.1515151515152 cm, max. 1059 yr at 500 cm
+#> Mean 95% confidence ranges 524 yr, min. 140 yr at 0 cm, max. 1058 yr between 368.686868686869 and 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -348,14 +346,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S003-AR020-T10                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 7,425,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 553 yr, min. 134 yr at 5.05050505050505 cm, max. 1525 yr at 500 cm
+#> Mean 95% confidence ranges 539 yr, min. 137 yr at 5.05050505050505 cm, max. 1569 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -364,14 +361,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S004-AR005-T15                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 5,087,500 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 588 yr, min. 105 yr at 10.1010101010101 cm, max. 1572 yr at 500 cm
+#> Mean 95% confidence ranges 562 yr, min. 92 yr at 10.1010101010101 cm, max. 1482 yr at 500 cm
 #> 80% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -380,14 +376,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S005-AR010-T15                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 5,087,500 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 573 yr, min. 114 yr at 10.1010101010101 cm, max. 1239 yr at 373.737373737374 cm
+#> Mean 95% confidence ranges 572 yr, min. 137 yr at 10.1010101010101 cm, max. 1291 yr at 388.888888888889 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -396,14 +391,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S006-AR020-T15                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 5,087,500 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 601 yr, min. 141 yr at 5.05050505050505 cm, max. 1767 yr at 500 cm
+#> Mean 95% confidence ranges 603 yr, min. 96 yr at 0 cm, max. 1747 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -412,14 +406,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S007-AR005-T20                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 3,987,500 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 766 yr, min. 118 yr at 10.1010101010101 cm, max. 2035 yr at 500 cm
+#> Mean 95% confidence ranges 764 yr, min. 119 yr at 5.05050505050505 cm, max. 2080 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -428,14 +421,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S008-AR010-T20                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 3,987,500 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 598 yr, min. 105 yr at 10.1010101010101 cm, max. 1309 yr at 378.787878787879 cm
+#> Mean 95% confidence ranges 599 yr, min. 126 yr at 5.05050505050505 cm, max. 1365 yr at 378.787878787879 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -444,14 +436,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S009-AR020-T20                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 3,987,500 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 642 yr, min. 151 yr between 30.3030303030303 and 35.3535353535353 cm, max. 1939 yr at 500 cm
+#> Mean 95% confidence ranges 631 yr, min. 126 yr at 5.05050505050505 cm, max. 2051 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -460,14 +451,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S010-AR005-T30                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 2,750,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 755 yr, min. 112 yr at 10.1010101010101 cm, max. 1827 yr at 500 cm
+#> Mean 95% confidence ranges 744 yr, min. 127 yr at 10.1010101010101 cm, max. 1697 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -476,14 +466,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S011-AR010-T30                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 2,750,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 630 yr, min. 96 yr at 5.05050505050505 cm, max. 1655 yr at 358.585858585859 cm
+#> Mean 95% confidence ranges 665 yr, min. 98 yr at 15.1515151515152 cm, max. 1699 yr at 388.888888888889 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -492,14 +481,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S012-AR020-T30                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 2,750,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 710 yr, min. 115 yr between 5.05050505050505 and 10.1010101010101 cm, max. 2264 yr at 500 cm
+#> Mean 95% confidence ranges 687 yr, min. 101 yr at 5.05050505050505 cm, max. 2322 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -508,14 +496,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S013-AR005-T40                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 2,200,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 679 yr, min. 101 yr at 10.1010101010101 cm, max. 1730 yr at 398.989898989899 cm
+#> Mean 95% confidence ranges 645 yr, min. 102 yr at 5.05050505050505 cm, max. 1638 yr at 398.989898989899 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -524,14 +511,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S014-AR010-T40                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 2,200,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 638 yr, min. 116 yr at 10.1010101010101 cm, max. 1719 yr at 398.989898989899 cm
+#> Mean 95% confidence ranges 627 yr, min. 101 yr at 10.1010101010101 cm, max. 1689 yr at 358.585858585859 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -540,14 +526,13 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 #> --------------------------------------------------------------------------------
 #> |                                S015-AR020-T40                                |
 #> --------------------------------------------------------------------------------
-#> Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()
 #>   Boundary set at depth(s)  NA
 #>  Will run 2,200,000 iterations and store 2,000
 #> Calculating age ranges...
 #> 
 #> Preparing ghost graph...
 #> 
-#> Mean 95% confidence ranges 682 yr, min. 98 yr at 10.1010101010101 cm, max. 2348 yr at 500 cm
+#> Mean 95% confidence ranges 679 yr, min. 120 yr at 5.05050505050505 cm, max. 2261 yr at 500 cm
 #> 100% of the dates overlap with the age-depth model (95% ranges)
 #> 
 #> --------------------------------------------------------------------------------
@@ -584,25 +569,25 @@ out <- ageR::Bacon(wdir = "./", entity = "X", cpus = 8, verbose = FALSE) %>%
 
 <img src="man/figures/README-bacon-run-4.png" width="100%" />
 
-    #> X: 64.844 sec elapsed
+    #> X: 55.833 sec elapsed
 
 |     | Acc. Rate | Thickness | Area Between Curves | Relative Bias |
 |:----|----------:|----------:|--------------------:|:--------------|
-| 2   |        10 |        10 |            1.047513 | 3.71e-17      |
-| 1   |         5 |        10 |            1.169971 | -6.76e-17     |
-| 5   |        10 |        15 |            1.299892 | 4.51e-17      |
-| 8   |        10 |        20 |            1.341751 | 1.04e-17      |
-| 11  |        10 |        30 |            1.550398 | 1.21e-16      |
-| 15  |        20 |        40 |            1.653871 | 2.72e-16      |
-| 12  |        20 |        30 |            1.713987 | -1.70e-16     |
-| 14  |        10 |        40 |            1.719351 | -1.04e-16     |
-| 4   |         5 |        15 |            1.773636 | 1.97e-17      |
-| 9   |        20 |        20 |            1.801102 | 9.32e-17      |
-| 6   |        20 |        15 |            1.911795 | 6.70e-17      |
-| 3   |        20 |        10 |            1.965164 | -6.78e-17     |
-| 7   |         5 |        20 |            2.322335 | 2.98e-17      |
-| 10  |         5 |        30 |            4.151370 | -4.82e-17     |
-| 13  |         5 |        40 |            5.151565 | -7.07e-17     |
+| 2   |        10 |        10 |            1.086173 | 6.70e-17      |
+| 5   |        10 |        15 |            1.251990 | 2.68e-17      |
+| 1   |         5 |        10 |            1.353079 | -4.43e-17     |
+| 8   |        10 |        20 |            1.359341 | -7.61e-17     |
+| 11  |        10 |        30 |            1.615011 | -4.70e-17     |
+| 14  |        10 |        40 |            1.645746 | 2.46e-17      |
+| 3   |        20 |        10 |            1.654022 | 8.91e-18      |
+| 4   |         5 |        15 |            1.754415 | -4.29e-17     |
+| 9   |        20 |        20 |            1.860253 | -1.24e-16     |
+| 12  |        20 |        30 |            1.863718 | 8.20e-17      |
+| 15  |        20 |        40 |            2.068277 | 2.16e-17      |
+| 6   |        20 |        15 |            2.173148 | 1.05e-16      |
+| 7   |         5 |        20 |            2.278536 | -7.75e-17     |
+| 10  |         5 |        30 |            4.275709 | 8.29e-18      |
+| 13  |         5 |        40 |            5.736973 | -3.99e-17     |
 
 ###### Best Scenario (Acc. Rate: 10 & Thicknes: 10)
 

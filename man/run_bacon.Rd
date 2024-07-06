@@ -91,7 +91,7 @@ specified by \code{thick} (default \code{thick = 5}).}
 Saves MC ensemble, bacon_chronology and AM plot.
 }
 \description{
-Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
+Run the function \code{rbacon::Bacon(...)}.
 }
 \references{
 Blauuw, M. et al., Bayesian Analysis 6, 457-474 (2011)
