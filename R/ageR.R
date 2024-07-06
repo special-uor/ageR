@@ -463,7 +463,7 @@ Bacon <- function(wdir,
 
 #' Run Bacon
 #'
-#' Run the function \code{rbacon:Bacon}{rbacon::Bacon(...)}.
+#' Run the function \code{rbacon::Bacon(...)}.
 #'
 #' @importFrom grDevices dev.off pdf dev.control recordPlot
 #' @importFrom graphics abline arrows lines matplot points
@@ -867,7 +867,7 @@ abc_chrono_ages <- function(path, sample_size = 1000, use_median = TRUE) {
 #' @keywords internal
 #'
 gelman_test <- function(data, confidence = 0.975) {
-  if (class(data) != "list")
+  if (!inherits(data, "list"))
     stop("Input must be a list of MCMC runs", call. = FALSE)
   # Find length of shortest run
   r <- min(unlist(lapply(data, nrow)))
